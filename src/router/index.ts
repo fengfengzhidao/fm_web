@@ -96,6 +96,24 @@ const router = createRouter({
                     ]
                 },
                 {
+                    name: "goodsManage",
+                    path: "goods_manage",
+                    meta: {
+                        title: "商品管理",
+                        role: [1]
+                    },
+                    children: [
+                        {
+                            name: "goodsList",
+                            path: "goods_list",
+                            meta: {
+                                title: "商品列表"
+                            },
+                            component: () => import("@/views/admin/goods_manage/index.vue"),
+                        }
+                    ]
+                },
+                {
                     name: "commentManage",
                     path: "comment_manage",
                     meta: {

@@ -152,6 +152,13 @@ export function goodsCategoryListApi(): Promise<baseResponse<string[]>> {
     return useAxios.get("/api/goods/category")
 }
 
+export function goodsCategoryOptionsApi(): Promise<baseResponse<optionsType[]>> {
+    return goodsCategoryListApi().then((res) => ({
+        ...res,
+        data: res.data?.map((item) => ({label: item, value: item})) || []
+    }))
+}
+
 export interface goodsStatusUpdateRequest {
     // 商品ID
     id: number
