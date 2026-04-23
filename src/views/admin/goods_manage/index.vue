@@ -62,6 +62,12 @@ const form = reactive<GoodsForm>({
   goodsConfigText: "[]",
 })
 
+function closeModal() {
+  visible.value = false
+  isEdit.value = false
+  resetForm()
+}
+
 function resetForm() {
   Object.assign(form, {
     id: undefined,
@@ -140,6 +146,7 @@ async function submit(done: (closed: boolean) => void) {
   }
   Message.success(res.msg)
   fListRef.value?.getList()
+  closeModal()
   done(true)
 }
 
@@ -209,7 +216,13 @@ async function updateStatus(record: goodsType) {
       </template>
     </f_list>
 
-    <a-modal v-model:visible="visible" :title="isEdit ? '编辑商品' : '发布商品'" :on-before-ok="submit" width="720px">
+    <a-modal
+        v-if="visible"
+        v-model:visible="visible"
+        :title="isEdit ? '编辑商品' : '发布商品'"
+        :on-before-ok="submit"
+        @cancel="closeModal"
+        width="720px">
       <a-form ref="formRef" :model="form" auto-label-width>
         <a-form-item field="title" label="商品名称" :rules="[{required: true, message: '请输入商品名称'}]">
           <a-input v-model="form.title" placeholder="商品名称"></a-input>
