@@ -14,7 +14,7 @@ export interface columnType extends TableColumnData {
 export interface actionGroupType {
   label: string
   value?: number
-  callback: (keyList: number[]) => void
+  callback: (keyList: Array<string | number>) => void
 }
 
 export interface filterGroupType {
@@ -67,12 +67,13 @@ const actionGroupOptions = ref<actionGroupType[]>([])
 
 
 function initActionGroup() {
+  actionGroupOptions.value = []
   let index = 0
   if (!props.noBatchDelete) {
     actionGroupOptions.value.push({
       label: "批量删除",
       value: 1,
-      callback: (keyList: number[]) => {
+      callback: (keyList: Array<string | number>) => {
         baseDelete(keyList)
         selectedKeys.value = []
       }
@@ -153,7 +154,7 @@ async function getList(newParams?: paramsType) {
 
 getList()
 const emits = defineEmits<{
-  (e: 'delete', keyList: number[] | string[]): void
+  (e: 'delete', keyList: Array<string | number>): void
   (e: 'add'): void
   (e: 'edit', record: any): void
   (e: "row-click", record: any): void
@@ -164,7 +165,7 @@ async function remove(record: any) {
   baseDelete([key])
 }
 
-async function baseDelete(keyList: number[]) {
+async function baseDelete(keyList: Array<string | number>) {
   if (noDefaultDelete) {
     // 不启用默认删除
     emits("delete", keyList)
@@ -177,7 +178,7 @@ async function baseDelete(keyList: number[]) {
   }
   const url = array[1]
 
-  const res = await defaultDeleteApi(url, keyList)
+  const res = await defaultDeleteApi(url, keyList.map((item) => Number(item)))
   if (res.code) {
     Message.error(res.msg)
     return
@@ -221,7 +222,7 @@ function refresh() {
 }
 
 
-const selectedKeys = ref([]);
+const selectedKeys = ref<(string | number)[]>([]);
 
 const rowSelection = reactive<TableRowSelection>({
   type: 'checkbox',
@@ -330,30 +331,29 @@ defineExpose({
     <div class="f_list_body">
       <a-spin :loading="loading" tip="加载中...">
         <div class="f_list_table">
-          <a-table @row-click="rowClick" :data="data.list" :row-key="rowKey" v-model:selectedKeys="selectedKeys"
-                   :row-selection="props.noCheck ? undefined : rowSelection " :pagination="false">
-            <template #columns>
-              <template v-for="col in props.columns">
-                <a-table-column v-if="col.dataIndex" v-bind="col"></a-table-column>
-                <a-table-column v-else-if="col.slotName" v-bind="col">
-                  <template #cell="data">
-                    <div class="col_actions" v-if="col.slotName === 'action'">
-                      <slot v-bind="data" name="action_left"></slot>
-                      <a-button v-if="!noEdit" type="primary" @click="edit(data.record)">{{ editLabel }}</a-button>
-                      <a-popconfirm v-if="!noDelete" @ok="remove(data.record)" content="确定要删除该记录吗？">
-                        <a-button type="primary" status="danger">{{ deleteLabel }}</a-button>
-                      </a-popconfirm>
-                      <slot v-bind="data" name="action_right"></slot>
-                    </div>
-                    <div v-if="col.slotName === 'created_at'">
-                      {{ dateTemFormat(data.record[col.slotName], col.dateFormat) }}
-                    </div>
-                    <slot v-else :name="col.slotName" v-bind="data"></slot>
-                  </template>
-                </a-table-column>
+      <a-table @row-click="rowClick" :data="data.list" :row-key="rowKey" v-model:selectedKeys="selectedKeys"
+               :row-selection="props.noCheck ? undefined : rowSelection " :pagination="false">
+        <template #columns>
+          <template v-for="col in props.columns" :key="col.dataIndex || col.slotName || col.title">
+            <a-table-column v-bind="col">
+              <template v-if="col.slotName" #cell="data">
+                <div class="col_actions" v-if="col.slotName === 'action'">
+                  <slot v-bind="data" name="action_left"></slot>
+                  <a-button v-if="!noEdit" type="primary" @click="edit(data.record)">{{ editLabel }}</a-button>
+                  <a-popconfirm v-if="!noDelete" @ok="remove(data.record)" content="确定要删除该记录吗？">
+                    <a-button type="primary" status="danger">{{ deleteLabel }}</a-button>
+                  </a-popconfirm>
+                  <slot v-bind="data" name="action_right"></slot>
+                </div>
+                <div v-else-if="col.slotName === 'created_at'">
+                  {{ dateTemFormat(data.record[col.slotName], col.dateFormat) }}
+                </div>
+                <slot v-else :name="col.slotName" v-bind="data"></slot>
               </template>
-            </template>
-          </a-table>
+            </a-table-column>
+          </template>
+        </template>
+      </a-table>
         </div>
         <div class="f_list_page" v-if="!props.noPage">
           <a-pagination show-total @change="pageChange" :total="data.count" v-model:current="params.page"

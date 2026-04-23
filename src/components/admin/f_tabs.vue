@@ -14,7 +14,7 @@ interface TabType {
 }
 
 const tabs = ref<TabType[]>([
-  {title: "首页", name: "home"},
+  {title: "数据统计", name: "home"},
 ])
 
 function check(item: TabType) {
@@ -47,7 +47,7 @@ function removeItem(item: TabType) {
 }
 
 function removeAllItem() {
-  tabs.value = [{title: "首页", name: "home"}]
+  tabs.value = [{title: "数据统计", name: "home"}]
   router.push({name: "home"})
   saveTabs()
 }
@@ -57,7 +57,10 @@ function loadTabs() {
   const f_tabs = localStorage.getItem("f_tabs")
   if (f_tabs) {
     try {
-      tabs.value = JSON.parse(f_tabs)
+      tabs.value = JSON.parse(f_tabs).map((item: TabType) => ({
+        ...item,
+        title: item.name === "home" ? "数据统计" : item.title,
+      }))
     } catch (e) {
       console.log(e)
     }

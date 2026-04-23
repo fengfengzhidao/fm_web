@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type {Component} from "vue";
-import {IconHome, IconUser, IconSettings, IconMessage, IconBarChart, IconStorage, IconGift} from "@arco-design/web-vue/es/icon";
+import {IconUser, IconSettings, IconMessage, IconBarChart, IconStorage, IconGift} from "@arco-design/web-vue/es/icon";
 import F_component from "@/components/common/f_component.vue";
 import {ref} from "vue";
 import {collapsed} from "@/components/admin/f_menu";
@@ -23,42 +23,22 @@ interface MenuType {
 
 
 const menuList: MenuType[] = [
-  {title: "首页", name: "home", icon: IconHome},
-  {
-    title: "个人中心", name: "userCenter", icon: IconUser, children: [
-      {title: "个人信息", name: "userInfo", icon: "iconfont icon-yonghuxinxi-"}
-    ]
-  },
-  {
-    title: "数据统计", role: 1, name: "dataManage", icon: IconBarChart, children: [
-      {title: "统计概览", name: "dataStatistics", icon: IconBarChart}
-    ]
-  },
-  {
-    title: "用户管理", role: 1, name: "userManage", icon: "iconfont icon-yonghuguanli", children: [
+  {title: "数据统计", name: "home", icon: IconBarChart},
+  {title: "用户管理", role: 1, name: "userManage", icon: IconUser, children: [
       {title: "用户列表", name: "userList", icon: "iconfont icon-yonghuguanli_huaban",}
-    ]
-  },
-  {
-    title: "商品管理", role: 1, name: "goodsManage", icon: IconStorage, children: [
+    ]},
+  {title: "商品管理", role: 1, name: "goodsManage", icon: IconStorage, children: [
       {title: "商品列表", name: "goodsList", icon: IconStorage}
-    ]
-  },
-  {
-    title: "评价管理", role: 1, name: "commentManage", icon: IconMessage, children: [
+    ]},
+  {title: "评价管理", role: 1, name: "commentManage", icon: IconMessage, children: [
       {title: "评价列表", name: "commentList", icon: IconMessage}
-    ]
-  },
-  {
-    title: "活动管理", role: 1, name: "activityManage", icon: IconGift, children: [
+    ]},
+  {title: "活动管理", role: 1, name: "activityManage", icon: IconGift, children: [
       {title: "活动列表", name: "activityList", icon: IconGift}
-    ]
-  },
-  {
-    title: "站点配置", role: 1, name: "settingsManage", icon: "iconfont icon-xitongpeizhi", children: [
-      {title: "基础配置", name: "settings", icon: IconSettings},
-    ]
-  },
+    ]},
+  {title: "系统管理", role: 1, name: "settingsManage", icon: "iconfont icon-xitongpeizhi", children: [
+      {title: "站点配置", name: "settings", icon: IconSettings},
+    ]},
 ]
 
 

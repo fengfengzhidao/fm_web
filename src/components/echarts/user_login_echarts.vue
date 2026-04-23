@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as echarts from 'echarts';
-import {onMounted, reactive, ref, watch} from "vue";
+import {onBeforeUnmount, onMounted, reactive, ref, watch} from "vue";
 import {theme} from "@/components/common/f_theme";
 import type {dataLoginStatisticType} from "@/api/data_api";
 import {dataLoginStatisticApi} from "@/api/data_api";
@@ -8,6 +8,7 @@ import {Message} from "@arco-design/web-vue";
 
 type EChartsOption = echarts.EChartsOption;
 let myChart: echarts.ECharts | null = null
+const chartRef = ref<HTMLDivElement | null>(null)
 
 const data = reactive<dataLoginStatisticType>({
   dateList: [],
@@ -23,8 +24,6 @@ async function getData() {
   }
   Object.assign(data, res.data)
 }
-
-
 
 function initEcharts() {
   let option: EChartsOption;
@@ -46,9 +45,13 @@ function initEcharts() {
   option = {
     color: themeColor,
     title: {
-      text: '用户登录数据',
+      text: '用户独立趋势',
+      subtext: '近 7 天登录与注册变化',
       textStyle: {
         color: textColor
+      },
+      subtextStyle: {
+        color: lineColor
       }
     },
     tooltip: {
@@ -117,22 +120,39 @@ function initEcharts() {
   option && myChart?.setOption(option);
 }
 
+function resizeChart() {
+  myChart?.resize()
+}
+
 onMounted(async () => {
   await getData()
-  const chartDom = document.querySelector('.user_login_echarts') as HTMLDivElement;
-  myChart = echarts.init(chartDom);
+  if (!chartRef.value) {
+    return
+  }
+  myChart = echarts.init(chartRef.value);
   initEcharts()
+  window.addEventListener("resize", resizeChart)
 })
 
 watch(() => theme.value, () => {
   initEcharts()
 })
 
+watch(() => [data.dateList.join("|"), data.loginList.join(","), data.signList.join(",")], () => {
+  initEcharts()
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener("resize", resizeChart)
+  myChart?.dispose()
+  myChart = null
+})
+
 
 </script>
 
 <template>
-  <div class="user_login_echarts"></div>
+  <div ref="chartRef" class="user_login_echarts"></div>
 </template>
 
 <style lang="less">
