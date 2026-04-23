@@ -9,8 +9,6 @@ import {
   type dataOrderTrendType,
   dataSystemStatisticApi,
   type dataSystemStatisticType,
-  dataWeatherApi,
-  type weatherType,
 } from "@/api/data_api";
 import {Message} from "@arco-design/web-vue";
 import {IconApps, IconClockCircle, IconMessage, IconStorage, IconSubscribe, IconUser} from "@arco-design/web-vue/es/icon";
@@ -26,7 +24,6 @@ interface StatItem {
 const loading = ref(false)
 const system = reactive<Partial<dataSystemStatisticType>>({})
 const computer = reactive<Partial<dataComputerType>>({})
-const weather = reactive<Partial<weatherType>>({})
 const orderTrend = reactive<dataOrderTrendType>({
   dateList: [],
   countList: [],
@@ -36,6 +33,7 @@ const loginTrend = reactive<dataLoginStatisticType>({
   loginList: [],
   signList: [],
 })
+const showWeatherPanel = false
 
 const statList: StatItem[] = [
   {label: "用户数量", key: "userNum", icon: IconUser, color: "#165dff"},
@@ -63,7 +61,6 @@ async function getData() {
     await Promise.all([
       request(dataSystemStatisticApi, (data) => Object.assign(system, data)),
       request(dataComputerApi, (data) => Object.assign(computer, data)),
-      request(dataWeatherApi, (data) => Object.assign(weather, data)),
       request(dataOrderTrendApi, (data) => Object.assign(orderTrend, data)),
       request(dataLoginStatisticApi, (data) => Object.assign(loginTrend, data)),
     ])
@@ -149,14 +146,12 @@ onMounted(getData)
           </div>
         </div>
 
-        <div class="panel">
+        <div v-if="showWeatherPanel" class="panel">
           <div class="panel_title">天气信息</div>
           <div class="weather_box">
-            <div class="weather_main">{{ weather.weather || "-" }}</div>
-            <div class="weather_temp">{{ weather.temperature || "-" }}°C</div>
-            <div class="weather_meta">{{ weather.province }} {{ weather.city }}</div>
-            <div class="weather_meta">湿度 {{ weather.humidity || "-" }}% / {{ weather.winddirection || "-" }}风 {{ weather.windpower || "-" }}级</div>
-            <div class="weather_meta">{{ weather.reporttime }}</div>
+            <div class="weather_main">-</div>
+            <div class="weather_temp">-°C</div>
+            <div class="weather_meta">天气信息暂不可用</div>
           </div>
         </div>
       </div>
