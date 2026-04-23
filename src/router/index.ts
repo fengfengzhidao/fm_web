@@ -78,6 +78,24 @@ const router = createRouter({
                     ]
                 },
                 {
+                    name: "dataManage",
+                    path: "data_manage",
+                    meta: {
+                        title: "数据统计",
+                        role: [1]
+                    },
+                    children: [
+                        {
+                            name: "dataStatistics",
+                            path: "statistics",
+                            meta: {
+                                title: "统计概览"
+                            },
+                            component: () => import("@/views/admin/data_manage/index.vue"),
+                        }
+                    ]
+                },
+                {
                     name: "commentManage",
                     path: "comment_manage",
                     meta: {

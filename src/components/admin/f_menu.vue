@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type {Component} from "vue";
-import {IconHome, IconUser, IconSettings, IconMessage} from "@arco-design/web-vue/es/icon";
+import {IconHome, IconUser, IconSettings, IconMessage, IconBarChart} from "@arco-design/web-vue/es/icon";
 import F_component from "@/components/common/f_component.vue";
 import {ref} from "vue";
 import {collapsed} from "@/components/admin/f_menu";
@@ -27,6 +27,11 @@ const menuList: MenuType[] = [
   {
     title: "个人中心", name: "userCenter", icon: IconUser, children: [
       {title: "个人信息", name: "userInfo", icon: "iconfont icon-yonghuxinxi-"}
+    ]
+  },
+  {
+    title: "数据统计", role: 1, name: "dataManage", icon: IconBarChart, children: [
+      {title: "统计概览", name: "dataStatistics", icon: IconBarChart}
     ]
   },
   {
