@@ -55,8 +55,8 @@ const menuList: MenuType[] = [
     ]
   },
   {
-    title: "系统设置", role: 1, name: "settingsManage", icon: "iconfont icon-xitongpeizhi", children: [
-      {title: "系统信息", name: "settings", icon: IconSettings},
+    title: "站点配置", role: 1, name: "settingsManage", icon: "iconfont icon-xitongpeizhi", children: [
+      {title: "基础配置", name: "settings", icon: IconSettings},
     ]
   },
 ]

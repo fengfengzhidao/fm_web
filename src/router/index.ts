@@ -153,7 +153,7 @@ const router = createRouter({
                     name: "settingsManage",
                     path: "settings_manage",
                     meta: {
-                        title: "系统配置",
+                        title: "站点配置",
                         role: [1]
                     },
                     children: [
@@ -161,7 +161,7 @@ const router = createRouter({
                             name: "settings",
                             path: "settings",
                             meta: {
-                                title: "系统信息"
+                                title: "基础配置"
                             },
                             component: () => import("@/views/admin/settings_manage/index.vue"),
                         }
