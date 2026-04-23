@@ -10,9 +10,9 @@ type EChartsOption = echarts.EChartsOption;
 let myChart: echarts.ECharts | null = null
 
 const data = reactive<dataLoginStatisticType>({
-  date_list: [],
-  login_data: [],
-  sign_data: [],
+  dateList: [],
+  loginList: [],
+  signList: [],
 })
 
 async function getData() {
@@ -76,7 +76,7 @@ function initEcharts() {
       {
         type: 'category',
         boundaryGap: false,
-        data: data.date_list
+        data: data.dateList
       }
     ],
     yAxis: [
@@ -98,7 +98,7 @@ function initEcharts() {
         emphasis: {
           focus: 'series'
         },
-        data: data.login_data,
+        data: data.loginList,
         smooth: true,
       },
       {
@@ -110,7 +110,7 @@ function initEcharts() {
           focus: 'series'
         },
         smooth: true,
-        data: data.sign_data,
+        data: data.signList,
       },
     ]
   };

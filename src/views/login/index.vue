@@ -10,7 +10,7 @@ import {useRoute} from "vue-router";
 const route = useRoute()
 const userStore = userStorei()
 const form = reactive<emailLoginRequest>({
-  user_name: "",
+  username: "",
   password: ""
 })
 
@@ -29,7 +29,7 @@ async function emailLogin() {
 
 
   // 如何获取用户信息 1. 直接解析token   2. 调用户信息接口
-  userStore.saveUserInfo(res.data)
+  await userStore.saveUserInfo(res.data)
 
   const redirect = route.query.redirect
   if (redirect) {
@@ -37,7 +37,7 @@ async function emailLogin() {
     return
   }
   router.push({
-    name: "web_home"
+    name: "admin"
   })
 
 
@@ -51,8 +51,8 @@ async function emailLogin() {
     <div class="login_mask">
       <a-form ref="formRef" :model="form" :label-col-props="{span: 0}" :wrapper-col-props="{span:24}">
         <div class="title">用户登陆</div>
-        <a-form-item label="用户名" field="user_name" :rules="[{required:true,message:'请输入用户名'}]">
-          <a-input placeholder="请输入用户名" v-model="form.user_name">
+        <a-form-item label="用户名" field="username" :rules="[{required:true,message:'请输入用户名'}]">
+          <a-input placeholder="请输入用户名" v-model="form.username">
             <template #prefix>
               <icon-user/>
             </template>

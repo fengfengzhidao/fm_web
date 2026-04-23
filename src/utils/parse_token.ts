@@ -1,8 +1,10 @@
 export interface jwtPayload {
-    "username": string
-    "nick_name": string
-    "role": number
-    "user_id": number
+    "username"?: string
+    "nick_name"?: string
+    "role"?: number
+    "user_id"?: number
+    "userID"?: number
+    "roleID"?: number
     "exp": number
     "iss": string
 }

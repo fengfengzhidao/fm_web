@@ -51,11 +51,11 @@ export function dataMock() {
             })
     })
 
-    mock(/.*?\/api\/data\/login_statistic/, function (){
+    mock(/.*?\/api\/data\/user_trend/, function (){
         return {
             "code": 0,
             "data": {
-                "date_list": [
+                "dateList": [
                     "2024-05-20",
                     "2024-05-21",
                     "2024-05-22",
@@ -64,7 +64,7 @@ export function dataMock() {
                     "2024-05-25",
                     "2024-05-26"
                 ],
-                "login_data": [
+                "loginList": [
                     3,
                     3,
                     2,
@@ -73,7 +73,7 @@ export function dataMock() {
                     2,
                     3
                 ],
-                "sign_data": [
+                "signList": [
                     0,
                     0,
                     1,

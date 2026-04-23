@@ -24,10 +24,10 @@ export function dataWeatherApi(): Promise<baseResponse<weatherType>> {
 }
 
 export interface dataLoginStatisticType{
-    date_list: string[]
-    login_data: number[]
-    sign_data: number[]
+    dateList: string[]
+    loginList: number[]
+    signList: number[]
 }
 export function dataLoginStatisticApi():Promise<baseResponse<dataLoginStatisticType>>{
-    return  useAxios.get("/api/data/login_statistic")
+    return  useAxios.get("/api/data/user_trend")
 }

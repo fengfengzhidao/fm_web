@@ -2,39 +2,35 @@ import {type baseResponse, type listResponse, type optionsType, type paramsType,
 
 
 export interface emailLoginRequest {
-    user_name: string
+    username: string
     password: string
+    captchaID?: string
+    captchaCode?: string
 }
 
 export function emailLoginApi(data: emailLoginRequest): Promise<baseResponse<string>> {
-    return useAxios.post("/api/email_login", data)
+    return useAxios.post("/api/users/login", data)
 }
 
 
 export interface userInfoType {
     "id": number
-    "created_at": string
-    "nick_name": string
-    "user_name": string
+    "createdAt": string
+    "updatedAt": string
+    "nickname": string
+    "username": string
     "avatar": string
-    "email": string
-    "tel": string
     "addr": string
-    "token": string
     "ip": string
-    "role": string
-    "sign_status": string
-    "integral": number
-    "sign": string
-    "link": string
+    "roleID": number
 }
 
 export function userInfoApi(): Promise<baseResponse<userInfoType>> {
-    return useAxios.get("/api/user_info")
+    return useAxios.get("/api/users/detail")
 }
 
 export function userLogoutApi(): Promise<baseResponse<string>> {
-    return useAxios.post("/api/logout")
+    return useAxios.post("/api/users/logout")
 }
 
 export interface userListType {

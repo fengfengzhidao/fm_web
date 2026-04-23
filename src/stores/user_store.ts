@@ -33,30 +33,29 @@ export const userStorei = defineStore('userStore', {
         }
     },
     actions: {
-         saveUserInfo(token: string) {
+         async saveUserInfo(token: string) {
             // 传一个token过来，然后重新去调用户信息接口
             this.userInfo.token = token
             const payLoad = parseToken(token)
-            this.userInfo.userID = payLoad.user_id
-            this.userInfo.role = payLoad.role
+            this.userInfo.userID = payLoad.userID || payLoad.user_id || 0
+            this.userInfo.role = payLoad.roleID || payLoad.role || 0
 
-             userInfoApi().then(res=>{
-                if (res.code) {
-                    Message.error(res.msg)
-                    return
-                }
+             const res = await userInfoApi()
+             if (res.code) {
+                 Message.error(res.msg)
+                 return
+             }
 
-                 this.userInfo = {
-                     userID: res.data.id,
-                     nickName: res.data.nick_name,
-                     userName: res.data.user_name,
-                     avatar: res.data.avatar,
-                     role: payLoad.role,
-                     token: token,
-                 }
-                 // 持久化
-                 localStorage.setItem("userInfo", JSON.stringify(this.userInfo))
-            })
+             this.userInfo = {
+                 userID: res.data.id,
+                 nickName: res.data.nickname,
+                 userName: res.data.username,
+                 avatar: res.data.avatar,
+                 role: res.data.roleID,
+                 token: token,
+             }
+             // 持久化
+             localStorage.setItem("userInfo", JSON.stringify(this.userInfo))
         },
         loadUserInfo() {
             const val = localStorage.getItem("userInfo")
@@ -82,7 +81,7 @@ export const userStorei = defineStore('userStore', {
             }
         },
         async userLogout() {
-            const res = await userLogoutApi()
+            await userLogoutApi()
             localStorage.removeItem("userInfo")
             this.userInfo = {
                 userID: 0,
