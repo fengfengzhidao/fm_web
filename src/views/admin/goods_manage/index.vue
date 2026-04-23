@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {onMounted, reactive, ref} from "vue";
-import F_list, {type columnType, type filterGroupType} from "@/components/admin/f_list.vue";
+import F_list, {type columnType} from "@/components/admin/f_list.vue";
 import {
   goodsAdminListApi,
   goodsCategoryOptionsApi,
@@ -29,8 +29,8 @@ const fListRef = ref<InstanceType<typeof F_list>>()
 const formRef = ref()
 const visible = ref(false)
 const isEdit = ref(false)
-const filterReady = ref(false)
-const filterGroup = ref<filterGroupType[]>([])
+const categoryOptions = ref<optionsType[]>([])
+const selectedCategory = ref<string | undefined>()
 
 const columns: columnType[] = [
   {title: "ID", dataIndex: "id", width: 80},
@@ -100,21 +100,19 @@ function openEdit(record: goodsType) {
 
 async function initFilterGroup() {
   const res = await goodsCategoryOptionsApi()
-  const categoryOptions: optionsType[] = res.code ? [] : res.data || []
   if (res.code) {
     Message.error(res.msg)
   }
+  categoryOptions.value = res.data || []
+}
 
-  filterGroup.value = [
-    {label: "商品分类", source: categoryOptions, column: "category", width: 150},
-    {
-      label: "商品状态", column: "status", width: 130, source: [
-        {label: "上架", value: 1},
-        {label: "下架", value: 2},
-      ]
-    },
-  ]
-  filterReady.value = true
+function applyCategoryFilter(value: string | number | boolean | Record<string, any> | Array<string | number | boolean | Record<string, any>> | undefined) {
+  const category = typeof value === "string" ? value : undefined
+  selectedCategory.value = category
+  fListRef.value?.getList({
+    page: 1,
+    category,
+  })
 }
 
 function buildPayload() {
@@ -179,16 +177,23 @@ onMounted(initFilterGroup)
 <template>
   <div class="goods_manage_view">
     <f_list
-        v-if="filterReady"
         ref="fListRef"
         :url="goodsAdminListApi"
         :columns="columns"
-        :filter-group="filterGroup"
         add-label="发布商品"
         edit-label="编辑"
         search-placeholder="搜索商品"
         @add="openAdd"
         @edit="openEdit">
+      <template #search_other>
+        <a-select
+            v-model="selectedCategory"
+            :options="categoryOptions"
+            allow-clear
+            style="width: 150px"
+            placeholder="商品分类"
+            @change="applyCategoryFilter"></a-select>
+      </template>
       <template #cover="{record}:{record: goodsType}">
         <a-image
             v-if="record.images?.length"

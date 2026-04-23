@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type {baseResponse, listResponse, optionsFunc, optionsType, paramsType} from "@/api";
+import type {baseResponse, listResponse, optionsType, paramsType} from "@/api";
 import {reactive, ref} from "vue";
 import {Message, type TableColumnData, type TableData, type TableRowSelection} from "@arco-design/web-vue";
 import {dateTemFormat, type dateTemType} from "@/utils/date";
@@ -19,10 +19,9 @@ export interface actionGroupType {
 
 export interface filterGroupType {
   label: string
-  source: optionsType[] | optionsFunc
+  source: optionsType[]
   options?: optionsType[]
   column?: string
-  params?: paramsType
   callback?: (value: number | string) => void
   width?: number
 }
@@ -95,26 +94,11 @@ initActionGroup()
 
 
 const filterGroups = ref<filterGroupType[]>([])
-const filterValues = reactive<Record<string, number | string | undefined>>({})
 
-async function initFilterGroup() {
-  const list: filterGroupType[] = []
-  for (const f of props.filterGroup || []) {
-    const filter = {...f}
-    if (typeof f.source === 'function') {
-      const res = await f.source(f.params)
-      if (res.code) {
-        Message.error(res.msg)
-        continue
-      }
-      filter.options = res.data || []
-    } else {
-      filter.options = f.source
-    }
-    const key = filter.column || filter.label
-    filterValues[key] = undefined
+function initFilterGroup() {
+  filterGroups.value = (props.filterGroup || []).map((f) => {
+    const filter = {...f, options: f.source}
     if (!filter.callback) {
-      // 如果没有callback，那就走默认行为
       filter.callback = (value) => {
         if (filter.column) {
           const p: { [key: string]: any } = {}
@@ -123,10 +107,8 @@ async function initFilterGroup() {
         }
       }
     }
-
-    list.push(filter)
-  }
-  filterGroups.value = list
+    return filter
+  })
 }
 
 initFilterGroup()
@@ -323,7 +305,6 @@ defineExpose({
         <a-select
             v-for="item in filterGroups"
             :key="item.column || item.label"
-            v-model="filterValues[item.column || item.label]"
             :style="{width: item.width + 'px'}"
             allow-clear
             @change="(value) => item.callback?.(value as string | number)"
