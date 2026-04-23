@@ -36,6 +36,8 @@ export interface commentType {
     goodsTitle?: string
     // 用户昵称
     userNickname?: string
+    // 下单时商品价格
+    orderGoodsPrice?: number
     // 评论内容
     content: string
     // 满意度 1-5

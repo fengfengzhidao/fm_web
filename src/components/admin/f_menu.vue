@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type {Component} from "vue";
-import {IconHome, IconUser, IconSettings} from "@arco-design/web-vue/es/icon";
+import {IconHome, IconUser, IconSettings, IconMessage} from "@arco-design/web-vue/es/icon";
 import F_component from "@/components/common/f_component.vue";
 import {ref} from "vue";
 import {collapsed} from "@/components/admin/f_menu";
@@ -32,6 +32,11 @@ const menuList: MenuType[] = [
   {
     title: "用户管理", role: 1, name: "userManage", icon: "iconfont icon-yonghuguanli", children: [
       {title: "用户列表", name: "userList", icon: "iconfont icon-yonghuguanli_huaban",}
+    ]
+  },
+  {
+    title: "评价管理", role: 1, name: "commentManage", icon: IconMessage, children: [
+      {title: "评价列表", name: "commentList", icon: IconMessage}
     ]
   },
   {

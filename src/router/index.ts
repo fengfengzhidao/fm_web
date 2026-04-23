@@ -78,6 +78,24 @@ const router = createRouter({
                     ]
                 },
                 {
+                    name: "commentManage",
+                    path: "comment_manage",
+                    meta: {
+                        title: "评价管理",
+                        role: [1]
+                    },
+                    children: [
+                        {
+                            name: "commentList",
+                            path: "comment_list",
+                            meta: {
+                                title: "评价列表"
+                            },
+                            component: () => import("@/views/admin/comment_manage/index.vue"),
+                        }
+                    ]
+                },
+                {
                     name: "settingsManage",
                     path: "settings_manage",
                     meta: {
