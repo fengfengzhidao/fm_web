@@ -410,29 +410,29 @@ function backToList() {
               <a-form-item label="商品主图">
                 <div class="image_list">
                   <div v-for="(image, index) in form.images" :key="`image-${index}`" class="image_row">
-                    <div class="image_preview">
-                      <a-image
-                          v-if="image"
-                          :src="image"
-                          :preview="false"
-                          :width="72"
-                          :height="72"
-                          fit="cover"></a-image>
-                      <div v-else class="image_placeholder">预览</div>
-                    </div>
+                    <a-upload
+                      class="image_upload"
+                      :show-file-list="false"
+                      accept="image/png,image/jpeg,image/webp"
+                      :custom-request="createImageUploadRequest({type: 'main', index})"
+                    >
+                      <template #upload-button>
+                        <div class="image_preview upload_trigger">
+                          <a-image
+                              v-if="image"
+                              :src="image"
+                              :preview="false"
+                              :width="72"
+                              :height="72"
+                              fit="cover"></a-image>
+                          <div v-else class="image_placeholder">点击上传</div>
+                        </div>
+                      </template>
+                    </a-upload>
                     <a-input v-model="form.images[index]" placeholder="支持手动填写图片路径，也可本地上传"></a-input>
                     <div class="row_actions">
-                      <a-upload
-                        :show-file-list="false"
-                        accept="image/png,image/jpeg,image/webp"
-                        :custom-request="createImageUploadRequest({type: 'main', index})"
-                      >
-                        <template #upload-button>
-                          <a-button>本地上传</a-button>
-                        </template>
-                      </a-upload>
-                      <a-button type="primary" @click="addImage(index)">+</a-button>
-                      <a-button status="danger" @click="removeImage(index)">-</a-button>
+                      <a-button size="mini" type="primary" @click="addImage(index)">+</a-button>
+                      <a-button size="mini" status="danger" @click="removeImage(index)">-</a-button>
                     </div>
                   </div>
                   <div class="tip_line">至少填写 1 张主图，最多可继续追加。</div>
@@ -450,26 +450,36 @@ function backToList() {
                   <div class="config_group_head">
                     <a-input v-model="group.title" class="group_title_input" placeholder="配置名称，例如：颜色、尺寸"></a-input>
                     <div class="row_actions">
-                      <a-button type="primary" @click="addGroup(groupIndex)">增加</a-button>
-                      <a-button status="danger" @click="removeGroup(groupIndex)">删除</a-button>
+                      <a-button size="mini" type="primary" @click="addGroup(groupIndex)">增加</a-button>
+                      <a-button size="mini" status="danger" @click="removeGroup(groupIndex)">删除</a-button>
                     </div>
                   </div>
                   <div class="config_sub_list">
                     <div v-for="(subItem, subIndex) in group.subList" :key="`sub-${groupIndex}-${subIndex}`" class="config_sub_row">
+                      <a-upload
+                        class="sub_image_upload"
+                        :show-file-list="false"
+                        accept="image/png,image/jpeg,image/webp"
+                        :custom-request="createImageUploadRequest({type: 'sub', groupIndex, subIndex})"
+                      >
+                        <template #upload-button>
+                          <div class="image_preview upload_trigger sub_preview">
+                            <a-image
+                                v-if="subItem.image"
+                                :src="subItem.image"
+                                :preview="false"
+                                :width="56"
+                                :height="56"
+                                fit="cover"></a-image>
+                            <div v-else class="image_placeholder">预览</div>
+                          </div>
+                        </template>
+                      </a-upload>
                       <a-input v-model="subItem.title" class="sub_title_input" placeholder="配置项名称"></a-input>
                       <a-input v-model="subItem.image" class="sub_image_input" placeholder="支持手动填写图片路径，也可本地上传"></a-input>
                       <div class="row_actions">
-                        <a-upload
-                          :show-file-list="false"
-                          accept="image/png,image/jpeg,image/webp"
-                          :custom-request="createImageUploadRequest({type: 'sub', groupIndex, subIndex})"
-                        >
-                          <template #upload-button>
-                            <a-button>本地上传</a-button>
-                          </template>
-                        </a-upload>
-                        <a-button type="primary" @click="addSub(groupIndex, subIndex)">+</a-button>
-                        <a-button status="danger" @click="removeSub(groupIndex, subIndex)">-</a-button>
+                        <a-button size="mini" type="primary" @click="addSub(groupIndex, subIndex)">+</a-button>
+                        <a-button size="mini" status="danger" @click="removeSub(groupIndex, subIndex)">-</a-button>
                       </div>
                     </div>
                   </div>
@@ -588,6 +598,28 @@ function backToList() {
     justify-content: center;
   }
 
+  .upload_trigger {
+    cursor: pointer;
+    transition: border-color .2s ease, background-color .2s ease, transform .2s ease;
+
+    &:hover {
+      border-color: rgb(var(--primary-6));
+      background: var(--color-fill-1);
+      transform: translateY(-1px);
+    }
+  }
+
+  .image_upload,
+  .sub_image_upload {
+    display: inline-flex;
+    flex-shrink: 0;
+  }
+
+  .sub_preview {
+    width: 56px;
+    height: 56px;
+  }
+
   .image_placeholder {
     color: @color-text-4;
     font-size: 12px;
@@ -597,6 +629,13 @@ function backToList() {
     display: flex;
     gap: 8px;
     flex-shrink: 0;
+  }
+
+  .row_actions :deep(.arco-btn-size-mini) {
+    height: 24px;
+    padding: 0 8px;
+    line-height: 22px;
+    font-size: 12px;
   }
 
   .tip_line {

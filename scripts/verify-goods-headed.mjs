@@ -33,12 +33,10 @@ async function ensureSampleImage() {
   await fs.writeFile(sampleImagePath, Buffer.from(sampleImageBase64, "base64"));
 }
 
-async function uploadViaButton(page, buttonIndex = 0) {
-  const button = page.getByRole("button", { name: "本地上传" }).nth(buttonIndex);
-  const waitChooser = page.waitForEvent("filechooser");
-  await button.click();
-  const chooser = await waitChooser;
-  await chooser.setFiles(sampleImagePath);
+async function uploadViaPreview(page, containerSelector, index = 0) {
+  const container = page.locator(containerSelector).nth(index)
+  await container.locator(".upload_trigger").click()
+  await container.locator('input[type="file"]').setInputFiles(sampleImagePath)
 }
 
 async function main() {
@@ -76,9 +74,9 @@ async function main() {
     await page.getByPlaceholder("请输入商品分类").fill("自动化测试分类");
     await page.getByPlaceholder("单位：元").fill("19.90");
     await page.getByPlaceholder("不填表示无限库存").fill("12");
-    await uploadViaButton(page, 0);
+    await uploadViaPreview(page, ".image_upload");
     await page.waitForFunction(() => {
-      const input = document.querySelector(".image_row input");
+      const input = document.querySelector(".image_row input[type='text']");
       return input instanceof HTMLInputElement && input.value.includes("/uploads/");
     });
     await takeShot(page, "03a-main-image-uploaded");
@@ -104,17 +102,17 @@ async function main() {
     const subTitleInputs = page.locator(".sub_title_input input");
     const subImageInputs = page.locator(".sub_image_input input");
     await subTitleInputs.first().fill("红色");
-    await uploadViaButton(page, 1);
+    await uploadViaPreview(page, ".sub_image_upload", 0);
     await page.waitForFunction(() => {
       const inputs = document.querySelectorAll(".sub_image_input input");
       const first = inputs[0];
       return first instanceof HTMLInputElement && first.value.includes("/uploads/");
     });
 
-    await page.locator(".config_group .config_sub_row .row_actions").first().getByRole("button").nth(1).click();
+    await page.locator(".config_group .config_sub_row .row_actions").first().getByRole("button").nth(0).click();
     await page.waitForFunction(() => document.querySelectorAll(".sub_image_input input").length >= 2);
     await subTitleInputs.nth(1).fill("蓝色");
-    await uploadViaButton(page, 2);
+    await uploadViaPreview(page, ".sub_image_upload", 1);
     await page.waitForFunction(() => {
       const inputs = document.querySelectorAll(".sub_image_input input");
       const second = inputs[1];
@@ -137,7 +135,7 @@ async function main() {
     await takeShot(page, "06-goods-edit");
 
     await page.getByPlaceholder("请输入商品名称").fill(editedTitle);
-    await uploadViaButton(page, 0);
+    await uploadViaPreview(page, ".image_upload");
     await editor.fill("# 自动化验证\n\n- 已完成编辑流程\n- 这是一条更新后的简介");
     await page.getByRole("button", { name: "保存修改" }).click();
     await page.getByText("商品更新成功").waitFor({ timeout: 30000 });
