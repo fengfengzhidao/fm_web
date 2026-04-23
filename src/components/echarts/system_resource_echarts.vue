@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as echarts from "echarts";
-import {onBeforeUnmount, onMounted, reactive, ref, watch} from "vue";
+import {nextTick, onBeforeUnmount, onMounted, reactive, ref, watch} from "vue";
 import {Message} from "@arco-design/web-vue";
 import {dataComputerApi, type dataComputerType} from "@/api/data_api";
 import {theme} from "@/components/common/f_theme";
@@ -9,6 +9,7 @@ type EChartsOption = echarts.EChartsOption;
 
 const chartRef = ref<HTMLDivElement | null>(null)
 let myChart: echarts.ECharts | null = null
+let resizeObserver: ResizeObserver | null = null
 
 const data = reactive<dataComputerType>({
   cpuPercent: 0,
@@ -93,14 +94,40 @@ function resizeChart() {
   myChart?.resize()
 }
 
-onMounted(async () => {
-  await getData()
-  if (!chartRef.value) {
+function initChart() {
+  const el = chartRef.value
+  if (!el || myChart) {
     return
   }
-  myChart = echarts.init(chartRef.value)
+  if (el.clientWidth === 0 || el.clientHeight === 0) {
+    return
+  }
+  myChart = echarts.init(el)
   renderChart()
   window.addEventListener("resize", resizeChart)
+}
+
+function observeChartSize() {
+  const el = chartRef.value
+  if (!el) {
+    return
+  }
+  resizeObserver?.disconnect()
+  resizeObserver = new ResizeObserver(() => {
+    if (!myChart) {
+      initChart()
+      return
+    }
+    resizeChart()
+  })
+  resizeObserver.observe(el)
+}
+
+onMounted(async () => {
+  await getData()
+  await nextTick()
+  initChart()
+  observeChartSize()
 })
 
 watch(() => theme.value, renderChart)
@@ -108,6 +135,8 @@ watch(() => [data.cpuPercent, data.memPercent, data.diskPercent], renderChart)
 
 onBeforeUnmount(() => {
   window.removeEventListener("resize", resizeChart)
+  resizeObserver?.disconnect()
+  resizeObserver = null
   myChart?.dispose()
   myChart = null
 })
