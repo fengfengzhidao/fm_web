@@ -597,6 +597,7 @@ function backToList() {
     gap: 8px;
     flex: 1;
     min-width: 0;
+    width: 100%;
   }
 
   .config_sub_row_bottom {
@@ -637,8 +638,8 @@ function backToList() {
   }
 
   .sub_preview {
-    width: 56px;
-    height: 56px;
+    width: 64px;
+    height: 64px;
   }
 
   .image_placeholder {
@@ -653,7 +654,7 @@ function backToList() {
   }
 
   .row_actions_bottom {
-    align-self: flex-start;
+    align-self: center;
   }
 
   .row_actions :deep(.arco-btn-size-mini) {
@@ -696,6 +697,7 @@ function backToList() {
 
   .config_sub_row {
     padding-left: 4px;
+    align-items: flex-end;
   }
 
   .sub_title_input {
@@ -705,6 +707,11 @@ function backToList() {
   .sub_image_input {
     flex: 1;
     min-width: 0;
+  }
+
+  .image_row_right :deep(.arco-input-wrapper),
+  .config_sub_row_right :deep(.arco-input-wrapper) {
+    width: 100%;
   }
 
   .editor_card {
