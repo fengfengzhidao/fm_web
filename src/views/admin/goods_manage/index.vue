@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {reactive, ref} from "vue";
+import {onMounted, reactive, ref} from "vue";
 import F_list, {type columnType, type filterGroupType} from "@/components/admin/f_list.vue";
 import {
   goodsAdminListApi,
@@ -11,6 +11,7 @@ import {
 } from "@/api/goods_api";
 import {Message} from "@arco-design/web-vue";
 import {dateTemFormat} from "@/utils/date";
+import type {optionsType} from "@/api";
 
 interface GoodsForm {
   id?: number
@@ -28,6 +29,8 @@ const fListRef = ref<InstanceType<typeof F_list>>()
 const formRef = ref()
 const visible = ref(false)
 const isEdit = ref(false)
+const filterReady = ref(false)
+const filterGroup = ref<filterGroupType[]>([])
 
 const columns: columnType[] = [
   {title: "ID", dataIndex: "id", width: 80},
@@ -39,16 +42,6 @@ const columns: columnType[] = [
   {title: "数据", slotName: "stats", width: 180},
   {title: "时间", slotName: "createdAt", width: 180},
   {title: "操作", slotName: "action", width: 220},
-]
-
-const filterGroup: filterGroupType[] = [
-  {label: "商品分类", source: goodsCategoryOptionsApi, column: "category", width: 150},
-  {
-    label: "商品状态", column: "status", width: 130, source: [
-      {label: "上架", value: 1},
-      {label: "下架", value: 2},
-    ]
-  },
 ]
 
 const form = reactive<GoodsForm>({
@@ -103,6 +96,25 @@ function openEdit(record: goodsType) {
     goodsConfigText: JSON.stringify(record.goodsConfigList || [], null, 2),
   })
   visible.value = true
+}
+
+async function initFilterGroup() {
+  const res = await goodsCategoryOptionsApi()
+  const categoryOptions: optionsType[] = res.code ? [] : res.data || []
+  if (res.code) {
+    Message.error(res.msg)
+  }
+
+  filterGroup.value = [
+    {label: "商品分类", source: categoryOptions, column: "category", width: 150},
+    {
+      label: "商品状态", column: "status", width: 130, source: [
+        {label: "上架", value: 1},
+        {label: "下架", value: 2},
+      ]
+    },
+  ]
+  filterReady.value = true
 }
 
 function buildPayload() {
@@ -160,11 +172,14 @@ async function updateStatus(record: goodsType) {
   Message.success(res.msg)
   fListRef.value?.getList()
 }
+
+onMounted(initFilterGroup)
 </script>
 
 <template>
   <div class="goods_manage_view">
     <f_list
+        v-if="filterReady"
         ref="fListRef"
         :url="goodsAdminListApi"
         :columns="columns"
