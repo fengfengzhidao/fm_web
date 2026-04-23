@@ -132,6 +132,24 @@ const router = createRouter({
                     ]
                 },
                 {
+                    name: "activityManage",
+                    path: "activity_manage",
+                    meta: {
+                        title: "活动管理",
+                        role: [1]
+                    },
+                    children: [
+                        {
+                            name: "activityList",
+                            path: "activity_list",
+                            meta: {
+                                title: "活动列表"
+                            },
+                            component: () => import("@/views/admin/activity_manage/index.vue"),
+                        }
+                    ]
+                },
+                {
                     name: "settingsManage",
                     path: "settings_manage",
                     meta: {

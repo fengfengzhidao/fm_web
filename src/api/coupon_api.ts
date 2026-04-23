@@ -2,6 +2,8 @@ import type {baseResponse, listResponse, paramsType} from "@/api/index";
 import {useAxios} from "@/api/index";
 
 export interface couponCreateRequest {
+    // 优惠券标题
+    title?: string
     // 优惠券类型：1 通用，2 新用户，3 商品
     type: number
     // 优惠金额，单位分

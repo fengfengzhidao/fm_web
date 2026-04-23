@@ -24,6 +24,12 @@ export interface secKillType extends secKillCreateRequest {
     buyNum: number
     // 结束时间
     endTime: string
+    // 商品名称
+    title?: string
+    // 封面图
+    cover?: string
+    // 原价，单位分
+    price?: number
 }
 
 export interface secKillInfoType {
