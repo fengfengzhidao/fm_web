@@ -409,7 +409,7 @@ function backToList() {
                 <a-input-number v-model="form.inventory" :min="0" placeholder="不填表示无限库存"></a-input-number>
                 <template #help>不填就是无限库存</template>
               </a-form-item>
-              <a-form-item label="商品主图">
+              <a-form-item class="main_image_form_item" label="商品主图">
                 <div class="image_list">
                   <div v-for="(image, index) in form.images" :key="`image-${index}`" class="image_row">
                     <a-upload
@@ -585,6 +585,12 @@ function backToList() {
     gap: 12px;
   }
 
+  .main_image_form_item {
+    :deep(.arco-form-item-content) {
+      width: 100%;
+    }
+  }
+
   .image_row,
   .config_sub_row {
     display: flex;
@@ -738,6 +744,45 @@ function backToList() {
   .markdown_wrap {
     flex: 1;
     min-height: 0;
+
+    .md-editor-dark,
+    .md-editor-dark .md-editor-preview,
+    .md-editor-dark .md-editor-content,
+    .md-editor-dark .md-editor-input-wrapper,
+    .md-editor-dark .md-editor-preview-wrapper,
+    .md-editor-dark .md-editor-toolbar-wrapper,
+    .md-editor-dark .md-editor-footer,
+    .md-editor-dark .md-editor-catalog-editor {
+      --md-color: var(--color-text-1);
+      --md-hover-color: var(--color-text-1);
+      --md-bk-color: var(--color-bg-1);
+      --md-bk-color-outstand: var(--color-fill-2);
+      --md-bk-hover-color: var(--color-fill-2);
+      --md-border-color: var(--color-border-2);
+      --md-border-hover-color: var(--color-border-2);
+      --md-border-active-color: var(--color-border-2);
+      --md-modal-mask: rgba(0, 0, 0, 0.45);
+      --md-modal-shadow: 0px 6px 24px 2px rgba(0, 0, 0, 0.24);
+      --md-scrollbar-bg-color: var(--color-fill-2);
+      --md-scrollbar-thumb-color: rgba(144, 147, 153, 0.35);
+      --md-scrollbar-thumb-hover-color: rgba(144, 147, 153, 0.5);
+      --md-scrollbar-thumb-active-color: rgba(144, 147, 153, 0.6);
+    }
+
+    .md-editor-dark .md-editor-preview {
+      --md-theme-color: var(--color-text-1);
+      --md-theme-color-reverse: var(--color-fill-2);
+      --md-theme-color-hover: var(--color-fill-2);
+      --md-theme-color-hover-inset: var(--color-fill-2);
+      --md-theme-border-color: var(--color-border-2);
+      --md-theme-border-color-reverse: var(--color-text-1);
+      --md-theme-border-color-inset: var(--color-fill-2);
+      --md-theme-bg-color: var(--color-bg-1);
+      --md-theme-bg-color-inset: var(--color-fill-2);
+      --md-theme-code-copy-tips-bg-color: var(--color-fill-2);
+      --md-theme-code-active-color: rgb(var(--primary-6));
+      --md-theme-code-block-bg-color: var(--color-fill-2);
+    }
 
     .md-editor {
       height: 100%;
