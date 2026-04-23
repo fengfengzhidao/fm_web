@@ -22,7 +22,7 @@ export interface paramsType {
 }
 
 export const useAxios = axios.create({
-    timeout: 6000,
+    timeout: 30000,
     baseURL: "", // 在使用前端代理的情况下，这里必须留空，不然会跨域
 })
 

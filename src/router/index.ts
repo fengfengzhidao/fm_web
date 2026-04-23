@@ -110,6 +110,22 @@ const router = createRouter({
                                 title: "商品列表"
                             },
                             component: () => import("@/views/admin/goods_manage/index.vue"),
+                        },
+                        {
+                            name: "goodsCreate",
+                            path: "create",
+                            meta: {
+                                title: "发布商品"
+                            },
+                            component: () => import("@/views/admin/goods_manage/goods_form_page.vue"),
+                        },
+                        {
+                            name: "goodsEdit",
+                            path: "edit/:id",
+                            meta: {
+                                title: "编辑商品"
+                            },
+                            component: () => import("@/views/admin/goods_manage/goods_form_page.vue"),
                         }
                     ]
                 },

@@ -1,34 +1,19 @@
 <script setup lang="ts">
-import {onMounted, reactive, ref} from "vue";
+import {onMounted, ref} from "vue";
+import {useRouter} from "vue-router";
 import F_list, {type columnType} from "@/components/admin/f_list.vue";
 import {
   goodsAdminListApi,
   goodsCategoryOptionsApi,
-  goodsCreateApi,
   goodsStatusUpdateApi,
-  goodsUpdateApi,
   type goodsType,
 } from "@/api/goods_api";
 import {Message} from "@arco-design/web-vue";
 import {dateTemFormat} from "@/utils/date";
 import type {optionsType} from "@/api";
 
-interface GoodsForm {
-  id?: number
-  title: string
-  videoPath: string
-  imageText: string
-  priceYuan: number
-  inventory?: number
-  category: string
-  abstract: string
-  goodsConfigText: string
-}
-
+const router = useRouter()
 const fListRef = ref<InstanceType<typeof F_list>>()
-const formRef = ref()
-const visible = ref(false)
-const isEdit = ref(false)
 const categoryOptions = ref<optionsType[]>([])
 const selectedCategory = ref<string | undefined>()
 
@@ -43,60 +28,6 @@ const columns: columnType[] = [
   {title: "时间", slotName: "createdAt", width: 180},
   {title: "操作", slotName: "action", width: 220},
 ]
-
-const form = reactive<GoodsForm>({
-  title: "",
-  videoPath: "",
-  imageText: "",
-  priceYuan: 0,
-  inventory: undefined,
-  category: "",
-  abstract: "",
-  goodsConfigText: "[]",
-})
-
-function closeModal() {
-  visible.value = false
-  isEdit.value = false
-  resetForm()
-}
-
-function resetForm() {
-  Object.assign(form, {
-    id: undefined,
-    title: "",
-    videoPath: "",
-    imageText: "",
-    priceYuan: 0,
-    inventory: undefined,
-    category: "",
-    abstract: "",
-    goodsConfigText: "[]",
-  })
-  formRef.value?.clearValidate()
-}
-
-function openAdd() {
-  isEdit.value = false
-  resetForm()
-  visible.value = true
-}
-
-function openEdit(record: goodsType) {
-  isEdit.value = true
-  Object.assign(form, {
-    id: record.id,
-    title: record.title,
-    videoPath: record.videoPath || "",
-    imageText: record.images?.join("\n") || "",
-    priceYuan: Number((record.price / 100).toFixed(2)),
-    inventory: record.inventory === null ? undefined : record.inventory,
-    category: record.category,
-    abstract: record.abstract,
-    goodsConfigText: JSON.stringify(record.goodsConfigList || [], null, 2),
-  })
-  visible.value = true
-}
 
 async function initFilterGroup() {
   const res = await goodsCategoryOptionsApi()
@@ -116,49 +47,12 @@ function applyCategoryFilter(value: string | number | boolean | Record<string, a
   })
 }
 
-function buildPayload() {
-  let goodsConfigList = []
-  try {
-    goodsConfigList = JSON.parse(form.goodsConfigText || "[]")
-  } catch (e) {
-    Message.error("高级配置必须是合法 JSON")
-    return
-  }
-  const images = form.imageText.split(/\r?\n/).map((item) => item.trim()).filter(Boolean)
-  return {
-    id: form.id as number,
-    title: form.title,
-    videoPath: form.videoPath || undefined,
-    images,
-    price: Math.round(Number(form.priceYuan) * 100),
-    inventory: form.inventory === undefined || form.inventory === null ? undefined : Number(form.inventory),
-    category: form.category,
-    abstract: form.abstract,
-    goodsConfigList,
-  }
+function openCreate() {
+  router.push({name: "goodsCreate"})
 }
 
-async function submit(done: (closed: boolean) => void) {
-  const error = await formRef.value.validate()
-  if (error) {
-    done(false)
-    return
-  }
-  const payload = buildPayload()
-  if (!payload) {
-    done(false)
-    return
-  }
-  const res = isEdit.value ? await goodsUpdateApi(payload) : await goodsCreateApi(payload)
-  if (res.code) {
-    Message.error(res.msg)
-    done(false)
-    return
-  }
-  Message.success(res.msg)
-  fListRef.value?.getList()
-  closeModal()
-  done(true)
+function openEdit(record: goodsType) {
+  router.push({name: "goodsEdit", params: {id: record.id}})
 }
 
 async function updateStatus(record: goodsType) {
@@ -172,7 +66,9 @@ async function updateStatus(record: goodsType) {
   fListRef.value?.getList()
 }
 
-initFilterGroup()
+onMounted(() => {
+  initFilterGroup()
+})
 </script>
 
 <template>
@@ -184,7 +80,7 @@ initFilterGroup()
         add-label="发布商品"
         edit-label="编辑"
         search-placeholder="搜索商品"
-        @add="openAdd"
+        @add="openCreate"
         @edit="openEdit">
       <template #search_other>
         <a-select
@@ -236,41 +132,6 @@ initFilterGroup()
         </a-button>
       </template>
     </f_list>
-
-    <a-modal
-        v-if="visible"
-        v-model:visible="visible"
-        :title="isEdit ? '编辑商品' : '发布商品'"
-        :on-before-ok="submit"
-        @cancel="closeModal"
-        width="720px">
-      <a-form ref="formRef" :model="form" auto-label-width>
-        <a-form-item field="title" label="商品名称" :rules="[{required: true, message: '请输入商品名称'}]">
-          <a-input v-model="form.title" placeholder="商品名称"></a-input>
-        </a-form-item>
-        <a-form-item field="category" label="商品分类" :rules="[{required: true, message: '请输入商品分类'}]">
-          <a-input v-model="form.category" placeholder="例如：手机数码"></a-input>
-        </a-form-item>
-        <a-form-item field="priceYuan" label="商品价格" :rules="[{required: true, message: '请输入商品价格'}]">
-          <a-input-number v-model="form.priceYuan" :min="0.01" :precision="2" placeholder="单位：元"></a-input-number>
-        </a-form-item>
-        <a-form-item field="inventory" label="库存">
-          <a-input-number v-model="form.inventory" :min="0" placeholder="不填表示无限库存"></a-input-number>
-        </a-form-item>
-        <a-form-item field="imageText" label="商品主图" :rules="[{required: true, message: '请输入至少一张主图地址'}]">
-          <a-textarea v-model="form.imageText" placeholder="每行一个图片地址，最多 9 张" :auto-size="{minRows: 3, maxRows: 5}"></a-textarea>
-        </a-form-item>
-        <a-form-item field="videoPath" label="视频地址">
-          <a-input v-model="form.videoPath" placeholder="可选"></a-input>
-        </a-form-item>
-        <a-form-item field="abstract" label="商品简介">
-          <a-textarea v-model="form.abstract" placeholder="商品简介" :auto-size="{minRows: 2, maxRows: 4}"></a-textarea>
-        </a-form-item>
-        <a-form-item field="goodsConfigText" label="高级配置">
-          <a-textarea v-model="form.goodsConfigText" placeholder="JSON 数组" :auto-size="{minRows: 4, maxRows: 8}"></a-textarea>
-        </a-form-item>
-      </a-form>
-    </a-modal>
   </div>
 </template>
 
