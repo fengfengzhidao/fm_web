@@ -6,6 +6,7 @@ import type {RequestOption, UploadRequest} from "@arco-design/web-vue";
 import {MdEditor} from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
 import {imageUploadApi} from "@/api/image_api";
+import {theme as appTheme} from "@/components/common/f_theme";
 import {
   goodsCreateApi,
   goodsDetailApi,
@@ -36,6 +37,7 @@ const loading = ref(false)
 const saving = ref(false)
 const editorCardHeight = ref("auto")
 const isEdit = computed(() => route.name === "goodsEdit")
+const editorTheme = computed(() => appTheme.value === "dark" ? "dark" : "light")
 const pageTitle = computed(() => isEdit.value ? "编辑商品" : "发布商品")
 const pageDesc = computed(() => isEdit.value ? "修改商品基础信息、Markdown 简介和高级配置。" : "填写商品基础信息、Markdown 简介和高级配置。")
 
@@ -502,7 +504,7 @@ function backToList() {
               <template #title>商品简介</template>
               <div class="editor_tip">使用 Markdown 编辑商品简介。</div>
               <div class="markdown_wrap">
-                <MdEditor v-model="form.abstract" />
+                <MdEditor v-model="form.abstract" :theme="editorTheme" :preview-theme="editorTheme" />
               </div>
             </a-card>
           </div>
@@ -595,9 +597,9 @@ function backToList() {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    flex: 1;
+    flex: 0 1 auto;
     min-width: 0;
-    width: 100%;
+    width: calc(100% - 88px);
   }
 
   .config_sub_row_bottom {
