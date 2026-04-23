@@ -429,10 +429,12 @@ function backToList() {
                         </div>
                       </template>
                     </a-upload>
-                    <a-input v-model="form.images[index]" placeholder="支持手动填写图片路径，也可本地上传"></a-input>
-                    <div class="row_actions">
-                      <a-button size="mini" type="primary" @click="addImage(index)">+</a-button>
-                      <a-button size="mini" status="danger" @click="removeImage(index)">-</a-button>
+                    <div class="image_row_right">
+                      <a-input v-model="form.images[index]" placeholder="支持手动填写图片路径，也可本地上传"></a-input>
+                      <div class="row_actions row_actions_bottom">
+                        <a-button size="mini" type="primary" @click="addImage(index)">+</a-button>
+                        <a-button size="mini" status="danger" @click="removeImage(index)">-</a-button>
+                      </div>
                     </div>
                   </div>
                   <div class="tip_line">至少填写 1 张主图，最多可继续追加。</div>
@@ -475,11 +477,15 @@ function backToList() {
                           </div>
                         </template>
                       </a-upload>
-                      <a-input v-model="subItem.title" class="sub_title_input" placeholder="配置项名称"></a-input>
-                      <a-input v-model="subItem.image" class="sub_image_input" placeholder="支持手动填写图片路径，也可本地上传"></a-input>
-                      <div class="row_actions">
-                        <a-button size="mini" type="primary" @click="addSub(groupIndex, subIndex)">+</a-button>
-                        <a-button size="mini" status="danger" @click="removeSub(groupIndex, subIndex)">-</a-button>
+                      <div class="config_sub_row_right">
+                        <a-input v-model="subItem.title" class="sub_title_input" placeholder="配置项名称"></a-input>
+                        <div class="config_sub_row_bottom">
+                          <a-input v-model="subItem.image" class="sub_image_input" placeholder="支持手动填写图片路径，也可本地上传"></a-input>
+                          <div class="row_actions row_actions_bottom">
+                            <a-button size="mini" type="primary" @click="addSub(groupIndex, subIndex)">+</a-button>
+                            <a-button size="mini" status="danger" @click="removeSub(groupIndex, subIndex)">-</a-button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -578,11 +584,26 @@ function backToList() {
   }
 
   .image_row,
-  .config_group_head,
   .config_sub_row {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 10px;
+  }
+
+  .image_row_right,
+  .config_sub_row_right {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .config_sub_row_bottom {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
   }
 
   .image_preview {
@@ -631,6 +652,10 @@ function backToList() {
     flex-shrink: 0;
   }
 
+  .row_actions_bottom {
+    align-self: flex-start;
+  }
+
   .row_actions :deep(.arco-btn-size-mini) {
     height: 24px;
     padding: 0 8px;
@@ -652,6 +677,9 @@ function backToList() {
   }
 
   .config_group_head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     margin-bottom: 12px;
   }
 
@@ -671,8 +699,7 @@ function backToList() {
   }
 
   .sub_title_input {
-    width: 120px;
-    flex-shrink: 0;
+    width: 100%;
   }
 
   .sub_image_input {
@@ -729,7 +756,6 @@ function backToList() {
     }
 
     .image_row,
-    .config_group_head,
     .config_sub_row {
       flex-wrap: wrap;
     }
