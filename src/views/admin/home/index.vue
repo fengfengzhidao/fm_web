@@ -14,7 +14,7 @@ import System_resource_echarts from "@/components/echarts/system_resource_echart
 
     <div class="dashboard_grid">
       <div class="main_column">
-        <f_card title="用户独立趋势">
+        <f_card title="用户登录趋势">
           <user_login_echarts></user_login_echarts>
         </f_card>
 

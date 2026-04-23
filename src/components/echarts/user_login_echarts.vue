@@ -44,16 +44,6 @@ function initEcharts() {
 
   option = {
     color: themeColor,
-    title: {
-      text: '用户独立趋势',
-      subtext: '近 7 天登录与注册变化',
-      textStyle: {
-        color: textColor
-      },
-      subtextStyle: {
-        color: lineColor
-      }
-    },
     tooltip: {
       trigger: 'axis',
       axisPointer: {
@@ -79,7 +69,15 @@ function initEcharts() {
       {
         type: 'category',
         boundaryGap: false,
-        data: data.dateList
+        data: data.dateList,
+        axisLabel: {
+          color: textColor
+        },
+        axisLine: {
+          lineStyle: {
+            color: lineColor
+          }
+        }
       }
     ],
     yAxis: [

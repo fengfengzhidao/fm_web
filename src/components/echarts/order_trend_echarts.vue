@@ -30,12 +30,6 @@ function buildOption(): EChartsOption {
 
   return {
     color: ["#165dff"],
-    title: {
-      text: "下单统计",
-      subtext: "近 7 天下单量",
-      textStyle: {color: textColor},
-      subtextStyle: {color: lineColor},
-    },
     tooltip: {trigger: "axis"},
     grid: {
       left: "3%",
