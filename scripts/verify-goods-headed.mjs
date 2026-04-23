@@ -12,6 +12,8 @@ const artifactDir = path.resolve("playwright-artifacts");
 const listURL = `${baseURL}/admin/goods_manage/goods_list`;
 const createdTitle = `Playwright 商品 ${Date.now()}`;
 const editedTitle = `${createdTitle} - 已编辑`;
+const sampleImagePath = path.join(artifactDir, "sample-upload.png");
+const sampleImageBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO7KXSUAAAAASUVORK5CYII=";
 
 async function ensureArtifactDir() {
   await fs.mkdir(artifactDir, { recursive: true });
@@ -25,6 +27,18 @@ async function takeShot(page, name) {
 
 async function fillFirst(locator, value) {
   await locator.first().fill(value);
+}
+
+async function ensureSampleImage() {
+  await fs.writeFile(sampleImagePath, Buffer.from(sampleImageBase64, "base64"));
+}
+
+async function uploadViaButton(page, buttonIndex = 0) {
+  const button = page.getByRole("button", { name: "本地上传" }).nth(buttonIndex);
+  const waitChooser = page.waitForEvent("filechooser");
+  await button.click();
+  const chooser = await waitChooser;
+  await chooser.setFiles(sampleImagePath);
 }
 
 async function main() {
@@ -42,6 +56,7 @@ async function main() {
   page.setDefaultTimeout(30000);
 
   try {
+    await ensureSampleImage();
     console.log(`打开页面: ${baseURL}/login`);
     await page.goto(`${baseURL}/login`, { waitUntil: "networkidle" });
     await takeShot(page, "01-login");
@@ -61,11 +76,27 @@ async function main() {
     await page.getByPlaceholder("请输入商品分类").fill("自动化测试分类");
     await page.getByPlaceholder("单位：元").fill("19.90");
     await page.getByPlaceholder("不填表示无限库存").fill("12");
-    await fillFirst(page.getByPlaceholder("请输入图片地址"), "https://picsum.photos/seed/fm-web-1/320/320");
+    await uploadViaButton(page, 0);
+    await page.waitForFunction(() => {
+      const input = document.querySelector(".image_row input");
+      return input instanceof HTMLInputElement && input.value.includes("/uploads/");
+    });
+    await takeShot(page, "03a-main-image-uploaded");
+    await fillFirst(page.getByPlaceholder("支持手动填写图片路径，也可本地上传"), "/uploads/manual-main.jpg");
     await page.getByPlaceholder("可选").fill("https://example.com/demo.mp4");
 
     const editor = page.locator(".md-editor .cm-content[contenteditable='true']");
     await editor.fill("# 自动化验证\n\n- 这是一个测试商品\n- 用于验证发布、编辑和删除流程");
+
+    const editorBox = await page.locator(".editor_card").boundingBox();
+    const configBox = await page.locator(".goods_form_left .form_card").last().boundingBox();
+    if (!editorBox || !configBox) {
+      throw new Error("无法读取编辑器或高级配置的布局信息");
+    }
+    const gap = Math.abs((editorBox.y + editorBox.height) - (configBox.y + configBox.height));
+    if (gap > 24) {
+      throw new Error(`编辑器底部与高级配置底部未对齐，偏差 ${gap}px`);
+    }
 
     const groupTitleInputs = page.locator(".group_title_input input");
     await groupTitleInputs.first().fill("颜色");
@@ -73,11 +104,22 @@ async function main() {
     const subTitleInputs = page.locator(".sub_title_input input");
     const subImageInputs = page.locator(".sub_image_input input");
     await subTitleInputs.first().fill("红色");
-    await subImageInputs.first().fill("https://picsum.photos/seed/fm-web-red/200/200");
+    await uploadViaButton(page, 1);
+    await page.waitForFunction(() => {
+      const inputs = document.querySelectorAll(".sub_image_input input");
+      const first = inputs[0];
+      return first instanceof HTMLInputElement && first.value.includes("/uploads/");
+    });
 
-    await page.locator(".config_group .config_sub_row .row_actions").first().getByRole("button").first().click();
+    await page.locator(".config_group .config_sub_row .row_actions").first().getByRole("button").nth(1).click();
+    await page.waitForFunction(() => document.querySelectorAll(".sub_image_input input").length >= 2);
     await subTitleInputs.nth(1).fill("蓝色");
-    await subImageInputs.nth(1).fill("https://picsum.photos/seed/fm-web-blue/200/200");
+    await uploadViaButton(page, 2);
+    await page.waitForFunction(() => {
+      const inputs = document.querySelectorAll(".sub_image_input input");
+      const second = inputs[1];
+      return second instanceof HTMLInputElement && second.value.includes("/uploads/");
+    });
 
     await page.getByRole("button", { name: "确认发布" }).click();
     await page.getByText("商品发布成功").waitFor({ timeout: 30000 });
@@ -95,6 +137,7 @@ async function main() {
     await takeShot(page, "06-goods-edit");
 
     await page.getByPlaceholder("请输入商品名称").fill(editedTitle);
+    await uploadViaButton(page, 0);
     await editor.fill("# 自动化验证\n\n- 已完成编辑流程\n- 这是一条更新后的简介");
     await page.getByRole("button", { name: "保存修改" }).click();
     await page.getByText("商品更新成功").waitFor({ timeout: 30000 });

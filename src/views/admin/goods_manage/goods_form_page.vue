@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import {computed, reactive, ref, watch} from "vue";
+import {computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {Message} from "@arco-design/web-vue";
+import type {RequestOption, UploadRequest} from "@arco-design/web-vue";
 import {MdEditor} from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
+import {imageUploadApi} from "@/api/image_api";
 import {
   goodsCreateApi,
   goodsDetailApi,
@@ -28,8 +30,11 @@ interface GoodsForm {
 const route = useRoute()
 const router = useRouter()
 const formRef = ref()
+const goodsFormLeftRef = ref<HTMLElement | null>(null)
+const editorCardRef = ref<HTMLElement | null>(null)
 const loading = ref(false)
 const saving = ref(false)
+const editorCardHeight = ref("auto")
 const isEdit = computed(() => route.name === "goodsEdit")
 const pageTitle = computed(() => isEdit.value ? "编辑商品" : "发布商品")
 const pageDesc = computed(() => isEdit.value ? "修改商品基础信息、Markdown 简介和高级配置。" : "填写商品基础信息、Markdown 简介和高级配置。")
@@ -108,6 +113,94 @@ function removeSub(groupIndex: number, subIndex: number) {
   }
   subList.splice(subIndex, 1)
 }
+
+function applyImagePath(target: {type: "main"; index: number} | {type: "sub"; groupIndex: number; subIndex: number}, path: string) {
+  if (target.type === "main") {
+    form.images[target.index] = path
+    return
+  }
+  form.goodsConfigList[target.groupIndex].subList[target.subIndex].image = path
+}
+
+function createImageUploadRequest(target: {type: "main"; index: number} | {type: "sub"; groupIndex: number; subIndex: number}) {
+  return (option: RequestOption): UploadRequest => {
+    const file = option.fileItem.file
+    if (!file) {
+      const msg = "请选择图片文件"
+      Message.error(msg)
+      option.onError(msg)
+      return {}
+    }
+
+    let aborted = false
+    imageUploadApi(file).then((res) => {
+      if (aborted) {
+        return
+      }
+      if (res.code) {
+        Message.error(res.msg)
+        option.onError(res.msg)
+        return
+      }
+
+      applyImagePath(target, res.data)
+      Message.success(res.msg)
+      option.onSuccess(res)
+    }).catch((error) => {
+      if (aborted) {
+        return
+      }
+      console.error(error)
+      Message.error("图片上传失败")
+      option.onError(error)
+    })
+
+    return {
+      abort() {
+        aborted = true
+      },
+    }
+  }
+}
+
+function syncEditorHeight() {
+  const leftBox = goodsFormLeftRef.value
+  const editorBox = editorCardRef.value
+  if (!leftBox || !editorBox) {
+    return
+  }
+
+  const configCard = leftBox.querySelector(".form_card:last-of-type") as HTMLElement | null
+  if (!configCard) {
+    return
+  }
+
+  const editorRect = editorBox.getBoundingClientRect()
+  const configRect = configCard.getBoundingClientRect()
+  const nextHeight = Math.max(0, Math.round(configRect.bottom - editorRect.top))
+  editorCardHeight.value = `${nextHeight}px`
+}
+
+let resizeObserver: ResizeObserver | null = null
+
+onMounted(async () => {
+  await nextTick()
+  syncEditorHeight()
+
+  if (typeof ResizeObserver !== "undefined" && goodsFormLeftRef.value) {
+    resizeObserver = new ResizeObserver(() => {
+      syncEditorHeight()
+    })
+    resizeObserver.observe(goodsFormLeftRef.value)
+  }
+
+  window.addEventListener("resize", syncEditorHeight)
+})
+
+onBeforeUnmount(() => {
+  resizeObserver?.disconnect()
+  window.removeEventListener("resize", syncEditorHeight)
+})
 
 function normalizeImages() {
   const images = form.images.map((item) => item.trim()).filter(Boolean)
@@ -226,6 +319,8 @@ async function loadDetail() {
           })) : [createEmptySub()],
         }))
         : [createEmptyGroup()]
+    await nextTick()
+    syncEditorHeight()
   } catch (error) {
     console.error(error)
     Message.error("商品详情加载失败")
@@ -295,7 +390,7 @@ function backToList() {
 
     <a-spin class="goods_form_spin" :loading="loading">
       <div class="goods_form_layout">
-        <div class="goods_form_left">
+        <div ref="goodsFormLeftRef" class="goods_form_left">
           <a-form ref="formRef" :model="form" auto-label-width>
             <a-card class="form_card" :bordered="false">
               <template #title>基础信息</template>
@@ -325,8 +420,17 @@ function backToList() {
                           fit="cover"></a-image>
                       <div v-else class="image_placeholder">预览</div>
                     </div>
-                    <a-input v-model="form.images[index]" placeholder="请输入图片地址"></a-input>
+                    <a-input v-model="form.images[index]" placeholder="支持手动填写图片路径，也可本地上传"></a-input>
                     <div class="row_actions">
+                      <a-upload
+                        :show-file-list="false"
+                        accept="image/png,image/jpeg,image/webp"
+                        :custom-request="createImageUploadRequest({type: 'main', index})"
+                      >
+                        <template #upload-button>
+                          <a-button>本地上传</a-button>
+                        </template>
+                      </a-upload>
                       <a-button type="primary" @click="addImage(index)">+</a-button>
                       <a-button status="danger" @click="removeImage(index)">-</a-button>
                     </div>
@@ -353,8 +457,17 @@ function backToList() {
                   <div class="config_sub_list">
                     <div v-for="(subItem, subIndex) in group.subList" :key="`sub-${groupIndex}-${subIndex}`" class="config_sub_row">
                       <a-input v-model="subItem.title" class="sub_title_input" placeholder="配置项名称"></a-input>
-                      <a-input v-model="subItem.image" class="sub_image_input" placeholder="配置项图片地址"></a-input>
+                      <a-input v-model="subItem.image" class="sub_image_input" placeholder="支持手动填写图片路径，也可本地上传"></a-input>
                       <div class="row_actions">
+                        <a-upload
+                          :show-file-list="false"
+                          accept="image/png,image/jpeg,image/webp"
+                          :custom-request="createImageUploadRequest({type: 'sub', groupIndex, subIndex})"
+                        >
+                          <template #upload-button>
+                            <a-button>本地上传</a-button>
+                          </template>
+                        </a-upload>
                         <a-button type="primary" @click="addSub(groupIndex, subIndex)">+</a-button>
                         <a-button status="danger" @click="removeSub(groupIndex, subIndex)">-</a-button>
                       </div>
@@ -368,13 +481,15 @@ function backToList() {
         </div>
 
         <div class="goods_form_right">
-          <a-card class="form_card editor_card" :bordered="false">
-            <template #title>商品简介</template>
-            <div class="editor_tip">使用 Markdown 编辑商品简介。</div>
-            <div class="markdown_wrap">
-              <MdEditor v-model="form.abstract" />
-            </div>
-          </a-card>
+          <div ref="editorCardRef" class="editor_card_wrap" :style="{height: editorCardHeight}">
+            <a-card class="form_card editor_card" :bordered="false">
+              <template #title>商品简介</template>
+              <div class="editor_tip">使用 Markdown 编辑商品简介。</div>
+              <div class="markdown_wrap">
+                <MdEditor v-model="form.abstract" />
+              </div>
+            </a-card>
+          </div>
         </div>
       </div>
     </a-spin>
@@ -429,6 +544,10 @@ function backToList() {
   .goods_form_left,
   .goods_form_right {
     min-width: 0;
+  }
+
+  .editor_card_wrap {
+    width: 100%;
   }
 
   .form_card {
@@ -523,9 +642,16 @@ function backToList() {
   }
 
   .editor_card {
-    min-height: calc(100vh - 180px);
+    height: 100%;
     display: flex;
     flex-direction: column;
+
+    .arco-card-body {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
   }
 
   .editor_tip {
@@ -536,10 +662,11 @@ function backToList() {
 
   .markdown_wrap {
     flex: 1;
-    min-height: 720px;
+    min-height: 0;
 
     .md-editor {
       height: 100%;
+      min-height: 0;
     }
   }
 
