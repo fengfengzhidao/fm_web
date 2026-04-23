@@ -115,6 +115,11 @@ function applyCategoryFilter(value: string | number | boolean | Record<string, a
   })
 }
 
+function onCategoryChange(event: Event) {
+  const target = event.target as HTMLSelectElement
+  applyCategoryFilter(target.value || undefined)
+}
+
 function buildPayload() {
   let goodsConfigList = []
   try {
@@ -186,13 +191,14 @@ onMounted(initFilterGroup)
         @add="openAdd"
         @edit="openEdit">
       <template #search_other>
-        <a-select
-            v-model="selectedCategory"
-            :options="categoryOptions"
-            allow-clear
-            style="width: 150px"
-            placeholder="商品分类"
-            @change="applyCategoryFilter"></a-select>
+        <div class="goods_filter">
+          <select :value="selectedCategory || ''" class="goods_category_select" @change="onCategoryChange">
+            <option value="">商品分类</option>
+            <option v-for="item in categoryOptions" :key="item.value" :value="item.value">
+              {{ item.label }}
+            </option>
+          </select>
+        </div>
       </template>
       <template #cover="{record}:{record: goodsType}">
         <a-image
@@ -275,6 +281,22 @@ onMounted(initFilterGroup)
 
 <style lang="less">
 .goods_manage_view {
+  .goods_filter {
+    display: flex;
+    align-items: center;
+  }
+
+  .goods_category_select {
+    min-width: 150px;
+    height: 32px;
+    border: 1px solid var(--color-border-2);
+    border-radius: 4px;
+    background: var(--color-bg-1);
+    color: var(--color-text-1);
+    padding: 0 10px;
+    outline: none;
+  }
+
   .goods_info {
     display: flex;
     flex-direction: column;

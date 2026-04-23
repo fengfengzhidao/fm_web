@@ -126,17 +126,27 @@ const params = reactive<paramsType>({
 
 async function getList(newParams?: paramsType) {
   loading.value = true
-  if (newParams) {
-    Object.assign(params, newParams)
+  try {
+    if (newParams) {
+      Object.assign(params, newParams)
+    }
+    const res = await props.url(params)
+    if (!res) {
+      Message.error("列表接口返回异常")
+      return
+    }
+    if (res.code) {
+      Message.error(res.msg)
+      return
+    }
+    data.list = res.data.list || []
+    data.count = res.data.count
+  } catch (error) {
+    Message.error("列表加载失败")
+    console.error(error)
+  } finally {
+    loading.value = false
   }
-  const res = await props.url(params)
-  loading.value = false
-  if (res.code) {
-    Message.error(res.msg)
-    return
-  }
-  data.list = res.data.list || []
-  data.count = res.data.count
 }
 
 getList()
