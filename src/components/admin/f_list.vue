@@ -95,33 +95,38 @@ initActionGroup()
 
 
 const filterGroups = ref<filterGroupType[]>([])
+const filterValues = reactive<Record<string, number | string | undefined>>({})
 
 async function initFilterGroup() {
-  filterGroups.value = []
+  const list: filterGroupType[] = []
   for (const f of props.filterGroup || []) {
+    const filter = {...f}
     if (typeof f.source === 'function') {
       const res = await f.source(f.params)
       if (res.code) {
         Message.error(res.msg)
         continue
       }
-      f.options = res.data
+      filter.options = res.data || []
     } else {
-      f.options = f.source
+      filter.options = f.source
     }
-    if (!f.callback) {
+    const key = filter.column || filter.label
+    filterValues[key] = undefined
+    if (!filter.callback) {
       // 如果没有callback，那就走默认行为
-      f.callback = (value) => {
-        if (f.column) {
+      filter.callback = (value) => {
+        if (filter.column) {
           const p: { [key: string]: any } = {}
-          p[f.column] = value
+          p[filter.column] = value
           getList(p)
         }
       }
     }
 
-    filterGroups.value.push(f)
+    list.push(filter)
   }
+  filterGroups.value = list
 }
 
 initFilterGroup()
@@ -315,10 +320,15 @@ defineExpose({
         <a-input-search :placeholder="searchPlaceholder" v-model="params.key" @search="search"></a-input-search>
       </div>
       <div class="action_filter">
-
-        <a-select v-for="item in filterGroups" :style="{width: item.width + 'px'}" allow-clear
-                  @change="item.callback as any" :placeholder="item.label"
-                  :options="item.options as optionsType[]"></a-select>
+        <a-select
+            v-for="item in filterGroups"
+            :key="item.column || item.label"
+            v-model="filterValues[item.column || item.label]"
+            :style="{width: item.width + 'px'}"
+            allow-clear
+            @change="(value) => item.callback?.(value as string | number)"
+            :placeholder="item.label"
+            :options="item.options as optionsType[]"></a-select>
       </div>
       <div class="action_search_slot">
         <slot name="search_other"></slot>
