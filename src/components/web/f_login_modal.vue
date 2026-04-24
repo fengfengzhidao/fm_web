@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, reactive, ref, watch} from "vue";
+import {computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch} from "vue";
 import type {emailLoginRequest} from "@/api/user_api";
 import {emailLoginApi} from "@/api/user_api";
 import {Message} from "@arco-design/web-vue";
@@ -16,16 +16,188 @@ const form = reactive<emailLoginRequest>({
 
 const formRef = ref()
 const visible = computed(() => store.loginModalVisible)
+const introCanvasRef = ref<HTMLCanvasElement | null>(null)
+const captchaText = ref("")
+
+let introRaf = 0
+let introResizeHandler: (() => void) | null = null
+let introParticles: Array<{
+  x: number
+  y: number
+  vx: number
+  vy: number
+  r: number
+  alpha: number
+}> = []
 
 watch(visible, val => {
   if (!val) return
   form.username = ""
   form.password = ""
+  refreshCaptcha()
+  queueIntroDraw()
 })
 
 function closeLogin() {
   store.closeLoginModal()
 }
+
+function randomCaptchaText(length = 4) {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+  let result = ""
+  for (let i = 0; i < length; i += 1) {
+    result += chars[Math.floor(Math.random() * chars.length)]
+  }
+  return result
+}
+
+function refreshCaptcha() {
+  captchaText.value = randomCaptchaText()
+}
+
+function initIntroParticles(width: number, height: number) {
+  introParticles = Array.from({length: 42}, () => ({
+    x: Math.random() * width,
+    y: Math.random() * height,
+    vx: (Math.random() - 0.5) * 0.6,
+    vy: (Math.random() - 0.5) * 0.6,
+    r: 1.2 + Math.random() * 2.6,
+    alpha: 0.22 + Math.random() * 0.5,
+  }))
+}
+
+function drawIntroFrame() {
+  const canvas = introCanvasRef.value
+  if (!canvas) return
+  const ctx = canvas.getContext("2d")
+  if (!ctx) return
+  const width = canvas.clientWidth || 300
+  const height = canvas.clientHeight || 420
+
+  canvas.width = Math.floor(width * window.devicePixelRatio)
+  canvas.height = Math.floor(height * window.devicePixelRatio)
+  ctx.scale(window.devicePixelRatio, window.devicePixelRatio)
+
+  ctx.clearRect(0, 0, width, height)
+
+  const gradient = ctx.createLinearGradient(0, 0, width, height)
+  gradient.addColorStop(0, "#20123d")
+  gradient.addColorStop(.45, "#5a285f")
+  gradient.addColorStop(1, "#0d1127")
+  ctx.fillStyle = gradient
+  ctx.fillRect(0, 0, width, height)
+
+  const glow = ctx.createRadialGradient(width * .5, height * .34, 10, width * .5, height * .34, width * .85)
+  glow.addColorStop(0, "rgba(255, 135, 170, .55)")
+  glow.addColorStop(.45, "rgba(116, 106, 255, .22)")
+  glow.addColorStop(1, "rgba(0, 0, 0, 0)")
+  ctx.fillStyle = glow
+  ctx.fillRect(0, 0, width, height)
+
+  ctx.save()
+  ctx.strokeStyle = "rgba(255, 255, 255, .08)"
+  ctx.lineWidth = 1
+  for (let i = 0; i < 6; i += 1) {
+    const y = height * 0.18 + i * 34
+    ctx.beginPath()
+    ctx.moveTo(0, y)
+    ctx.lineTo(width, y + Math.sin(Date.now() / 1200 + i) * 3)
+    ctx.stroke()
+  }
+  ctx.restore()
+
+  ctx.save()
+  ctx.fillStyle = "rgba(255, 255, 255, .92)"
+  introParticles.forEach(p => {
+    p.x += p.vx
+    p.y += p.vy
+    if (p.x < -20) p.x = width + 20
+    if (p.x > width + 20) p.x = -20
+    if (p.y < -20) p.y = height + 20
+    if (p.y > height + 20) p.y = -20
+    ctx.globalAlpha = p.alpha
+    ctx.beginPath()
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
+    ctx.fill()
+  })
+  ctx.restore()
+
+  ctx.save()
+  ctx.strokeStyle = "rgba(255, 255, 255, .12)"
+  ctx.lineWidth = 1
+  for (let i = 0; i < introParticles.length; i += 1) {
+    for (let j = i + 1; j < introParticles.length; j += 1) {
+      const a = introParticles[i]
+      const b = introParticles[j]
+      const dx = a.x - b.x
+      const dy = a.y - b.y
+      const dist = Math.sqrt(dx * dx + dy * dy)
+      if (dist < 80) {
+        ctx.globalAlpha = (1 - dist / 80) * 0.32
+        ctx.beginPath()
+        ctx.moveTo(a.x, a.y)
+        ctx.lineTo(b.x, b.y)
+        ctx.stroke()
+      }
+    }
+  }
+  ctx.restore()
+
+  ctx.save()
+  ctx.fillStyle = "rgba(255, 255, 255, .96)"
+  ctx.font = "700 16px Arial"
+  ctx.fillText("枫枫商城", 24, 34)
+  ctx.font = "700 28px Arial"
+  const lines = ["前台商城与用户中心", "联调项目"]
+  ctx.fillText(lines[0], 24, 82)
+  ctx.fillText(lines[1], 24, 118)
+  ctx.font = "14px Arial"
+  ctx.fillStyle = "rgba(255, 255, 255, .88)"
+  ctx.fillText("商品浏览 · 搜索 · 秒杀 · 购物车 · 订单", 24, height - 76)
+  ctx.fillText("用户中心 · 收藏 · 足迹 · 地址 · 优惠券", 24, height - 48)
+  ctx.restore()
+
+  introRaf = window.requestAnimationFrame(drawIntroFrame)
+}
+
+function queueIntroDraw() {
+  cancelIntroAnimation()
+  nextTick(() => {
+    const canvas = introCanvasRef.value
+    if (!canvas) return
+    const parent = canvas.parentElement
+    const width = parent?.clientWidth || 320
+    const height = parent?.clientHeight || 420
+    initIntroParticles(width, height)
+    drawIntroFrame()
+  })
+}
+
+function cancelIntroAnimation() {
+  if (introRaf) {
+    window.cancelAnimationFrame(introRaf)
+    introRaf = 0
+  }
+  if (introResizeHandler) {
+    window.removeEventListener("resize", introResizeHandler)
+    introResizeHandler = null
+  }
+}
+
+onMounted(() => {
+  refreshCaptcha()
+  introResizeHandler = () => {
+    queueIntroDraw()
+  }
+  window.addEventListener("resize", introResizeHandler)
+  if (visible.value) {
+    queueIntroDraw()
+  }
+})
+
+onBeforeUnmount(() => {
+  cancelIntroAnimation()
+})
 
 async function emailLogin() {
   const val = await formRef.value.validate()
@@ -56,21 +228,8 @@ async function emailLogin() {
         </button>
 
         <div class="modal_intro">
+          <canvas ref="introCanvasRef" class="intro_canvas"></canvas>
           <div class="intro_overlay"></div>
-          <div class="intro_content">
-            <div class="intro_brand">枫枫商城</div>
-            <h3>前台商城与用户中心联调项目</h3>
-            <p>
-              这是一个围绕商品浏览、搜索、秒杀、购物车、订单和用户中心搭建的商城前台，
-              直接连真实接口，不做空页面。
-            </p>
-
-            <ul class="intro_list">
-              <li>前台：首页、搜索、商品详情、秒杀、购物车、确认订单</li>
-              <li>用户中心：订单、收藏、足迹、地址、优惠券、消息</li>
-              <li>登录后可继续原页面流程，不会被打断到其他路由</li>
-            </ul>
-          </div>
         </div>
 
         <div class="modal_form">
@@ -93,7 +252,9 @@ async function emailLogin() {
             </a-form-item>
             <a-form-item class="code_row">
               <a-input class="code_input" placeholder="验证码"/>
-              <div class="code_img">验证码</div>
+              <div class="code_img" @click="refreshCaptcha">
+                <span>{{ captchaText }}</span>
+              </div>
             </a-form-item>
             <a-form-item class="action_row">
               <a-button type="primary" @click="emailLogin" long>登陆</a-button>
@@ -149,77 +310,25 @@ async function emailLogin() {
 
 .modal_intro {
   position: relative;
-  background:
-    linear-gradient(160deg, rgba(255, 93, 114, .24), rgba(15, 23, 42, .74)),
-    url(@/assets/img/bg.png) center / cover no-repeat;
-  color: #fff;
   overflow: hidden;
 }
 
+.intro_canvas,
 .intro_overlay {
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(180deg, rgba(15, 23, 42, .08), rgba(15, 23, 42, .34));
 }
 
-.intro_content {
-  position: relative;
-  z-index: 1;
-  padding: 42px 34px 34px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
+.intro_canvas {
+  width: 100%;
   height: 100%;
+  display: block;
 }
 
-.intro_brand {
-  display: inline-flex;
-  width: fit-content;
-  padding: 7px 12px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, .18);
-  font-size: 12px;
-  letter-spacing: .08em;
-}
-
-.intro_content h3 {
-  margin: 18px 0 12px;
-  font-size: 27px;
-  line-height: 1.35;
-}
-
-.intro_content p {
-  margin: 0;
-  line-height: 1.8;
-  color: rgba(255, 255, 255, .92);
-}
-
-.intro_list {
-  margin: 20px 0 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 10px;
-
-  li {
-    padding-left: 18px;
-    position: relative;
-    line-height: 1.6;
-    color: rgba(255, 255, 255, .94);
-  }
-
-  li::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: .65em;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #fff;
-    opacity: .92;
-  }
+.intro_overlay {
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, .06), rgba(15, 23, 42, .22));
+  pointer-events: none;
 }
 
 .modal_form {
@@ -276,15 +385,18 @@ async function emailLogin() {
 
   .code_img {
     height: 34px;
-    display: grid;
-    place-items: center;
+    width: 100%;
     border: 1px solid rgba(255, 93, 114, .42);
-    color: #5b5b8d;
-    font-size: 13px;
     background:
       linear-gradient(135deg, rgba(255, 93, 114, .08), rgba(255, 255, 255, 1));
     border-radius: 4px;
-    letter-spacing: .08em;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    color: #5b5b8d;
+    font-weight: 700;
+    letter-spacing: .16em;
+    user-select: none;
   }
 
   .action_row {
@@ -317,14 +429,6 @@ async function emailLogin() {
 
   .modal_intro {
     min-height: 240px;
-  }
-
-  .intro_content {
-    padding: 30px 22px;
-  }
-
-  .intro_content h3 {
-    font-size: 22px;
   }
 
   .modal_form {
