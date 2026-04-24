@@ -150,19 +150,15 @@ onMounted(() => {
 .search_shell,
 .result_shell {
   margin: 20px max(16px, calc((100% - 1240px) / 2));
-  padding: 30px;
-  border-radius: 28px;
+  padding: 18px 18px 20px;
+  border-radius: 8px;
   background: #fff;
   border: 1px solid rgba(226, 232, 240, .95);
-  box-shadow: 0 12px 34px rgba(15, 23, 42, .04);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, .03);
 }
 
 .search_shell {
   margin-top: 20px;
-  background:
-      radial-gradient(circle at 18% 18%, rgba(255, 93, 114, .04), transparent 22%),
-      radial-gradient(circle at 84% 14%, rgba(29, 78, 216, .04), transparent 20%),
-      linear-gradient(180deg, #fff 0%, #fbfcfe 100%);
 }
 
 .search_head {
@@ -172,8 +168,8 @@ onMounted(() => {
   gap: 20px;
 
   h1 {
-    margin: 12px 0 10px;
-    font-size: 44px;
+    margin: 8px 0 8px;
+    font-size: 28px;
     line-height: 1.1;
   }
 
@@ -192,22 +188,22 @@ onMounted(() => {
 }
 
 .search_bar {
-  margin-top: 24px;
+  margin-top: 18px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 12px;
 
   :deep(.arco-input-wrapper) {
-    height: 56px;
-    border-radius: 20px;
+    height: 44px;
+    border-radius: 14px;
     border-color: rgba(255, 93, 114, .26);
-    box-shadow: 0 14px 34px rgba(255, 93, 114, .08);
+    box-shadow: none;
   }
 
   :deep(.arco-btn) {
-    height: 56px;
+    height: 44px;
     min-width: 120px;
-    border-radius: 18px;
+    border-radius: 12px;
   }
 }
 
@@ -229,7 +225,7 @@ onMounted(() => {
 
   h2 {
     margin: 0;
-    font-size: 28px;
+    font-size: 20px;
   }
 
   span {
@@ -241,13 +237,13 @@ onMounted(() => {
 
 .result_grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 16px;
 }
 
 .goods_card {
   overflow: hidden;
-  border-radius: 24px;
+  border-radius: 8px;
   border: 1px solid var(--color-border-2);
   background: var(--color-bg-1);
   transition: transform .18s ease, box-shadow .18s ease;
@@ -271,19 +267,19 @@ onMounted(() => {
 }
 
 .goods_body {
-  padding: 16px;
+  padding: 12px;
 }
 
 .goods_title {
-  font-size: 16px;
+  font-size: 13px;
   line-height: 1.5;
-  min-height: 48px;
+  min-height: 39px;
 }
 
 .goods_price {
   margin-top: 10px;
   color: #e11d48;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 800;
 }
 
@@ -294,7 +290,7 @@ onMounted(() => {
 
 @media (max-width: 1100px) {
   .result_grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 

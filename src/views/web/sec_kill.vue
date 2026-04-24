@@ -409,18 +409,14 @@ onMounted(loadDateList)
 .hero_card,
 .panel,
 .detail_panel {
-  border-radius: 24px;
+  border-radius: 8px;
   border: 1px solid var(--color-border-2);
   background: var(--color-bg-1);
-  box-shadow: 0 10px 40px rgba(15, 23, 42, .04);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, .03);
 }
 
 .hero_copy {
-  padding: 30px;
-  background:
-      radial-gradient(circle at 18% 18%, rgba(255, 93, 114, .04), transparent 22%),
-      radial-gradient(circle at 84% 14%, rgba(29, 78, 216, .04), transparent 20%),
-      linear-gradient(180deg, #fff 0%, #fbfcfe 100%);
+  padding: 20px 22px;
 }
 
 .eyebrow {
@@ -431,8 +427,8 @@ onMounted(loadDateList)
 }
 
 .hero_copy h1 {
-  margin: 10px 0 12px;
-  font-size: 44px;
+  margin: 8px 0 10px;
+  font-size: 28px;
   line-height: 1.1;
 }
 
@@ -443,7 +439,7 @@ onMounted(loadDateList)
 }
 
 .hero_card {
-  padding: 28px;
+  padding: 20px 22px;
   display: grid;
   gap: 12px;
   align-content: start;
@@ -467,7 +463,7 @@ onMounted(loadDateList)
 
 .panel {
   margin: 0 max(16px, calc((100% - 1240px) / 2)) 20px;
-  padding: 28px;
+  padding: 18px 18px 20px;
 }
 
 .section_head {
@@ -480,7 +476,7 @@ onMounted(loadDateList)
 
 .section_head h2 {
   margin: 0;
-  font-size: 28px;
+  font-size: 20px;
 }
 
 .section_head span {
@@ -497,7 +493,7 @@ onMounted(loadDateList)
 }
 
 .date_tab {
-  padding: 12px 16px;
+  padding: 10px 14px;
   border-radius: 999px;
   border: 1px solid var(--color-border-2);
   background: var(--color-fill-1);
@@ -515,13 +511,13 @@ onMounted(loadDateList)
 
 .goods_grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 16px;
 }
 
 .goods_card {
   overflow: hidden;
-  border-radius: 24px;
+  border-radius: 8px;
   border: 1px solid var(--color-border-2);
   background: var(--color-fill-1);
 }
@@ -546,14 +542,14 @@ onMounted(loadDateList)
 }
 
 .goods_body {
-  padding: 16px;
+  padding: 12px;
 }
 
 .goods_body h3 {
   margin: 0;
-  font-size: 17px;
+  font-size: 13px;
   line-height: 1.6;
-  min-height: 54px;
+  min-height: 42px;
 }
 
 .price_row,
@@ -568,7 +564,7 @@ onMounted(loadDateList)
 
 .price_row strong {
   color: #e11d48;
-  font-size: 22px;
+  font-size: 16px;
 }
 
 .price_row span,
@@ -589,7 +585,7 @@ onMounted(loadDateList)
 }
 
 .detail_panel {
-  padding: 18px;
+  padding: 16px;
   background: #fff;
 }
 
@@ -601,14 +597,14 @@ onMounted(loadDateList)
 
 .detail_goods {
   display: grid;
-  grid-template-columns: 120px minmax(0, 1fr);
+  grid-template-columns: 110px minmax(0, 1fr);
   gap: 14px;
 }
 
 .detail_goods img {
-  width: 120px;
-  height: 120px;
-  border-radius: 16px;
+  width: 110px;
+  height: 110px;
+  border-radius: 8px;
   object-fit: cover;
 }
 

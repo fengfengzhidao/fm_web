@@ -16,7 +16,7 @@
   display: flex;
   justify-content: center;
   margin-top: 72px;
-  background: linear-gradient(180deg, #fff 0%, #fafbfc 100%);
+  background: #f4f5f7;
 
   > .f_container {
     width: min(1240px, 100%);

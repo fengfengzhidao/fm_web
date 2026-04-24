@@ -309,11 +309,11 @@ onMounted(() => {
 .detail_shell,
 .comment_shell {
   margin: 20px max(16px, calc((100% - 1240px) / 2));
-  padding: 30px;
-  border-radius: 28px;
+  padding: 18px 18px 20px;
+  border-radius: 8px;
   background: #fff;
   border: 1px solid rgba(226, 232, 240, .95);
-  box-shadow: 0 12px 34px rgba(15, 23, 42, .04);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, .03);
 }
 
 .detail_shell {
@@ -337,7 +337,7 @@ onMounted(() => {
 
 .main_cover {
   aspect-ratio: 1;
-  border-radius: 26px;
+  border-radius: 8px;
   overflow: hidden;
   background: var(--color-fill-1);
 
@@ -391,7 +391,7 @@ onMounted(() => {
 
 .summary_panel h1 {
   margin: 12px 0 10px;
-  font-size: 38px;
+  font-size: 28px;
   line-height: 1.15;
 }
 
@@ -403,14 +403,14 @@ onMounted(() => {
 
 .price_box {
   margin-top: 20px;
-  padding: 22px;
-  border-radius: 24px;
+  padding: 18px;
+  border-radius: 8px;
   background: linear-gradient(135deg, rgba(255, 93, 114, .1), rgba(255, 93, 114, .03));
 }
 
 .price {
   color: #e11d48;
-  font-size: 34px;
+  font-size: 24px;
   font-weight: 800;
 }
 
@@ -432,8 +432,8 @@ onMounted(() => {
 .coupon_box,
 .config_box {
   margin-top: 18px;
-  padding: 20px;
-  border-radius: 24px;
+  padding: 16px;
+  border-radius: 8px;
   background: var(--color-fill-1);
 }
 
@@ -458,7 +458,7 @@ onMounted(() => {
 }
 
 .config_item {
-  border-radius: 18px;
+  border-radius: 8px;
   background: var(--color-bg-1);
   border: 1px solid var(--color-border-2);
   overflow: hidden;
@@ -532,14 +532,14 @@ onMounted(() => {
 }
 
 .level_card {
-  padding: 18px;
-  border-radius: 20px;
+  padding: 16px;
+  border-radius: 8px;
   background: var(--color-fill-1);
   text-align: center;
 
   strong {
     display: block;
-    font-size: 28px;
+    font-size: 22px;
     color: #ff5d72;
   }
 
@@ -559,7 +559,7 @@ onMounted(() => {
   grid-template-columns: auto 1fr;
   gap: 14px;
   padding: 16px;
-  border-radius: 20px;
+  border-radius: 8px;
   border: 1px solid var(--color-border-2);
 }
 
