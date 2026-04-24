@@ -9,24 +9,48 @@ import {canCommentOrder, canReceiveOrder, formatPrice, orderStatusColor, orderSt
 const router = useRouter()
 const loading = ref(false)
 const orders = ref<orderUserType[]>([])
+const orderNo = ref("")
+const goodsTitle = ref("")
+const page = ref(1)
+const pageSize = ref(10)
+const total = ref(0)
 
-const count = computed(() => orders.value.length)
+const count = computed(() => total.value || orders.value.length)
 
-async function loadOrders() {
+async function loadOrders(resetPage = false) {
+  if (resetPage) {
+    page.value = 1
+  }
   loading.value = true
   try {
-    const res = await orderUserListApi({limit: 20, page: 1})
+    const res = await orderUserListApi({
+      limit: pageSize.value,
+      page: page.value,
+      no: orderNo.value || undefined,
+      goodsTitle: goodsTitle.value || undefined,
+    })
     if (res.code) {
       Message.error(res.msg)
       return
     }
     orders.value = res.data.list || []
+    total.value = res.data.count || 0
   } catch (error) {
     console.error(error)
     Message.error("订单加载失败")
   } finally {
     loading.value = false
   }
+}
+
+async function searchOrders() {
+  await loadOrders(true)
+}
+
+async function resetSearch() {
+  orderNo.value = ""
+  goodsTitle.value = ""
+  await loadOrders(true)
 }
 
 function openDetail(item: orderUserType) {
@@ -64,6 +88,11 @@ async function removeOrder(item: orderUserType) {
   await loadOrders()
 }
 
+function onPageChange(nextPage: number) {
+  page.value = nextPage
+  loadOrders()
+}
+
 onMounted(loadOrders)
 </script>
 
@@ -76,6 +105,13 @@ onMounted(loadOrders)
         <p>查看订单列表、金额与详情。</p>
       </div>
       <a-tag color="blue">共 {{ count }} 单</a-tag>
+    </div>
+
+    <div class="filter_bar">
+      <a-input v-model="orderNo" allow-clear placeholder="按订单号搜索" @press-enter="searchOrders"/>
+      <a-input v-model="goodsTitle" allow-clear placeholder="按商品名称搜索" @press-enter="searchOrders"/>
+      <a-button type="primary" @click="searchOrders">搜索</a-button>
+      <a-button @click="resetSearch">重置</a-button>
     </div>
 
     <a-spin :loading="loading">
@@ -119,6 +155,16 @@ onMounted(loadOrders)
       </div>
       <a-empty v-else description="暂无订单"/>
     </a-spin>
+
+    <div v-if="count > pageSize" class="pager_bar">
+      <a-pagination
+        :current="page"
+        :page-size="pageSize"
+        :total="count"
+        show-total
+        @change="onPageChange"
+      />
+    </div>
   </div>
 </template>
 
@@ -156,6 +202,12 @@ onMounted(loadOrders)
 .order_list {
   display: grid;
   gap: 14px;
+}
+
+.filter_bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto auto;
+  gap: 12px;
 }
 
 .order_card {
@@ -226,6 +278,11 @@ onMounted(loadOrders)
   justify-content: flex-end;
 }
 
+.pager_bar {
+  display: flex;
+  justify-content: flex-end;
+}
+
 @media (max-width: 768px) {
   .panel_head,
   .order_top,
@@ -243,7 +300,15 @@ onMounted(loadOrders)
     aspect-ratio: 1;
   }
 
+  .filter_bar {
+    grid-template-columns: 1fr;
+  }
+
   .action_line {
+    justify-content: flex-start;
+  }
+
+  .pager_bar {
     justify-content: flex-start;
   }
 }
