@@ -21,11 +21,12 @@ import {beian} from "@/conf/global";
 
 <style lang="less">
 .f_footer {
-  background-color: var(--color-bg-1);
-  padding: 28px 16px;
+  background-color: #fff;
+  padding: 30px 16px 26px;
+  border-top: 1px solid var(--color-border-2);
 
   .footer_inner {
-    width: 1200px;
+    width: min(1240px, 100%);
     max-width: 100%;
     margin: 0 auto;
     display: flex;
@@ -53,8 +54,9 @@ import {beian} from "@/conf/global";
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px 0;
-    a{
+    padding: 18px 0 0;
+
+    a {
       margin-left: 10px;
       color: var(--color-text-2);
       text-decoration: none;

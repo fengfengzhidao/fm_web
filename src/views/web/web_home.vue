@@ -215,7 +215,7 @@ onMounted(() => {
         </div>
       </section>
 
-      <section class="home_section">
+      <section id="categories" class="home_section">
         <div class="section_head">
           <div>
             <h2>分类列表</h2>
@@ -292,7 +292,7 @@ onMounted(() => {
         </div>
       </section>
 
-      <section class="home_section">
+      <section id="featured" class="home_section">
         <div class="section_head">
           <div>
             <h2>猜你喜欢</h2>
@@ -328,28 +328,28 @@ onMounted(() => {
 }
 
 .home_hero {
-  padding: 92px max(20px, calc((100% - 1200px) / 2)) 72px;
+  padding: 88px max(16px, calc((100% - 1240px) / 2)) 64px;
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(320px, .8fr);
-  gap: 28px;
+  gap: 24px;
   align-items: stretch;
   background:
-      linear-gradient(135deg, rgba(255, 247, 247, .94), rgba(255, 255, 255, .96)),
-      url("@/assets/img/home_bg.png") center / cover no-repeat;
+      radial-gradient(circle at 18% 18%, rgba(255, 93, 114, .04), transparent 22%),
+      radial-gradient(circle at 84% 14%, rgba(29, 78, 216, .04), transparent 20%),
+      linear-gradient(180deg, #fff 0%, #fbfcfe 100%);
 }
 
 .hero_copy,
 .hero_panel,
 .home_section {
-  border-radius: 24px;
+  border-radius: 28px;
 }
 
 .hero_copy {
   padding: 34px;
-  background: rgba(255, 255, 255, .72);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 105, 123, .12);
-  box-shadow: 0 30px 80px rgba(255, 120, 120, .08);
+  background: #fff;
+  border: 1px solid rgba(226, 232, 240, .95);
+  box-shadow: 0 18px 42px rgba(15, 23, 42, .05);
 }
 
 .eyebrow {
@@ -361,7 +361,7 @@ onMounted(() => {
 
 .hero_copy h1 {
   margin: 14px 0 12px;
-  font-size: 58px;
+  font-size: 54px;
   line-height: 1.05;
   letter-spacing: -0.03em;
 }
@@ -370,7 +370,7 @@ onMounted(() => {
   max-width: 620px;
   margin: 0;
   color: var(--color-text-2);
-  font-size: 17px;
+  font-size: 16px;
   line-height: 1.85;
 }
 
@@ -382,7 +382,7 @@ onMounted(() => {
 
   :deep(.arco-input-wrapper) {
     height: 56px;
-    border-radius: 18px;
+    border-radius: 20px;
     border-color: rgba(255, 93, 114, .26);
     box-shadow: 0 14px 34px rgba(255, 93, 114, .08);
   }
@@ -405,11 +405,9 @@ onMounted(() => {
 
 .hero_panel {
   padding: 28px;
-  background:
-      radial-gradient(circle at top right, rgba(255, 93, 114, .12), transparent 42%),
-      var(--color-bg-1);
-  border: 1px solid var(--color-border-2);
-  box-shadow: 0 18px 60px rgba(15, 23, 42, .08);
+  background: #fff;
+  border: 1px solid rgba(226, 232, 240, .95);
+  box-shadow: 0 18px 42px rgba(15, 23, 42, .05);
 }
 
 .panel_head {
@@ -464,21 +462,21 @@ onMounted(() => {
   margin-top: 22px;
   padding: 16px;
   border-radius: 18px;
-  background: rgba(255, 93, 114, .08);
+  background: rgba(255, 93, 114, .06);
   color: var(--color-text-2);
   line-height: 1.75;
 }
 
 .home_section {
-  margin: 24px max(20px, calc((100% - 1200px) / 2));
-  padding: 28px;
-  background: var(--color-bg-1);
-  border: 1px solid var(--color-border-2);
-  box-shadow: 0 10px 40px rgba(15, 23, 42, .04);
+  margin: 20px max(16px, calc((100% - 1240px) / 2));
+  padding: 30px;
+  background: #fff;
+  border: 1px solid rgba(226, 232, 240, .95);
+  box-shadow: 0 12px 34px rgba(15, 23, 42, .04);
 }
 
 .coupon_section {
-  background: linear-gradient(180deg, rgba(255, 250, 251, 1), rgba(255, 255, 255, 1));
+  background: #fff;
 }
 
 .section_head {
@@ -486,7 +484,7 @@ onMounted(() => {
   align-items: flex-end;
   justify-content: space-between;
   gap: 20px;
-  margin-bottom: 22px;
+  margin-bottom: 24px;
 
   h2 {
     margin: 0;

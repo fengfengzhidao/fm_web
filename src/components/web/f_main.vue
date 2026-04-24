@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 </script>
 
 <template>
@@ -12,15 +11,18 @@
 
 <style lang="less">
 .f_main_com {
+  position: relative;
   width: 100%;
   display: flex;
   justify-content: center;
-  margin-top: 60px;
-  background-color: var(--color-fill-1);
+  margin-top: 72px;
+  background: linear-gradient(180deg, #fff 0%, #fafbfc 100%);
 
   > .f_container {
-    width: 100%;
-    min-height: calc(100vh - 122px);
+    width: min(1240px, 100%);
+    min-height: calc(100vh - 144px);
+    position: relative;
+    z-index: 1;
   }
 }
 </style>
