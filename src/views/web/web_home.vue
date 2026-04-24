@@ -6,6 +6,7 @@ import F_nav from "@/components/web/f_nav.vue";
 import F_main from "@/components/web/f_main.vue";
 import F_footer from "@/components/web/f_footer.vue";
 import {goodsIndexListApi, type goodsIndexType} from "@/api/goods_api";
+import {couponAcceptableListApi, couponReceiveApi, type acceptableCouponType} from "@/api/coupon_api";
 import {userStorei} from "@/stores/user_store";
 
 interface CategoryItem {
@@ -13,13 +14,6 @@ interface CategoryItem {
   desc: string
   key: string
   color: string
-}
-
-interface CouponItem {
-  title: string
-  price: string
-  threshold: string
-  tag: string
 }
 
 interface SpeedItem {
@@ -34,20 +28,15 @@ const router = useRouter()
 const store = userStorei()
 const searchKeyword = ref("")
 const goodsList = ref<goodsIndexType[]>([])
+const couponList = ref<acceptableCouponType[]>([])
 const loading = ref(false)
+const couponLoading = ref(false)
 
 const categories: CategoryItem[] = [
   {title: "数码家电", desc: "手机、电脑、智能设备", key: "数码家电", color: "linear-gradient(135deg, #ff8c7f, #ff5d72)"},
   {title: "品质生活", desc: "家居、清洁、日用好物", key: "品质生活", color: "linear-gradient(135deg, #8ec5ff, #6a8bff)"},
   {title: "服饰运动", desc: "潮流穿搭、户外装备", key: "服饰运动", color: "linear-gradient(135deg, #6dd5a3, #35b06f)"},
   {title: "食品生鲜", desc: "零食饮品、产地直采", key: "食品生鲜", color: "linear-gradient(135deg, #f8bf6b, #f67c48)"},
-]
-
-const coupons: CouponItem[] = [
-  {title: "无门槛优惠券", price: "￥1", threshold: "全场通用", tag: "领券立减"},
-  {title: "满减优惠券", price: "￥3", threshold: "满5可用", tag: "爆款推荐"},
-  {title: "门类优惠券", price: "￥5", threshold: "IT门类可用", tag: "数码好物"},
-  {title: "专属红包", price: "￥4", threshold: "图书门类可用", tag: "限时领取"},
 ]
 
 const speedItems: SpeedItem[] = [
@@ -62,6 +51,17 @@ function formatPrice(price?: number | null): string {
     return "0.00"
   }
   return (price / 100).toFixed(price % 100 === 0 ? 0 : 2)
+}
+
+function couponTypeText(type: number): string {
+  const map: Record<number, string> = {
+    1: "节日券",
+    2: "新用户券",
+    3: "新商品券",
+    4: "商品券",
+    5: "普通券",
+  }
+  return map[type] || `类型 ${type}`
 }
 
 async function loadGoods() {
@@ -79,6 +79,39 @@ async function loadGoods() {
   } finally {
     loading.value = false
   }
+}
+
+async function loadCoupons() {
+  couponLoading.value = true
+  try {
+    const res = await couponAcceptableListApi({page: 1, limit: 4})
+    if (res.code) {
+      Message.warning(res.msg)
+      couponList.value = []
+      return
+    }
+    couponList.value = res.data.list || []
+  } catch (error) {
+    console.error(error)
+    Message.error("优惠券加载失败")
+  } finally {
+    couponLoading.value = false
+  }
+}
+
+async function receiveCoupon(item: acceptableCouponType) {
+  if (!store.isLogin) {
+    Message.warning("请先登录后再领取优惠券")
+    router.push({name: "login", query: {redirect: "/"}})
+    return
+  }
+  const res = await couponReceiveApi({couponID: item.id})
+  if (res.code) {
+    Message.error(res.msg)
+    return
+  }
+  Message.success("优惠券领取成功")
+  await loadCoupons()
 }
 
 function handleSearch(key?: string) {
@@ -103,7 +136,10 @@ function goGoodsDetail(id: number) {
   })
 }
 
-onMounted(loadGoods)
+onMounted(() => {
+  loadGoods()
+  loadCoupons()
+})
 </script>
 
 <template>
@@ -206,21 +242,32 @@ onMounted(loadGoods)
         <div class="section_head">
           <div>
             <h2>优惠券领取</h2>
-            <span>先做成原型里的视觉入口，后续再接领取接口</span>
+            <span>优惠券来自真实接口，登录后可直接领取</span>
           </div>
-          <a-link @click="handleSearch('优惠券')">更多优惠券</a-link>
+          <a-link @click="router.push({name: 'web_user_center_coupon'})">我的优惠券</a-link>
         </div>
 
-        <div class="coupon_grid">
-          <article class="coupon_card" v-for="item in coupons" :key="item.title">
-            <div class="coupon_price">{{ item.price }}</div>
-            <div class="coupon_body">
-              <h3>{{ item.title }}</h3>
-              <p>{{ item.threshold }}</p>
-            </div>
-            <div class="coupon_tag">{{ item.tag }}</div>
-          </article>
-        </div>
+        <a-spin :loading="couponLoading" tip="加载中...">
+          <div v-if="couponList.length" class="coupon_grid">
+            <article class="coupon_card" v-for="item in couponList" :key="item.id">
+              <div class="coupon_price">￥{{ formatPrice(item.couponPrice) }}</div>
+              <div class="coupon_body">
+                <h3>{{ item.title || couponTypeText(item.type) }}</h3>
+                <p>满 {{ formatPrice(item.threshold) }} 可用</p>
+              </div>
+              <div class="coupon_tag">{{ couponTypeText(item.type) }}</div>
+              <a-button
+                class="coupon_action"
+                :disabled="item.isReceive"
+                type="primary"
+                @click="receiveCoupon(item)"
+              >
+                {{ item.isReceive ? "已领取" : "立即领取" }}
+              </a-button>
+            </article>
+          </div>
+          <a-empty v-else description="暂无可领取优惠券"/>
+        </a-spin>
       </section>
 
       <section class="home_section">
@@ -540,6 +587,11 @@ onMounted(loadGoods)
   color: #ff5d72;
   font-size: 13px;
   font-weight: 600;
+}
+
+.coupon_action {
+  grid-column: 1 / -1;
+  justify-self: end;
 }
 
 .speed_grid {
