@@ -308,26 +308,26 @@ onMounted(() => {
 
 .detail_shell,
 .comment_shell {
-  margin: 24px max(20px, calc((100% - 1200px) / 2));
-  padding: 28px;
-  border-radius: 24px;
-  background: var(--color-bg-1);
-  border: 1px solid var(--color-border-2);
-  box-shadow: 0 10px 40px rgba(15, 23, 42, .04);
+  margin: 20px max(16px, calc((100% - 1240px) / 2));
+  padding: 30px;
+  border-radius: 28px;
+  background: #fff;
+  border: 1px solid rgba(226, 232, 240, .95);
+  box-shadow: 0 12px 34px rgba(15, 23, 42, .04);
 }
 
 .detail_shell {
-  margin-top: 84px;
+  margin-top: 20px;
 }
 
 .back_btn {
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 .detail_grid {
   display: grid;
-  grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr);
-  gap: 24px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, .98fr);
+  gap: 28px;
 }
 
 .gallery_panel {
@@ -337,7 +337,7 @@ onMounted(() => {
 
 .main_cover {
   aspect-ratio: 1;
-  border-radius: 24px;
+  border-radius: 26px;
   overflow: hidden;
   background: var(--color-fill-1);
 
@@ -353,6 +353,7 @@ onMounted(() => {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 10px;
+  align-items: start;
 }
 
 .thumb_item {
@@ -378,7 +379,7 @@ onMounted(() => {
 }
 
 .summary_panel {
-  padding: 8px 0;
+  padding: 4px 0;
 }
 
 .eyebrow {
@@ -390,7 +391,7 @@ onMounted(() => {
 
 .summary_panel h1 {
   margin: 12px 0 10px;
-  font-size: 36px;
+  font-size: 38px;
   line-height: 1.15;
 }
 
@@ -402,14 +403,14 @@ onMounted(() => {
 
 .price_box {
   margin-top: 20px;
-  padding: 20px;
-  border-radius: 22px;
+  padding: 22px;
+  border-radius: 24px;
   background: linear-gradient(135deg, rgba(255, 93, 114, .1), rgba(255, 93, 114, .03));
 }
 
 .price {
   color: #e11d48;
-  font-size: 32px;
+  font-size: 34px;
   font-weight: 800;
 }
 
@@ -431,8 +432,8 @@ onMounted(() => {
 .coupon_box,
 .config_box {
   margin-top: 18px;
-  padding: 18px;
-  border-radius: 22px;
+  padding: 20px;
+  border-radius: 24px;
   background: var(--color-fill-1);
 }
 
@@ -452,7 +453,7 @@ onMounted(() => {
 
 .config_items {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -492,7 +493,7 @@ onMounted(() => {
 
   h2 {
     margin: 0;
-    font-size: 28px;
+    font-size: 30px;
   }
 
   span {
@@ -532,7 +533,7 @@ onMounted(() => {
 
 .level_card {
   padding: 18px;
-  border-radius: 18px;
+  border-radius: 20px;
   background: var(--color-fill-1);
   text-align: center;
 
@@ -558,7 +559,7 @@ onMounted(() => {
   grid-template-columns: auto 1fr;
   gap: 14px;
   padding: 16px;
-  border-radius: 18px;
+  border-radius: 20px;
   border: 1px solid var(--color-border-2);
 }
 
