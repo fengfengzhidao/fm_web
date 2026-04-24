@@ -1,5 +1,5 @@
 import type {baseResponse, listResponse, paramsType} from "@/api/index";
-import {useAxios} from "@/api/index";
+import {useAxios, usePublicAxios} from "@/api/index";
 
 export interface commentCreateItem {
     // 订单商品ID
@@ -101,9 +101,9 @@ export function commentAdminListApi(params?: paramsType): Promise<baseResponse<l
 }
 
 export function commentLevelApi(params: commentLevelParams): Promise<baseResponse<commentLevelType>> {
-    return useAxios.get("/api/comment/level", {params})
+    return usePublicAxios.get("/api/comment/level", {params})
 }
 
 export function goodsCommentListApi(params: goodsCommentListParams): Promise<baseResponse<listResponse<goodsCommentType>>> {
-    return useAxios.get("/api/comment/goods", {params})
+    return usePublicAxios.get("/api/comment/goods", {params})
 }

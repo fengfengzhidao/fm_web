@@ -26,6 +26,11 @@ export const useAxios = axios.create({
     baseURL: "", // 在使用前端代理的情况下，这里必须留空，不然会跨域
 })
 
+export const usePublicAxios = axios.create({
+    timeout: 30000,
+    baseURL: "",
+})
+
 useAxios.interceptors.request.use((config) => {
     const userStore = userStorei()
     config.headers.set("token", userStore.userInfo.token)
@@ -33,6 +38,15 @@ useAxios.interceptors.request.use((config) => {
 })
 
 useAxios.interceptors.response.use((res) => {
+    if (res.status === 200) {
+        return res.data
+    }
+    return res
+}, (res) => {
+    Message.error(res.message)
+})
+
+usePublicAxios.interceptors.response.use((res) => {
     if (res.status === 200) {
         return res.data
     }

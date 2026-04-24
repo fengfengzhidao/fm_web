@@ -1,5 +1,5 @@
 import type {baseResponse, listResponse, optionsType, paramsType} from "@/api/index";
-import {useAxios} from "@/api/index";
+import {useAxios, usePublicAxios} from "@/api/index";
 
 export interface goodsSubConfigType {
     // 配置项名称
@@ -145,11 +145,11 @@ export function goodsAdminRemoveApi(idList: number[]): Promise<baseResponse<stri
 }
 
 export function goodsDetailApi(id: number | string): Promise<baseResponse<goodsDetailType>> {
-    return useAxios.get(`/api/goods/${id}`)
+    return usePublicAxios.get(`/api/goods/${id}`)
 }
 
 export function goodsCategoryListApi(): Promise<baseResponse<optionsType[]>> {
-    return useAxios.get("/api/goods/category")
+    return usePublicAxios.get("/api/goods/category")
 }
 
 export function goodsCategoryOptionsApi(): Promise<baseResponse<optionsType[]>> {
@@ -172,7 +172,27 @@ export function goodsAdminOptionsApi(): Promise<baseResponse<goodsOptionType[]>>
 }
 
 export function goodsIndexListApi(params?: goodsIndexParams): Promise<baseResponse<listResponse<goodsIndexType>>> {
-    return useAxios.get("/api/goods/index", {params})
+    const url = new URL("/api/goods/index", window.location.origin)
+    const query = params || {}
+    for (const key in query) {
+        if (!Object.prototype.hasOwnProperty.call(query, key)) {
+            continue
+        }
+
+        const value = query[key as keyof goodsIndexParams]
+        if (value !== undefined && value !== null && value !== "") {
+            url.searchParams.set(key, String(value))
+        }
+    }
+
+    return fetch(url.toString(), {
+        method: "GET",
+    }).then(async (res) => {
+        if (!res.ok) {
+            throw new Error(`请求失败: ${res.status}`)
+        }
+        return res.json()
+    })
 }
 
 export function goodsOptionsApi(): Promise<baseResponse<optionsType[]>> {

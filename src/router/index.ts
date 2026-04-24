@@ -22,6 +22,16 @@ const router = createRouter({
                     name: "web_search",
                     path: "search",
                     component: () => import("@/views/web/web_search.vue"),
+                },
+                {
+                    name: "web_goods_detail",
+                    path: "goods/:id",
+                    component: () => import("@/views/web/goods_detail.vue"),
+                },
+                {
+                    name: "web_cart",
+                    path: "cart",
+                    component: () => import("@/views/web/cart.vue"),
                 }
             ]
         },

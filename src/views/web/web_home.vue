@@ -96,6 +96,13 @@ function goCategory(key: string) {
   })
 }
 
+function goGoodsDetail(id: number) {
+  router.push({
+    name: "web_goods_detail",
+    params: {id},
+  })
+}
+
 onMounted(loadGoods)
 </script>
 
@@ -249,7 +256,7 @@ onMounted(loadGoods)
 
         <a-spin :loading="loading" tip="加载中...">
           <div v-if="goodsList.length" class="goods_grid">
-            <article class="goods_card" v-for="item in goodsList" :key="item.id">
+            <article class="goods_card" v-for="item in goodsList" :key="item.id" @click="goGoodsDetail(item.id)">
               <div class="goods_cover">
                 <img :src="item.cover" :alt="item.title"></img>
               </div>
