@@ -224,13 +224,13 @@ onMounted(loadGoods)
       </section>
 
       <section class="home_section">
-        <div class="section_head">
-          <div>
-            <h2>秒杀专区</h2>
-            <span>先复刻原型中的卡片表达，后续再接真实秒杀数据</span>
+          <div class="section_head">
+            <div>
+              <h2>秒杀专区</h2>
+              <span>已经接入秒杀专区页面，点击即可进入抢购链路</span>
+            </div>
+          <a-link @click="router.push({name: 'web_sec_kill'})">查看秒杀</a-link>
           </div>
-          <a-link @click="handleSearch('秒杀')">查看秒杀</a-link>
-        </div>
 
         <div class="speed_grid">
           <article class="speed_card" v-for="item in speedItems" :key="item.title">

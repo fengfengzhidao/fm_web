@@ -99,7 +99,12 @@ export function secKillRemoveApi(idList: number[]): Promise<baseResponse<string>
     return useAxios.delete("/api/sec_kill", {data: {idList}})
 }
 
-export function secKillDateListApi(): Promise<baseResponse<string[]>> {
+export interface secKillDateItem {
+    // 秒杀码段，格式：YYYY-MM-DD HH:00:00
+    date: string
+}
+
+export function secKillDateListApi(): Promise<baseResponse<secKillDateItem[]>> {
     return useAxios.get("/api/sec_kill/date")
 }
 

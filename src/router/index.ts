@@ -24,6 +24,14 @@ const router = createRouter({
                     component: () => import("@/views/web/web_search.vue"),
                 },
                 {
+                    name: "web_sec_kill",
+                    path: "sec_kill",
+                    component: () => import("@/views/web/sec_kill.vue"),
+                    meta: {
+                        title: "秒杀专区",
+                    }
+                },
+                {
                     name: "web_goods_detail",
                     path: "goods/:id",
                     component: () => import("@/views/web/goods_detail.vue"),

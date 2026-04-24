@@ -39,6 +39,7 @@ if (!noScroll) {
       </div>
       <div class="left">
         <router-link to="/">商城首页</router-link>
+        <router-link :to="{name: 'web_sec_kill'}">秒杀专区</router-link>
         <a href="#categories">商品分类</a>
         <a href="#featured">精选商品</a>
         <router-link :to="{name: 'web_cart'}">购物车</router-link>
