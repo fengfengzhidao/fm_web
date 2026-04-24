@@ -6,7 +6,7 @@ import F_nav from "@/components/web/f_nav.vue";
 import F_main from "@/components/web/f_main.vue";
 import F_footer from "@/components/web/f_footer.vue";
 import {goodsDetailApi, type goodsDetailType} from "@/api/goods_api";
-import {commentLevelApi, goodsCommentListApi, type commentLevelType, type goodsCommentType} from "@/api/comment_api";
+import {commentLevelApi, goodsCommentListApi, type commentLevelType, type goodsCommentListParams, type goodsCommentType} from "@/api/comment_api";
 import {carCreateApi} from "@/api/car_api";
 import {userStorei} from "@/stores/user_store";
 import {dateTimeFormat} from "@/utils/date";
@@ -16,12 +16,22 @@ const router = useRouter()
 const store = userStorei()
 
 const loading = ref(false)
+const commentLoading = ref(false)
 const adding = ref(false)
 const detail = ref<goodsDetailType | null>(null)
 const comments = ref<goodsCommentType[]>([])
 const level = ref<commentLevelType | null>(null)
 const buyNum = ref(1)
 const currentImage = ref("")
+const commentFilter = ref("all")
+
+const commentFilters = [
+  {key: "all", label: "全部评论"},
+  {key: "great", label: "好评"},
+  {key: "middle", label: "中评"},
+  {key: "bad", label: "差评"},
+  {key: "images", label: "有图"},
+]
 
 const goodsID = computed(() => Number(route.params.id))
 
@@ -42,10 +52,9 @@ async function loadDetail() {
 
   loading.value = true
   try {
-    const [detailRes, levelRes, commentRes] = await Promise.all([
+    const [detailRes, levelRes] = await Promise.all([
       goodsDetailApi(id),
       commentLevelApi({goodsID: id, limit: 1, page: 1}),
-      goodsCommentListApi({goodsID: id, limit: 4, page: 1}),
     ])
 
     if (detailRes.code) {
@@ -56,21 +65,56 @@ async function loadDetail() {
     if (levelRes.code) {
       Message.warning(levelRes.msg)
     }
-    if (commentRes.code) {
-      Message.warning(commentRes.msg)
-    }
 
     detail.value = detailRes.data
     level.value = levelRes.code ? null : levelRes.data
-    comments.value = commentRes.code ? [] : (commentRes.data.list || [])
     currentImage.value = detailRes.data.images?.[0] || detailRes.data.goodsConfigList?.[0]?.subList?.[0]?.image || ""
     buyNum.value = 1
+    await loadComments(commentFilter.value)
   } catch (error) {
     console.error(error)
     Message.error("商品详情加载失败")
   } finally {
     loading.value = false
   }
+}
+
+function buildCommentParams(filter: string): goodsCommentListParams {
+  const params: goodsCommentListParams = {
+    goodsID: goodsID.value,
+    limit: 8,
+    page: 1,
+  }
+  if (filter === "great") params.commentType = 1
+  if (filter === "middle") params.commentType = 2
+  if (filter === "bad") params.commentType = 3
+  if (filter === "images") params.isImages = true
+  return params
+}
+
+async function loadComments(filter = commentFilter.value) {
+  commentLoading.value = true
+  try {
+    const res = await goodsCommentListApi(buildCommentParams(filter))
+    if (res.code) {
+      Message.warning(res.msg)
+      comments.value = []
+      return
+    }
+    comments.value = res.data.list || []
+  } catch (error) {
+    console.error(error)
+    Message.error("评论加载失败")
+    comments.value = []
+  } finally {
+    commentLoading.value = false
+  }
+}
+
+async function changeCommentFilter(filter: string) {
+  if (commentFilter.value === filter) return
+  commentFilter.value = filter
+  await loadComments(filter)
 }
 
 async function addToCart() {
@@ -224,20 +268,33 @@ onMounted(() => {
           </div>
         </div>
 
-        <div v-if="comments.length" class="comment_list">
-          <article class="comment_card" v-for="item in comments" :key="item.createdAt + item.userNickname">
-            <a-avatar :size="42" :image-url="item.userAvatar || '/logo.png'"/>
-            <div class="comment_body">
-              <div class="comment_head">
-                <strong>{{ item.userNickname }}</strong>
-                <span>{{ dateTimeFormat(item.createdAt) }}</span>
-              </div>
-              <div class="comment_content">{{ item.content }}</div>
-              <div class="comment_meta">满意度 {{ item.level }} 星</div>
-            </div>
-          </article>
+        <div class="comment_filter_row">
+          <button
+            v-for="item in commentFilters"
+            :key="item.key"
+            class="comment_filter"
+            :class="{active: commentFilter === item.key}"
+            @click="changeCommentFilter(item.key)">
+            {{ item.label }}
+          </button>
         </div>
-        <a-empty v-else description="暂无评论"/>
+
+        <a-spin :loading="commentLoading">
+          <div v-if="comments.length" class="comment_list">
+            <article class="comment_card" v-for="item in comments" :key="item.createdAt + item.userNickname">
+              <a-avatar :size="42" :image-url="item.userAvatar || '/logo.png'"/>
+              <div class="comment_body">
+                <div class="comment_head">
+                  <strong>{{ item.userNickname }}</strong>
+                  <span>{{ dateTimeFormat(item.createdAt) }}</span>
+                </div>
+                <div class="comment_content">{{ item.content }}</div>
+                <div class="comment_meta">满意度 {{ item.level }} 星</div>
+              </div>
+            </article>
+          </div>
+          <a-empty v-else description="暂无评论"/>
+        </a-spin>
       </section>
     </f_main>
     <f_footer/>
@@ -449,6 +506,28 @@ onMounted(() => {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 14px;
+}
+
+.comment_filter_row {
+  margin: 18px 0 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.comment_filter {
+  border: 1px solid var(--color-border-2);
+  background: var(--color-fill-1);
+  border-radius: 999px;
+  padding: 8px 14px;
+  cursor: pointer;
+  color: var(--color-text-2);
+
+  &.active {
+    color: #e11d48;
+    border-color: rgba(225, 29, 72, .28);
+    background: rgba(255, 93, 114, .1);
+  }
 }
 
 .level_card {
