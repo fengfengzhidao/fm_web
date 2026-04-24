@@ -267,16 +267,16 @@ onMounted(() => {
 
 .cart_shell,
 .tip_shell {
-  margin: 24px max(20px, calc((100% - 1200px) / 2));
-  padding: 28px;
-  border-radius: 24px;
-  background: var(--color-bg-1);
-  border: 1px solid var(--color-border-2);
-  box-shadow: 0 10px 40px rgba(15, 23, 42, .04);
+  margin: 20px max(16px, calc((100% - 1240px) / 2));
+  padding: 30px;
+  border-radius: 28px;
+  background: #fff;
+  border: 1px solid rgba(226, 232, 240, .95);
+  box-shadow: 0 12px 34px rgba(15, 23, 42, .04);
 }
 
 .cart_shell {
-  margin-top: 84px;
+  margin-top: 20px;
 }
 
 .page_head {
@@ -288,14 +288,14 @@ onMounted(() => {
 
   h1 {
     margin: 12px 0 10px;
-    font-size: 40px;
+    font-size: 42px;
     line-height: 1.1;
   }
 
   p {
     margin: 0;
     color: var(--color-text-2);
-    line-height: 1.8;
+    line-height: 1.85;
   }
 }
 
@@ -314,17 +314,17 @@ onMounted(() => {
 
 .cart_grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(320px, .75fr);
-  gap: 20px;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, .8fr);
+  gap: 18px;
 }
 
 .goods_panel,
 .summary_panel,
 .tip_card {
-  padding: 20px;
-  border-radius: 22px;
-  background: var(--color-fill-1);
-  border: 1px solid var(--color-border-2);
+  padding: 22px;
+  border-radius: 24px;
+  background: #fff;
+  border: 1px solid rgba(226, 232, 240, .95);
 }
 
 .panel_head_row {
@@ -352,7 +352,7 @@ onMounted(() => {
 
 .item_cover {
   width: 120px;
-  border-radius: 18px;
+  border-radius: 16px;
   overflow: hidden;
   cursor: pointer;
 
@@ -402,7 +402,7 @@ onMounted(() => {
 
 .summary_total {
   padding: 18px;
-  border-radius: 18px;
+  border-radius: 20px;
   background: linear-gradient(135deg, rgba(255, 93, 114, .1), rgba(255, 93, 114, .04));
   display: grid;
   gap: 4px;
@@ -445,7 +445,7 @@ onMounted(() => {
 
 .coupon_card {
   padding: 14px 16px;
-  border-radius: 18px;
+  border-radius: 20px;
   background: var(--color-bg-1);
   border: 1px solid var(--color-border-2);
   display: flex;
@@ -469,7 +469,7 @@ onMounted(() => {
 .summary_note {
   margin-top: 18px;
   padding: 14px;
-  border-radius: 18px;
+  border-radius: 20px;
   background: rgba(255, 93, 114, .08);
   color: var(--color-text-2);
   line-height: 1.75;
@@ -482,7 +482,7 @@ onMounted(() => {
 }
 
 .tip_shell {
-  background: linear-gradient(135deg, rgba(255, 250, 251, 1), rgba(255, 255, 255, 1));
+  background: #fff;
 }
 
 .tip_text {
@@ -522,6 +522,15 @@ onMounted(() => {
 
   .item_cover {
     width: 100%;
+  }
+
+  .item_actions {
+    width: 100%;
+    align-items: stretch;
+
+    :deep(.arco-input-number) {
+      width: 100%;
+    }
   }
 }
 </style>

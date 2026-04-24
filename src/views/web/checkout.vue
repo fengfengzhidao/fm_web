@@ -235,12 +235,12 @@ onMounted(loadData)
 }
 
 .checkout_shell {
-  margin: 84px max(20px, calc((100% - 1200px) / 2)) 24px;
-  padding: 28px;
-  border-radius: 24px;
-  background: var(--color-bg-1);
-  border: 1px solid var(--color-border-2);
-  box-shadow: 0 10px 40px rgba(15, 23, 42, .04);
+  margin: 20px max(16px, calc((100% - 1240px) / 2)) 20px;
+  padding: 30px;
+  border-radius: 28px;
+  background: #fff;
+  border: 1px solid rgba(226, 232, 240, .95);
+  box-shadow: 0 12px 34px rgba(15, 23, 42, .04);
 }
 
 .page_head {
@@ -253,7 +253,7 @@ onMounted(loadData)
 
 .page_head h1 {
   margin: 8px 0 8px;
-  font-size: 38px;
+  font-size: 42px;
 }
 
 .page_head p,
@@ -273,19 +273,19 @@ onMounted(loadData)
 .checkout_grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 16px;
+  gap: 18px;
 }
 
 .panel,
 .summary_panel {
-  padding: 18px;
-  border-radius: 22px;
-  background: var(--color-fill-1);
-  border: 1px solid var(--color-border-2);
+  padding: 22px;
+  border-radius: 24px;
+  background: #fff;
+  border: 1px solid rgba(226, 232, 240, .95);
 }
 
 .panel_title {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 800;
   margin-bottom: 12px;
 }
@@ -306,7 +306,7 @@ onMounted(loadData)
 .goods_item img {
   width: 92px;
   height: 92px;
-  border-radius: 14px;
+  border-radius: 16px;
   object-fit: cover;
 }
 
@@ -327,7 +327,7 @@ onMounted(loadData)
   gap: 10px;
   align-items: flex-start;
   padding: 12px 14px;
-  border-radius: 16px;
+  border-radius: 18px;
   background: var(--color-bg-1);
   border: 1px solid var(--color-border-2);
   cursor: pointer;
@@ -347,6 +347,9 @@ onMounted(loadData)
 .summary_box {
   display: grid;
   gap: 12px;
+  padding: 18px;
+  border-radius: 20px;
+  background: var(--color-fill-1);
 }
 
 .summary_box > div {
@@ -363,6 +366,12 @@ onMounted(loadData)
 
 .summary_note {
   line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+  .checkout_shell {
+    margin-top: 20px;
+  }
 }
 
 @media (max-width: 1100px) {
