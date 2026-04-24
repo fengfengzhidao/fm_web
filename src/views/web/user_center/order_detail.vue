@@ -2,13 +2,14 @@
 import {computed, onMounted, ref, watch} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {Message} from "@arco-design/web-vue";
-import {orderDetailApi, type orderDetailType} from "@/api/order_api";
+import {orderCallbackApi, orderDetailApi, orderRevGoodsApi, orderStatusApi, type orderDetailType} from "@/api/order_api";
 import {dateTimeFormat} from "@/utils/date";
-import {formatPrice, orderStatusText} from "@/views/web/user_center/utils";
+import {canCommentOrder, canPayOrder, canReceiveOrder, formatPrice, orderStatusColor, orderStatusText} from "@/views/web/user_center/utils";
 
 const route = useRoute()
 const router = useRouter()
 const loading = ref(false)
+const actionLoading = ref(false)
 const detail = ref<orderDetailType | null>(null)
 
 const orderID = computed(() => Number(route.params.id))
@@ -37,6 +38,81 @@ async function loadDetail() {
   }
 }
 
+async function refreshStatus() {
+  if (!detail.value?.no) {
+    return
+  }
+  const res = await orderStatusApi({no: detail.value.no})
+  if (res.code) {
+    Message.error(res.msg)
+    return
+  }
+  if (detail.value) {
+    detail.value.status = res.data.status
+  }
+}
+
+async function goPay() {
+  if (!detail.value) {
+    return
+  }
+  actionLoading.value = true
+  try {
+    if (detail.value.payUrl) {
+      window.open(detail.value.payUrl, "_blank")
+      return
+    }
+    Message.warning("当前订单没有支付地址")
+  } catch (error) {
+    console.error(error)
+    Message.error("打开支付页失败")
+  } finally {
+    actionLoading.value = false
+  }
+}
+
+async function receiveGoods() {
+  if (!detail.value?.id) {
+    return
+  }
+  actionLoading.value = true
+  try {
+    const res = await orderRevGoodsApi({orderID: detail.value.id})
+    if (res.code) {
+      Message.error(res.msg)
+      return
+    }
+    Message.success("已确认收货")
+    await loadDetail()
+  } catch (error) {
+    console.error(error)
+    Message.error("确认收货失败")
+  } finally {
+    actionLoading.value = false
+  }
+}
+
+async function simulatePaid() {
+  if (!detail.value?.no) {
+    return
+  }
+  actionLoading.value = true
+  try {
+    const res = await orderCallbackApi({no: detail.value.no})
+    if (res.code) {
+      Message.error(res.msg)
+      return
+    }
+    Message.success("支付状态已更新")
+    await loadDetail()
+  } catch (error) {
+    console.error(error)
+    Message.error("更新支付状态失败")
+  } finally {
+    actionLoading.value = false
+  }
+}
+
 watch(orderID, loadDetail, {immediate: true})
 
 onMounted(loadDetail)
@@ -50,7 +126,14 @@ onMounted(loadDetail)
         <h2>订单详情</h2>
         <p>查看订单商品、收货地址和结算信息。</p>
       </div>
-      <a-button @click="router.back()">返回</a-button>
+      <div class="head_actions">
+        <a-button @click="refreshStatus">刷新状态</a-button>
+        <a-button v-if="detail && canPayOrder(detail.status)" type="primary" :loading="actionLoading" @click="goPay">去支付</a-button>
+        <a-button v-if="detail && canPayOrder(detail.status)" :loading="actionLoading" @click="simulatePaid">模拟支付完成</a-button>
+        <a-button v-if="detail && canReceiveOrder(detail.status)" type="primary" :loading="actionLoading" @click="receiveGoods">确认收货</a-button>
+        <a-button v-if="detail && canCommentOrder(detail.status)" @click="router.push({name: 'web_user_center_evaluate'})">去评价</a-button>
+        <a-button @click="router.back()">返回</a-button>
+      </div>
     </div>
 
     <a-spin :loading="loading">
@@ -61,10 +144,11 @@ onMounted(loadDetail)
             <div>订单号：{{ detail.no }}</div>
             <div>创建时间：{{ dateTimeFormat(detail.createdAt) }}</div>
             <div>更新时间：{{ dateTimeFormat(detail.updatedAt) }}</div>
-            <div>状态：{{ orderStatusText(detail.status) }}</div>
+            <div>状态：<a-tag :color="orderStatusColor(detail.status)">{{ orderStatusText(detail.status) }}</a-tag></div>
             <div>订单金额：￥{{ formatPrice(detail.price) }}</div>
             <div>优惠金额：￥{{ formatPrice(detail.coupon) }}</div>
             <div>支付方式：{{ detail.payType }}</div>
+            <div>支付地址：<a-link v-if="detail.payUrl" :href="detail.payUrl" target="_blank">打开支付页</a-link><span v-else>暂无</span></div>
           </div>
         </section>
 
@@ -117,6 +201,13 @@ onMounted(loadDetail)
   justify-content: space-between;
   gap: 16px;
   align-items: flex-start;
+}
+
+.head_actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .panel_head h2 {
@@ -214,6 +305,10 @@ onMounted(loadDetail)
 @media (max-width: 768px) {
   .panel_head {
     flex-direction: column;
+  }
+
+  .head_actions {
+    justify-content: flex-start;
   }
 
   .goods_row {

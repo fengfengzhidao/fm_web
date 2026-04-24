@@ -2,9 +2,9 @@
 import {computed, onMounted, ref} from "vue";
 import {useRouter} from "vue-router";
 import {Message} from "@arco-design/web-vue";
-import {orderUserListApi, orderUserRemoveApi, type orderUserType} from "@/api/order_api";
+import {orderRevGoodsApi, orderUserListApi, orderUserRemoveApi, type orderUserType} from "@/api/order_api";
 import {dateTimeFormat} from "@/utils/date";
-import {formatPrice, orderStatusText} from "@/views/web/user_center/utils";
+import {canCommentOrder, canReceiveOrder, formatPrice, orderStatusColor, orderStatusText} from "@/views/web/user_center/utils";
 
 const router = useRouter()
 const loading = ref(false)
@@ -31,6 +31,16 @@ async function loadOrders() {
 
 function openDetail(item: orderUserType) {
   router.push({name: "web_user_center_order_detail", params: {id: item.id}})
+}
+
+async function receiveOrder(item: orderUserType) {
+  const res = await orderRevGoodsApi({orderID: item.id})
+  if (res.code) {
+    Message.error(res.msg)
+    return
+  }
+  Message.success("已确认收货")
+  await loadOrders()
 }
 
 async function removeOrder(item: orderUserType) {
@@ -65,7 +75,7 @@ onMounted(loadOrders)
               <strong>{{ item.no }}</strong>
               <span>创建时间：{{ dateTimeFormat(item.createdAt) }}</span>
             </div>
-            <a-tag>{{ orderStatusText(item.status) }}</a-tag>
+            <a-tag :color="orderStatusColor(item.status)">{{ orderStatusText(item.status) }}</a-tag>
           </div>
 
           <div class="order_goods">
@@ -87,7 +97,8 @@ onMounted(loadOrders)
             </div>
             <div class="action_line">
               <a-button type="primary" @click="openDetail(item)">查看详情</a-button>
-              <a-button @click="router.push({name: 'web_user_center_evaluate'})">去评价</a-button>
+              <a-button v-if="canReceiveOrder(item.status)" @click="receiveOrder(item)">确认收货</a-button>
+              <a-button v-if="canCommentOrder(item.status)" @click="router.push({name: 'web_user_center_evaluate'})">去评价</a-button>
               <a-popconfirm content="确定删除该订单吗？" @ok="removeOrder(item)">
                 <a-button status="danger">删除</a-button>
               </a-popconfirm>
