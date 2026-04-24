@@ -53,7 +53,7 @@ const roleText = computed(() => store.isAdmin ? "管理员" : "普通用户")
 
 .panel_head h2 {
   margin: 8px 0 8px;
-  font-size: 30px;
+  font-size: 28px;
 }
 
 .panel_head p,
@@ -74,8 +74,9 @@ const roleText = computed(() => store.isAdmin ? "管理员" : "普通用户")
   align-items: center;
   padding: 20px;
   border-radius: 22px;
-  background: var(--color-fill-1);
+  background: var(--color-bg-1);
   border: 1px solid var(--color-border-2);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, .04);
 }
 
 .profile_body {
@@ -89,7 +90,7 @@ const roleText = computed(() => store.isAdmin ? "管理员" : "普通用户")
 
 .quick_grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
 }
 
@@ -98,8 +99,9 @@ const roleText = computed(() => store.isAdmin ? "管理员" : "普通用户")
   padding: 18px;
   border-radius: 18px;
   border: 1px solid var(--color-border-2);
-  background: linear-gradient(135deg, rgba(255, 93, 114, .08), rgba(255, 255, 255, 1));
+  background: var(--color-fill-1);
   cursor: pointer;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, .03);
 
   strong,
   span {

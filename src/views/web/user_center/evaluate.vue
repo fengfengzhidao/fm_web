@@ -155,7 +155,7 @@ onMounted(loadList)
 
 .panel_head h2 {
   margin: 8px 0 8px;
-  font-size: 30px;
+  font-size: 28px;
 }
 
 .panel_head p,
@@ -179,8 +179,9 @@ onMounted(loadList)
 .order_card {
   padding: 16px;
   border-radius: 20px;
-  background: var(--color-fill-1);
+  background: var(--color-bg-1);
   border: 1px solid var(--color-border-2);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, .03);
 }
 
 .order_card.target_order {
@@ -207,7 +208,8 @@ onMounted(loadList)
   gap: 14px;
   padding: 14px;
   border-radius: 18px;
-  background: var(--color-bg-1);
+  background: var(--color-fill-1);
+  border: 1px solid var(--color-border-2);
 }
 
 .goods_card.target_goods {

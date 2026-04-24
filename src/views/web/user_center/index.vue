@@ -81,7 +81,7 @@ function go(name: string) {
 
 .hero_shell,
 .center_shell {
-  margin: 24px max(20px, calc((100% - 1200px) / 2));
+  margin: 24px max(16px, calc((100% - 1240px) / 2));
 }
 
 .hero_shell {
@@ -91,7 +91,7 @@ function go(name: string) {
   gap: 20px;
   padding: 28px;
   border-radius: 24px;
-  background: linear-gradient(135deg, #fff 0%, #fff8fa 100%);
+  background: var(--color-bg-1);
   border: 1px solid var(--color-border-2);
   box-shadow: 0 10px 40px rgba(15, 23, 42, .04);
 }
@@ -105,7 +105,7 @@ function go(name: string) {
 
 .hero_meta h1 {
   margin: 12px 0 10px;
-  font-size: 42px;
+  font-size: 38px;
   line-height: 1.08;
 }
 
@@ -121,7 +121,8 @@ function go(name: string) {
   align-items: center;
   padding: 20px;
   border-radius: 22px;
-  background: rgba(255, 93, 114, .08);
+  background: var(--color-fill-1);
+  border: 1px solid var(--color-border-2);
 }
 
 .hero_user {
@@ -130,7 +131,7 @@ function go(name: string) {
 }
 
 .hero_user strong {
-  font-size: 20px;
+  font-size: 18px;
 }
 
 .hero_user span {
@@ -150,6 +151,10 @@ function go(name: string) {
   background: var(--color-bg-1);
   border: 1px solid var(--color-border-2);
   box-shadow: 0 10px 40px rgba(15, 23, 42, .04);
+}
+
+.content_panel {
+  min-height: 540px;
 }
 
 .side_title {
@@ -189,8 +194,9 @@ function go(name: string) {
   }
 
   &.active {
-    border-color: rgba(255, 93, 114, .32);
-    background: rgba(255, 93, 114, .08);
+    border-color: rgba(255, 93, 114, .28);
+    background: rgba(255, 93, 114, .06);
+    box-shadow: 0 8px 20px rgba(255, 93, 114, .06);
   }
 }
 

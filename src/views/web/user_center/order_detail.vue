@@ -175,7 +175,7 @@ onMounted(loadDetail)
           </div>
         </section>
 
-        <section class="detail_card detail_goods">
+        <section class="detail_card detail_goods span_2">
           <div class="card_title">商品列表</div>
           <article v-for="item in detail.goodsList" :key="item.orderGoodsID" class="goods_row">
             <img :src="item.cover" :alt="item.title">
@@ -188,7 +188,7 @@ onMounted(loadDetail)
           </article>
         </section>
 
-        <section class="detail_card">
+        <section class="detail_card span_2">
           <div class="card_title">优惠券</div>
           <div v-if="detail.couponList.length" class="coupon_list">
             <div v-for="coupon in detail.couponList" :key="coupon.couponPrice + coupon.type" class="coupon_item">
@@ -226,7 +226,7 @@ onMounted(loadDetail)
 
 .panel_head h2 {
   margin: 8px 0 8px;
-  font-size: 30px;
+  font-size: 28px;
 }
 
 .panel_head p,
@@ -247,13 +247,19 @@ onMounted(loadDetail)
 .detail_grid {
   display: grid;
   gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .detail_card {
   padding: 18px;
   border-radius: 22px;
-  background: var(--color-fill-1);
+  background: var(--color-bg-1);
   border: 1px solid var(--color-border-2);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, .03);
+}
+
+.span_2 {
+  grid-column: 1 / -1;
 }
 
 .card_title {
@@ -285,7 +291,8 @@ onMounted(loadDetail)
   gap: 14px;
   padding: 12px;
   border-radius: 18px;
-  background: var(--color-bg-1);
+  background: var(--color-fill-1);
+  border: 1px solid var(--color-border-2);
 }
 
 .goods_row img {
@@ -333,6 +340,10 @@ onMounted(loadDetail)
     width: 100%;
     height: auto;
     aspect-ratio: 1;
+  }
+
+  .detail_grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>

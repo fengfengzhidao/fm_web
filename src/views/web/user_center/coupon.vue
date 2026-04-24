@@ -55,6 +55,21 @@ onMounted(loadList)
       </div>
     </div>
 
+    <div class="summary_grid">
+      <article class="summary_card">
+        <strong>{{ availableList.length }}</strong>
+        <span>待领取</span>
+      </article>
+      <article class="summary_card">
+        <strong>{{ mineList.length }}</strong>
+        <span>未使用</span>
+      </article>
+      <article class="summary_card">
+        <strong>{{ usedList.length }}</strong>
+        <span>已使用</span>
+      </article>
+    </div>
+
     <a-tabs v-model:active-key="active">
       <a-tab-pane key="available" title="待领取的优惠券">
         <a-spin :loading="loading">
@@ -130,14 +145,39 @@ onMounted(loadList)
   gap: 14px;
 }
 
+.summary_grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.summary_card {
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: var(--color-bg-1);
+  border: 1px solid var(--color-border-2);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, .03);
+}
+
+.summary_card strong {
+  display: block;
+  font-size: 26px;
+  color: #e11d48;
+}
+
+.summary_card span {
+  color: var(--color-text-2);
+}
+
 .coupon_card,
 .coupon_row {
   display: grid;
   gap: 8px;
   padding: 16px;
   border-radius: 20px;
-  background: var(--color-fill-1);
+  background: var(--color-bg-1);
   border: 1px solid var(--color-border-2);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, .03);
 }
 
 .coupon_card strong {
@@ -152,6 +192,10 @@ onMounted(loadList)
 
 @media (max-width: 768px) {
   .coupon_grid {
+    grid-template-columns: 1fr;
+  }
+
+  .summary_grid {
     grid-template-columns: 1fr;
   }
 }

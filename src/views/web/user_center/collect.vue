@@ -95,7 +95,7 @@ onMounted(loadList)
 
 .panel_head h2 {
   margin: 8px 0 8px;
-  font-size: 30px;
+  font-size: 28px;
 }
 
 .panel_head p,
@@ -122,8 +122,9 @@ onMounted(loadList)
   align-items: center;
   padding: 16px;
   border-radius: 20px;
-  background: var(--color-fill-1);
+  background: var(--color-bg-1);
   border: 1px solid var(--color-border-2);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, .03);
 }
 
 .cover {
@@ -131,7 +132,7 @@ onMounted(loadList)
   height: 120px;
   border-radius: 18px;
   overflow: hidden;
-  background: linear-gradient(135deg, rgba(255, 93, 114, .1), rgba(255, 93, 114, .04));
+  background: linear-gradient(135deg, rgba(255, 93, 114, .08), rgba(255, 93, 114, .02));
   cursor: pointer;
   display: flex;
   align-items: center;

@@ -58,6 +58,7 @@ onMounted(loadList)
     <a-spin :loading="loading">
       <div v-if="list.length" class="goods_grid">
         <article v-for="item in list" :key="item.id" class="goods_card">
+          <div class="cover">{{ (item.goodsTitle || "商").slice(0, 1) }}</div>
           <div class="body">
             <strong @click="openDetail(item)">{{ item.goodsTitle }}</strong>
             <span>商品ID：{{ item.goodsID }}</span>
@@ -91,7 +92,7 @@ onMounted(loadList)
 
 .panel_head h2 {
   margin: 8px 0 8px;
-  font-size: 30px;
+  font-size: 28px;
 }
 
 .panel_head p,
@@ -112,14 +113,28 @@ onMounted(loadList)
 }
 
 .goods_card {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr) auto;
   gap: 14px;
   align-items: center;
   padding: 16px;
   border-radius: 20px;
-  background: var(--color-fill-1);
+  background: var(--color-bg-1);
   border: 1px solid var(--color-border-2);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, .03);
+}
+
+.cover {
+  width: 120px;
+  height: 120px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(255, 93, 114, .08), rgba(255, 93, 114, .02));
+  color: #ff5d72;
+  font-size: 40px;
+  font-weight: 800;
 }
 
 .body {
@@ -139,9 +154,14 @@ onMounted(loadList)
 }
 
 @media (max-width: 768px) {
-  .panel_head,
   .goods_card {
-    flex-direction: column;
+    grid-template-columns: 1fr;
+  }
+
+  .cover {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
   }
 }
 </style>
