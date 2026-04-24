@@ -36,7 +36,7 @@ export function canReceiveOrder(status: number): boolean {
 }
 
 export function canCommentOrder(status: number): boolean {
-    return status === 5
+    return status === 4 || status === 5
 }
 
 export function userCouponStatusText(status: number): string {

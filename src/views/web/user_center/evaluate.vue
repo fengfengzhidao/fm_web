@@ -1,14 +1,37 @@
 <script setup lang="ts">
-import {onMounted, reactive, ref} from "vue";
+import {computed, onMounted, reactive, ref} from "vue";
+import {useRoute} from "vue-router";
 import {Message} from "@arco-design/web-vue";
 import {commentCreateApi, type commentCreateItem} from "@/api/comment_api";
 import {orderUserListApi, type orderUserType} from "@/api/order_api";
 import {commentLevelText, formatPrice} from "@/views/web/user_center/utils";
 
+const route = useRoute()
 const loading = ref(false)
 const submiting = ref(false)
 const orders = ref<orderUserType[]>([])
 const formMap = reactive<Record<number, {content: string; level: number}>>({})
+
+const targetOrderID = computed(() => {
+  const raw = route.query.orderID
+  const value = Array.isArray(raw) ? raw[0] : raw
+  const num = Number(value)
+  return Number.isFinite(num) && num > 0 ? num : 0
+})
+
+const targetOrderGoodsID = computed(() => {
+  const raw = route.query.orderGoodsID
+  const value = Array.isArray(raw) ? raw[0] : raw
+  const num = Number(value)
+  return Number.isFinite(num) && num > 0 ? num : 0
+})
+
+const visibleOrders = computed(() => {
+  if (!targetOrderID.value) {
+    return orders.value
+  }
+  return orders.value.filter((order) => order.id === targetOrderID.value)
+})
 
 async function loadList() {
   loading.value = true
@@ -26,6 +49,9 @@ async function loadList() {
         }
       })
     })
+    if (targetOrderID.value && !orders.value.some((order) => order.id === targetOrderID.value)) {
+      Message.warning("未找到指定订单，请返回后重试")
+    }
   } catch (error) {
     console.error(error)
     Message.error("待评价订单加载失败")
@@ -65,6 +91,10 @@ async function submitComment(orderGoodsID: number) {
   }
 }
 
+function isTargetGoods(orderGoodsID: number): boolean {
+  return targetOrderGoodsID.value === orderGoodsID
+}
+
 onMounted(loadList)
 </script>
 
@@ -79,15 +109,20 @@ onMounted(loadList)
     </div>
 
     <a-spin :loading="loading">
-      <div v-if="orders.length" class="order_list">
-        <article v-for="order in orders" :key="order.id" class="order_card">
+      <div v-if="visibleOrders.length" class="order_list">
+        <article v-for="order in visibleOrders" :key="order.id" class="order_card" :class="{target_order: targetOrderID === order.id}">
           <div class="order_head">
             <strong>{{ order.no }}</strong>
             <span>订单金额 ￥{{ formatPrice(order.price) }}</span>
           </div>
 
           <div class="goods_list">
-            <section v-for="goods in order.orderGoodsList" :key="goods.orderGoodsID" class="goods_card">
+            <section
+              v-for="goods in order.orderGoodsList"
+              :key="goods.orderGoodsID"
+              class="goods_card"
+              :class="{target_goods: isTargetGoods(goods.orderGoodsID)}"
+            >
               <img :src="goods.goodsCover" :alt="goods.goodsTitle">
               <div class="goods_body">
                 <div class="goods_title">{{ goods.goodsTitle }}</div>
@@ -148,6 +183,11 @@ onMounted(loadList)
   border: 1px solid var(--color-border-2);
 }
 
+.order_card.target_order {
+  border-color: rgba(255, 93, 114, .35);
+  box-shadow: 0 12px 30px rgba(255, 93, 114, .08);
+}
+
 .order_head {
   display: flex;
   justify-content: space-between;
@@ -168,6 +208,11 @@ onMounted(loadList)
   padding: 14px;
   border-radius: 18px;
   background: var(--color-bg-1);
+}
+
+.goods_card.target_goods {
+  background: rgba(255, 93, 114, .06);
+  border: 1px solid rgba(255, 93, 114, .24);
 }
 
 .goods_card img {

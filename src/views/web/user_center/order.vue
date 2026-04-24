@@ -33,6 +33,17 @@ function openDetail(item: orderUserType) {
   router.push({name: "web_user_center_order_detail", params: {id: item.id}})
 }
 
+function goEvaluate(item: orderUserType) {
+  const firstGoods = item.orderGoodsList[0]
+  router.push({
+    name: "web_user_center_evaluate",
+    query: {
+      orderID: item.id,
+      ...(firstGoods ? {orderGoodsID: firstGoods.orderGoodsID} : {}),
+    },
+  })
+}
+
 async function receiveOrder(item: orderUserType) {
   const res = await orderRevGoodsApi({orderID: item.id})
   if (res.code) {
@@ -98,7 +109,7 @@ onMounted(loadOrders)
             <div class="action_line">
               <a-button type="primary" @click="openDetail(item)">查看详情</a-button>
               <a-button v-if="canReceiveOrder(item.status)" @click="receiveOrder(item)">确认收货</a-button>
-              <a-button v-if="canCommentOrder(item.status)" @click="router.push({name: 'web_user_center_evaluate'})">去评价</a-button>
+              <a-button v-if="canCommentOrder(item.status)" @click="goEvaluate(item)">去评价</a-button>
               <a-popconfirm content="确定删除该订单吗？" @ok="removeOrder(item)">
                 <a-button status="danger">删除</a-button>
               </a-popconfirm>
