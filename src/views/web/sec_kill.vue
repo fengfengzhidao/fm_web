@@ -399,7 +399,7 @@ onMounted(loadDateList)
 }
 
 .hero {
-  margin: 84px max(20px, calc((100% - 1200px) / 2)) 24px;
+  margin: 20px max(16px, calc((100% - 1240px) / 2)) 20px;
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) 360px;
   gap: 16px;
@@ -416,10 +416,11 @@ onMounted(loadDateList)
 }
 
 .hero_copy {
-  padding: 32px;
+  padding: 30px;
   background:
-      radial-gradient(circle at right top, rgba(255, 93, 114, .14), transparent 40%),
-      linear-gradient(135deg, rgba(255, 250, 250, .98), rgba(255, 255, 255, 1));
+      radial-gradient(circle at 18% 18%, rgba(255, 93, 114, .04), transparent 22%),
+      radial-gradient(circle at 84% 14%, rgba(29, 78, 216, .04), transparent 20%),
+      linear-gradient(180deg, #fff 0%, #fbfcfe 100%);
 }
 
 .eyebrow {
@@ -431,39 +432,42 @@ onMounted(loadDateList)
 
 .hero_copy h1 {
   margin: 10px 0 12px;
-  font-size: 42px;
+  font-size: 44px;
   line-height: 1.1;
 }
 
 .hero_copy p {
   margin: 0;
   color: var(--color-text-2);
-  line-height: 1.8;
+  line-height: 1.85;
 }
 
 .hero_card {
-  padding: 24px;
+  padding: 28px;
   display: grid;
-  gap: 14px;
+  gap: 12px;
   align-content: start;
+  background: #fff;
 }
 
 .hero_card_title {
   color: var(--color-text-2);
+  font-size: 14px;
 }
 
 .hero_card strong {
-  font-size: 20px;
+  font-size: 18px;
   word-break: break-all;
 }
 
 .hero_card span {
   color: var(--color-text-2);
+  font-size: 14px;
 }
 
 .panel {
-  margin: 0 max(20px, calc((100% - 1200px) / 2)) 24px;
-  padding: 24px;
+  margin: 0 max(16px, calc((100% - 1240px) / 2)) 20px;
+  padding: 28px;
 }
 
 .section_head {
@@ -476,7 +480,7 @@ onMounted(loadDateList)
 
 .section_head h2 {
   margin: 0;
-  font-size: 26px;
+  font-size: 28px;
 }
 
 .section_head span {
@@ -489,6 +493,7 @@ onMounted(loadDateList)
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+  padding-top: 4px;
 }
 
 .date_tab {
@@ -516,7 +521,7 @@ onMounted(loadDateList)
 
 .goods_card {
   overflow: hidden;
-  border-radius: 22px;
+  border-radius: 24px;
   border: 1px solid var(--color-border-2);
   background: var(--color-fill-1);
 }
@@ -585,6 +590,7 @@ onMounted(loadDateList)
 
 .detail_panel {
   padding: 18px;
+  background: #fff;
 }
 
 .panel_title {
