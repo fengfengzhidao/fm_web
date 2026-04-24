@@ -7,7 +7,6 @@ import F_main from "@/components/web/f_main.vue";
 import F_footer from "@/components/web/f_footer.vue";
 import {carListApi, carNumUpdateApi, carRemoveApi, carToCollectApi, type carGoodsInfoType, type carListType} from "@/api/car_api";
 import {userStorei} from "@/stores/user_store";
-import {dateTimeFormat} from "@/utils/date";
 
 const router = useRouter()
 const store = userStorei()
@@ -18,6 +17,7 @@ const cart = ref<carListType>({
   price: 0,
 })
 const selectedIds = ref<number[]>([])
+const selectedCouponIDs = ref<number[]>([])
 
 function formatPrice(price?: number | null): string {
   if (price === null || price === undefined) {
@@ -30,7 +30,8 @@ async function loadCart(nextSelectedIds?: number[]) {
   loading.value = true
   try {
     const res = await carListApi({
-      carIDList: nextSelectedIds || selectedIds.value,
+      carIDList: nextSelectedIds ?? selectedIds.value,
+      couponIDList: selectedCouponIDs.value,
     })
     if (res.code) {
       Message.error(res.msg)
@@ -63,7 +64,7 @@ async function updateNum(item: carGoodsInfoType, num: number) {
     return
   }
   Message.success("数量已更新")
-  await loadCart()
+  await loadCart(selectedIds.value)
 }
 
 async function removeItem(item: carGoodsInfoType) {
@@ -84,7 +85,7 @@ async function collectItem(item: carGoodsInfoType) {
     return
   }
   Message.success("已转入收藏")
-  await loadCart()
+  await loadCart(selectedIds.value)
 }
 
 async function toggleSelect(item: carGoodsInfoType, checked: boolean) {
@@ -95,6 +96,33 @@ async function toggleSelect(item: carGoodsInfoType, checked: boolean) {
     next.delete(item.carID)
   }
   selectedIds.value = Array.from(next)
+  await loadCart(selectedIds.value)
+}
+
+async function toggleSelectAll(checked: boolean) {
+  if (!cart.value.goodsList.length) {
+    return
+  }
+  selectedIds.value = checked ? cart.value.goodsList.map((item) => item.carID) : []
+  await loadCart(selectedIds.value)
+}
+
+async function toggleCoupon(id: number, checked: boolean) {
+  const next = new Set(selectedCouponIDs.value)
+  if (checked) {
+    next.add(id)
+  } else {
+    next.delete(id)
+  }
+  selectedCouponIDs.value = Array.from(next)
+  await loadCart(selectedIds.value)
+}
+
+async function clearCoupons() {
+  if (!selectedCouponIDs.value.length) {
+    return
+  }
+  selectedCouponIDs.value = []
   await loadCart(selectedIds.value)
 }
 
@@ -109,17 +137,18 @@ function checkout() {
     return
   }
 
-  const carIDs = selectedIds.value.length
-    ? selectedIds.value
-    : cart.value.goodsList.map((item) => item.carID)
+  const carIDs = selectedIds.value
   if (!carIDs.length) {
-    Message.warning("购物车没有可结算的商品")
+    Message.warning("请先选择要结算的商品")
     return
   }
   router.push({name: "web_checkout", query: {carIDs: carIDs.join(",")}})
 }
 
 const totalPrice = computed(() => formatPrice(cart.value.price))
+const allSelected = computed(() => cart.value.goodsList.length > 0 && selectedIds.value.length === cart.value.goodsList.length)
+const selectedCount = computed(() => selectedIds.value.length)
+const selectedCouponCount = computed(() => selectedCouponIDs.value.length)
 
 onMounted(() => {
   if (!store.isLogin) {
@@ -149,7 +178,12 @@ onMounted(() => {
         <a-spin :loading="loading" tip="加载中...">
           <div v-if="cart.goodsList.length" class="cart_grid">
             <div class="goods_panel">
-              <div class="panel_title">商品列表</div>
+              <div class="panel_head_row">
+                <div class="panel_title">商品列表</div>
+                <a-checkbox :model-value="allSelected" :indeterminate="selectedIds.length > 0 && !allSelected" @change="(checked) => toggleSelectAll(Boolean(checked))">
+                  全选
+                </a-checkbox>
+              </div>
               <article class="cart_item" v-for="item in cart.goodsList" :key="item.carID">
                 <a-checkbox :model-value="selectedIds.includes(item.carID)" @change="(checked) => toggleSelect(item, Boolean(checked))"/>
                 <div class="item_cover" @click="goGoodsDetail(item)">
@@ -182,18 +216,25 @@ onMounted(() => {
               </div>
 
               <div class="coupon_list">
-                <div class="coupon_title">可用优惠券</div>
+                <div class="coupon_head">
+                  <div class="coupon_title">可用优惠券</div>
+                  <a-button v-if="selectedCouponIDs.length" size="mini" type="text" @click="clearCoupons">清空</a-button>
+                </div>
+                <div class="coupon_hint">勾选优惠券后，金额会按当前购物车重新计算。</div>
                 <div v-if="cart.couponList.length" class="coupon_items">
-                  <div class="coupon_card" v-for="coupon in cart.couponList" :key="coupon.id">
-                    <strong>￥{{ formatPrice(coupon.couponPrice) }}</strong>
-                    <span>满 {{ formatPrice(coupon.threshold) }} 可用</span>
-                  </div>
+                  <label class="coupon_card" v-for="coupon in cart.couponList" :key="coupon.id">
+                    <a-checkbox :model-value="selectedCouponIDs.includes(coupon.id)" @change="(checked) => toggleCoupon(coupon.id, Boolean(checked))"/>
+                    <div>
+                      <strong>￥{{ formatPrice(coupon.couponPrice) }}</strong>
+                      <span>满 {{ formatPrice(coupon.threshold) }} 可用</span>
+                    </div>
+                  </label>
                 </div>
                 <a-empty v-else description="暂无可用优惠券"/>
               </div>
 
               <div class="summary_note">
-                购物车金额由后端计算，页面只负责展示和触发操作。
+                已选商品 {{ selectedCount }} 件，已选优惠券 {{ selectedCouponCount }} 张。
               </div>
 
               <div class="summary_actions">
@@ -286,10 +327,18 @@ onMounted(() => {
   border: 1px solid var(--color-border-2);
 }
 
+.panel_head_row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
 .panel_title {
   font-size: 20px;
   font-weight: 800;
-  margin-bottom: 18px;
+  margin-bottom: 0;
 }
 
 .cart_item {
@@ -372,9 +421,21 @@ onMounted(() => {
   margin-top: 18px;
 }
 
+.coupon_head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .coupon_title {
   font-weight: 700;
-  margin-bottom: 12px;
+}
+
+.coupon_hint {
+  margin-top: 8px;
+  color: var(--color-text-2);
+  line-height: 1.6;
 }
 
 .coupon_items {
@@ -387,6 +448,10 @@ onMounted(() => {
   border-radius: 18px;
   background: var(--color-bg-1);
   border: 1px solid var(--color-border-2);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  cursor: pointer;
 
   strong {
     display: block;
