@@ -102,7 +102,7 @@ async function loadCoupons() {
 async function receiveCoupon(item: acceptableCouponType) {
   if (!store.isLogin) {
     Message.warning("请先登录后再领取优惠券")
-    router.push({name: "login", query: {redirect: "/"}})
+    store.openLoginModal("/")
     return
   }
   const res = await couponReceiveApi({couponID: item.id})
@@ -201,10 +201,10 @@ onMounted(() => {
           </div>
 
           <div class="panel_actions">
-            <a-button type="primary" long @click="store.isLogin ? router.push({name: 'web_search'}) : router.push({name: 'login'})">
+            <a-button type="primary" long @click="store.isLogin ? router.push({name: 'web_search'}) : store.openLoginModal()">
               {{ store.isLogin ? "继续逛逛" : "立即登录" }}
             </a-button>
-            <a-button long @click="store.isLogin ? Message.info('用户中心将放在下一阶段开发') : router.push({name: 'login'})">
+            <a-button long @click="store.isLogin ? Message.info('用户中心将放在下一阶段开发') : store.openLoginModal()">
               查看个人中心
             </a-button>
           </div>

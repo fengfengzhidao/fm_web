@@ -16,6 +16,8 @@ interface userInfoType {
 
 interface userStoreType {
     userInfo: userInfoType
+    loginModalVisible: boolean
+    loginRedirect: string
 }
 
 
@@ -30,9 +32,19 @@ export const userStorei = defineStore('userStore', {
                 role: 0,
                 token: "",
             },
+            loginModalVisible: false,
+            loginRedirect: "",
         }
     },
     actions: {
+        openLoginModal(redirect = "") {
+            this.loginRedirect = redirect
+            this.loginModalVisible = true
+        },
+        closeLoginModal() {
+            this.loginModalVisible = false
+            this.loginRedirect = ""
+        },
          async saveUserInfo(token: string) {
             // 传一个token过来，然后重新去调用户信息接口
             this.userInfo.token = token

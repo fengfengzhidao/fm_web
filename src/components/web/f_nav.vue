@@ -62,7 +62,7 @@ onUnmounted(() => {
 
       <div class="right">
         <f_user_dropdown v-if="store.isLogin"/>
-        <router-link v-else class="plain_link" :to="{name: 'login'}">登录</router-link>
+        <button v-else class="plain_link" type="button" @click="store.openLoginModal()">登录</button>
         <router-link class="plain_link" :to="{name: 'admin'}">后台</router-link>
         <f_theme class="theme"/>
       </div>
@@ -171,9 +171,13 @@ onUnmounted(() => {
   }
 
   .plain_link {
+    padding: 0;
+    border: 0;
+    background: transparent;
     color: var(--color-text-2);
     text-decoration: none;
     font-size: 14px;
+    cursor: pointer;
   }
 }
 

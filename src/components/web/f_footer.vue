@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import {beian} from "@/conf/global";
+import {userStorei} from "@/stores/user_store";
+
+const store = userStorei()
 </script>
 
 <template>
@@ -9,7 +12,7 @@ import {beian} from "@/conf/global";
       <div class="links">
         <router-link to="/">商城首页</router-link>
         <router-link :to="{name: 'admin'}">后台管理</router-link>
-        <router-link :to="{name: 'login'}">用户登录</router-link>
+        <button type="button" class="login_button" @click="store.openLoginModal()">用户登录</button>
       </div>
     </div>
     <div class="f_beian" v-if="beian">
@@ -39,15 +42,20 @@ import {beian} from "@/conf/global";
       color: var(--color-text-1);
     }
 
-    .links {
-      display: flex;
-      gap: 24px;
+      .links {
+        display: flex;
+        gap: 24px;
 
-      a {
-        color: var(--color-text-2);
-        text-decoration: none;
+        a,
+        .login_button {
+          color: var(--color-text-2);
+          text-decoration: none;
+          border: 0;
+          background: transparent;
+          padding: 0;
+          cursor: pointer;
+        }
       }
-    }
   }
 
   .f_beian {

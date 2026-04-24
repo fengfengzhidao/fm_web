@@ -338,11 +338,8 @@ router.beforeEach((to, from, next) => {
         if (!store.isLogin) {
             // 没有登陆
             Message.warning("需要登陆")
-            router.push({
-                name: "login", query: {
-                    redirect: to.fullPath
-                }
-            })
+            store.openLoginModal(to.fullPath)
+            next(false)
             return
         }
 
