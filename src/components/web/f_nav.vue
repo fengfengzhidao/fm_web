@@ -42,6 +42,7 @@ if (!noScroll) {
         <a href="#categories">商品分类</a>
         <a href="#featured">精选商品</a>
         <router-link :to="{name: 'web_cart'}">购物车</router-link>
+        <router-link v-if="store.isLogin" :to="{name: 'web_user_center_info'}">个人中心</router-link>
       </div>
       <div class="right">
         <f_user_dropdown v-if="store.isLogin"></f_user_dropdown>

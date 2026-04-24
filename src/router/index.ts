@@ -32,6 +32,120 @@ const router = createRouter({
                     name: "web_cart",
                     path: "cart",
                     component: () => import("@/views/web/cart.vue"),
+                    meta: {
+                        title: "购物车",
+                    }
+                },
+                {
+                    name: "web_checkout",
+                    path: "checkout",
+                    component: () => import("@/views/web/checkout.vue"),
+                    meta: {
+                        auth: true,
+                        title: "确认订单",
+                    }
+                },
+                {
+                    name: "web_user_center",
+                    path: "user_center",
+                    component: () => import("@/views/web/user_center/index.vue"),
+                    meta: {
+                        auth: true,
+                        title: "用户中心",
+                    },
+                    redirect: {name: "web_user_center_info"},
+                    children: [
+                        {
+                            name: "web_user_center_info",
+                            path: "info",
+                            component: () => import("@/views/web/user_center/info.vue"),
+                            meta: {
+                                auth: true,
+                                title: "个人中心",
+                            }
+                        },
+                        {
+                            name: "web_user_center_order",
+                            path: "order",
+                            component: () => import("@/views/web/user_center/order.vue"),
+                            meta: {
+                                auth: true,
+                                title: "我的订单",
+                            }
+                        },
+                        {
+                            name: "web_user_center_order_detail",
+                            path: "order/:id",
+                            component: () => import("@/views/web/user_center/order_detail.vue"),
+                            meta: {
+                                auth: true,
+                                title: "订单详情",
+                            }
+                        },
+                        {
+                            name: "web_user_center_collect",
+                            path: "collect",
+                            component: () => import("@/views/web/user_center/collect.vue"),
+                            meta: {
+                                auth: true,
+                                title: "我的收藏",
+                            }
+                        },
+                        {
+                            name: "web_user_center_look",
+                            path: "look",
+                            component: () => import("@/views/web/user_center/look.vue"),
+                            meta: {
+                                auth: true,
+                                title: "我的足迹",
+                            }
+                        },
+                        {
+                            name: "web_user_center_addr",
+                            path: "addr",
+                            component: () => import("@/views/web/user_center/addr.vue"),
+                            meta: {
+                                auth: true,
+                                title: "我的地址",
+                            }
+                        },
+                        {
+                            name: "web_user_center_coupon",
+                            path: "coupon",
+                            component: () => import("@/views/web/user_center/coupon.vue"),
+                            meta: {
+                                auth: true,
+                                title: "我的优惠券",
+                            }
+                        },
+                        {
+                            name: "web_user_center_msg",
+                            path: "msg",
+                            component: () => import("@/views/web/user_center/msg.vue"),
+                            meta: {
+                                auth: true,
+                                title: "消息通知",
+                            }
+                        },
+                        {
+                            name: "web_user_center_comment",
+                            path: "comment",
+                            component: () => import("@/views/web/user_center/comment.vue"),
+                            meta: {
+                                auth: true,
+                                title: "我的评价",
+                            }
+                        },
+                        {
+                            name: "web_user_center_evaluate",
+                            path: "evaluate",
+                            component: () => import("@/views/web/user_center/evaluate.vue"),
+                            meta: {
+                                auth: true,
+                                title: "评论商品",
+                            }
+                        }
+                    ]
                 }
             ]
         },
@@ -209,7 +323,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-    if (to.meta.role) {
+    if (to.meta.auth || to.meta.role) {
         // 判断当前用户的角色，在不在列表里面
         const store = userStorei()
         console.log(store.userInfo)
@@ -218,13 +332,13 @@ router.beforeEach((to, from, next) => {
             Message.warning("需要登陆")
             router.push({
                 name: "login", query: {
-                    redirect: to.path
+                    redirect: to.fullPath
                 }
             })
             return
         }
 
-        if (!to.meta.role.includes(store.userInfo.role)) {
+        if (to.meta.role && !to.meta.role.includes(store.userInfo.role)) {
             // 不在
             Message.warning("鉴权失败")
             router.push(from.path)

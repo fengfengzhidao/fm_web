@@ -1,0 +1,220 @@
+<script setup lang="ts">
+import {onMounted, reactive, ref} from "vue";
+import {Message} from "@arco-design/web-vue";
+import {commentCreateApi, type commentCreateItem} from "@/api/comment_api";
+import {orderUserListApi, type orderUserType} from "@/api/order_api";
+import {commentLevelText, formatPrice} from "@/views/web/user_center/utils";
+
+const loading = ref(false)
+const submiting = ref(false)
+const orders = ref<orderUserType[]>([])
+const formMap = reactive<Record<number, {content: string; level: number}>>({})
+
+async function loadList() {
+  loading.value = true
+  try {
+    const res = await orderUserListApi({limit: 20, page: 1})
+    if (res.code) {
+      Message.error(res.msg)
+      return
+    }
+    orders.value = res.data.list || []
+    orders.value.forEach((order) => {
+      order.orderGoodsList.forEach((goods) => {
+        if (!formMap[goods.orderGoodsID]) {
+          formMap[goods.orderGoodsID] = {content: "", level: 5}
+        }
+      })
+    })
+  } catch (error) {
+    console.error(error)
+    Message.error("待评价订单加载失败")
+  } finally {
+    loading.value = false
+  }
+}
+
+async function submitComment(orderGoodsID: number) {
+  const form = formMap[orderGoodsID]
+  if (!form?.content.trim()) {
+    Message.warning("请输入评价内容")
+    return
+  }
+
+  submiting.value = true
+  try {
+    const payload: commentCreateItem = {
+      orderGoodsID,
+      content: form.content,
+      level: form.level,
+      images: [],
+    }
+    const res = await commentCreateApi({list: [payload]})
+    if (res.code) {
+      Message.error(res.msg)
+      return
+    }
+    Message.success("评价已提交")
+    form.content = ""
+    form.level = 5
+  } catch (error) {
+    console.error(error)
+    Message.error("提交评价失败")
+  } finally {
+    submiting.value = false
+  }
+}
+
+onMounted(loadList)
+</script>
+
+<template>
+  <div class="page_view">
+    <div class="panel_head">
+      <div>
+        <div class="eyebrow">EVALUATE</div>
+        <h2>评论商品</h2>
+        <p>从已购订单里挑商品提交评价。</p>
+      </div>
+    </div>
+
+    <a-spin :loading="loading">
+      <div v-if="orders.length" class="order_list">
+        <article v-for="order in orders" :key="order.id" class="order_card">
+          <div class="order_head">
+            <strong>{{ order.no }}</strong>
+            <span>订单金额 ￥{{ formatPrice(order.price) }}</span>
+          </div>
+
+          <div class="goods_list">
+            <section v-for="goods in order.orderGoodsList" :key="goods.orderGoodsID" class="goods_card">
+              <img :src="goods.goodsCover" :alt="goods.goodsTitle">
+              <div class="goods_body">
+                <div class="goods_title">{{ goods.goodsTitle }}</div>
+                <div class="goods_meta">
+                  <span>单价 ￥{{ formatPrice(goods.goodsPrice) }}</span>
+                  <span>数量 x{{ goods.num }}</span>
+                  <span>订单商品ID：{{ goods.orderGoodsID }}</span>
+                </div>
+                <a-rate v-model="formMap[goods.orderGoodsID].level" allow-clear/>
+                <a-textarea v-model="formMap[goods.orderGoodsID].content" placeholder="写下你的真实感受" :auto-size="{minRows: 3, maxRows: 5}"/>
+                <div class="goods_actions">
+                  <a-button type="primary" :loading="submiting" @click="submitComment(goods.orderGoodsID)">提交评价</a-button>
+                  <a-tag>{{ commentLevelText(formMap[goods.orderGoodsID].level) }}</a-tag>
+                </div>
+              </div>
+            </section>
+          </div>
+        </article>
+      </div>
+      <a-empty v-else description="暂无可评价订单"/>
+    </a-spin>
+  </div>
+</template>
+
+<style scoped lang="less">
+.page_view {
+  display: grid;
+  gap: 18px;
+}
+
+.panel_head h2 {
+  margin: 8px 0 8px;
+  font-size: 30px;
+}
+
+.panel_head p,
+.order_head span,
+.goods_meta span {
+  color: var(--color-text-2);
+}
+
+.eyebrow {
+  color: #ff5d72;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+
+.order_list {
+  display: grid;
+  gap: 16px;
+}
+
+.order_card {
+  padding: 16px;
+  border-radius: 20px;
+  background: var(--color-fill-1);
+  border: 1px solid var(--color-border-2);
+}
+
+.order_head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.goods_list {
+  display: grid;
+  gap: 12px;
+}
+
+.goods_card {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 14px;
+  padding: 14px;
+  border-radius: 18px;
+  background: var(--color-bg-1);
+}
+
+.goods_card img {
+  width: 96px;
+  height: 96px;
+  border-radius: 14px;
+  object-fit: cover;
+}
+
+.goods_body {
+  display: grid;
+  gap: 8px;
+}
+
+.goods_title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.goods_meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  color: var(--color-text-2);
+}
+
+.goods_actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .order_head,
+  .goods_card {
+    grid-template-columns: 1fr;
+  }
+
+  .goods_card {
+    display: grid;
+  }
+
+  .goods_card img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+  }
+}
+</style>

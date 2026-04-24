@@ -21,13 +21,17 @@ interface OptionType {
 }
 
 const options = ref<OptionType[]>([
-  {title: "个人信息", name: "userInfo"},
+  {title: "个人中心", name: "web_user_center_info"},
+  {title: "我的订单", name: "web_user_center_order"},
+  {title: "我的收藏", name: "web_user_center_collect"},
+  {title: "地址管理", name: "web_user_center_addr"},
   {title: "注销退出", name: "logout"},
 ])
 
 if (store.isAdmin){
   options.value = [
-    {title: "个人信息", name: "userInfo"},
+    {title: "个人中心", name: "web_user_center_info"},
+    {title: "后台首页", name: "admin"},
     {title: "用户列表", name: "userList"},
     {title: "系统信息", name: "settings"},
     {title: "注销退出", name: "logout"},

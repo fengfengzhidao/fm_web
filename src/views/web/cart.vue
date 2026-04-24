@@ -103,7 +103,20 @@ function goGoodsDetail(item: carGoodsInfoType) {
 }
 
 function checkout() {
-  Message.info("结算页将在下一阶段补齐")
+  if (!store.isLogin) {
+    Message.warning("请先登录后再结算")
+    router.push({name: "login", query: {redirect: "/checkout"}})
+    return
+  }
+
+  const carIDs = selectedIds.value.length
+    ? selectedIds.value
+    : cart.value.goodsList.map((item) => item.carID)
+  if (!carIDs.length) {
+    Message.warning("购物车没有可结算的商品")
+    return
+  }
+  router.push({name: "web_checkout", query: {carIDs: carIDs.join(",")}})
 }
 
 const totalPrice = computed(() => formatPrice(cart.value.price))

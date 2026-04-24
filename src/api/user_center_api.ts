@@ -91,7 +91,7 @@ export function addrCreateApi(data: addrRequest): Promise<baseResponse<string>> 
     return useAxios.post("/api/user_center/addr", data)
 }
 
-export function addrListApi(): Promise<baseResponse<addrType[]>> {
+export function addrListApi(): Promise<baseResponse<listResponse<addrType>>> {
     return useAxios.get("/api/user_center/addr")
 }
 
