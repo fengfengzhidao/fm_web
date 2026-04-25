@@ -41,6 +41,30 @@ const commentFilters = [
 ]
 
 const goodsID = computed(() => Number(route.params.id))
+const commentFilterList = computed(() => {
+  const summary = level.value
+  const allCount = summary?.allCount ?? detail.value?.commentCount ?? 0
+  const greatCount = summary?.greatCount ?? 0
+  const middleCount = summary?.middleCount ?? 0
+  const badCount = summary?.badCount ?? 0
+  const imageCount = summary?.imageCount ?? 0
+
+  return commentFilters.map((item) => {
+    const countMap: Record<string, number> = {
+      all: allCount,
+      great: greatCount,
+      middle: middleCount,
+      bad: badCount,
+      images: imageCount,
+    }
+    const count = countMap[item.key] ?? 0
+    return {
+      ...item,
+      count,
+      countText: count > 99 ? "99+" : String(count),
+    }
+  })
+})
 const previewImages = computed(() => {
   const list = detail.value?.images?.filter((item) => Boolean(item)) || []
   return list.length ? list : [homeBg]
@@ -360,58 +384,55 @@ onBeforeUnmount(() => {
       <section v-if="detail" class="comment_surface">
         <div class="section_head">
           <div>
-            <div class="section_title">评论概览</div>
+            <div class="section_title">用户评价</div>
           </div>
         </div>
 
-        <div class="level_grid">
-          <div class="level_card">
-            <strong>{{ level?.allCount ?? detail.commentCount }}</strong>
-            <span>全部评论</span>
-          </div>
-          <div class="level_card">
-            <strong>{{ level?.greatCount ?? 0 }}</strong>
-            <span>好评</span>
-          </div>
-          <div class="level_card">
-            <strong>{{ level?.middleCount ?? 0 }}</strong>
-            <span>中评</span>
-          </div>
-          <div class="level_card">
-            <strong>{{ level?.badCount ?? 0 }}</strong>
-            <span>差评</span>
-          </div>
-          <div class="level_card">
-            <strong>{{ level?.imageCount ?? 0 }}</strong>
-            <span>有图</span>
-          </div>
-        </div>
-
-        <div class="comment_filter_row">
+        <div class="comment_filter_panel">
           <button
-            v-for="item in commentFilters"
+            v-for="item in commentFilterList"
             :key="item.key"
             class="comment_filter"
             :class="{active: commentFilter === item.key}"
             @click="changeCommentFilter(item.key)"
           >
-            {{ item.label }}
+            <span>{{ item.label }}</span>
+            <span class="filter_count">({{ item.countText }})</span>
+          </button>
+
+          <button type="button" class="comment_sort_btn">
+            默认排序
+            <icon-down/>
           </button>
         </div>
 
         <a-spin :loading="commentLoading">
           <div v-if="comments.length" class="comment_list">
             <article class="comment_card" v-for="item in comments" :key="item.createdAt + item.userNickname">
-              <a-avatar :size="42" :image-url="item.userAvatar || '/logo.png'"/>
+              <a-avatar :size="40" :image-url="item.userAvatar || '/logo.png'"/>
               <div class="comment_body">
                 <div class="comment_head">
                   <strong>{{ item.userNickname }}</strong>
-                  <span>{{ dateTimeFormat(item.createdAt) }}</span>
+                  <div class="comment_rate_row">
+                    <a-rate :model-value="item.level" readonly allow-half/>
+                  </div>
                 </div>
+                <div class="comment_time">{{ dateTimeFormat(item.createdAt) }}</div>
                 <div class="comment_content">{{ item.content }}</div>
-                <div class="comment_meta">
-                  <IconStar/>
-                  <span>满意度 {{ item.level }} 星</span>
+                <a-image-preview-group v-if="item.images?.length" infinite>
+                  <div class="comment_image_list">
+                    <a-image
+                      v-for="(img, index) in item.images"
+                      :key="img + index"
+                      :src="img"
+                      :width="108"
+                      :height="108"
+                      fit="cover"
+                    />
+                  </div>
+                </a-image-preview-group>
+                <div class="comment_goods_line">
+                  购买商品：{{ detail.title }}
                 </div>
               </div>
             </article>
@@ -447,7 +468,7 @@ onBeforeUnmount(() => {
 
 .comment_surface {
   background: #fff;
-  box-shadow: 0 20px 45px rgba(17, 24, 39, .05);
+  box-shadow: none;
 }
 
 .detail_grid {
@@ -689,83 +710,72 @@ onBeforeUnmount(() => {
 }
 
 .section_head {
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .section_title {
-  color: #111827;
-  font-size: 30px;
+  color: #303133;
+  font-size: 24px;
   font-weight: 700;
   line-height: 1.1;
 }
 
-.section_desc {
-  margin-top: 8px;
-  color: #9ca3af;
-  font-size: 13px;
-}
-
-.level_grid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.level_card {
-  padding: 16px;
-  border-radius: 14px;
-  background: #fafafb;
-  text-align: center;
-
-  strong {
-    display: block;
-    font-size: 24px;
-    color: #ff637a;
-  }
-
-  span {
-    margin-top: 8px;
-    display: block;
-    color: #6b7280;
-    font-size: 12px;
-  }
-}
-
-.comment_filter_row {
-  margin: 18px 0 16px;
+.comment_filter_panel {
+  margin-bottom: 18px;
+  padding: 18px 22px;
+  border-radius: 8px;
+  background: #fafafa;
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  align-items: center;
+  gap: 24px;
 }
 
 .comment_filter {
-  border: 1px solid #eceef2;
-  background: #fafafb;
-  border-radius: 999px;
-  padding: 8px 14px;
+  padding: 0;
+  border: 0;
+  background: transparent;
   cursor: pointer;
-  color: #6b7280;
-  font-size: 12px;
+  color: #606266;
+  font-size: 15px;
+  line-height: 1.5;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
 
   &.active {
-    color: #ff637a;
-    border-color: #ffccd5;
-    background: #fff4f6;
+    color: #303133;
+    font-weight: 700;
   }
+}
+
+.filter_count {
+  color: inherit;
+}
+
+.comment_sort_btn {
+  margin-left: auto;
+  border: 0;
+  background: transparent;
+  color: #606266;
+  font-size: 15px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
 }
 
 .comment_list {
   display: grid;
-  gap: 12px;
+  gap: 0;
 }
 
 .comment_card {
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 14px;
-  padding: 16px;
-  border-radius: 14px;
-  border: 1px solid #eceef2;
+  padding: 22px 18px;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .comment_body {
@@ -774,32 +784,56 @@ onBeforeUnmount(() => {
 
 .comment_head {
   display: flex;
-  justify-content: space-between;
+  align-items: center;
   gap: 12px;
+  flex-wrap: wrap;
 
   strong {
-    color: #111827;
+    color: #303133;
+    font-size: 15px;
+    font-weight: 600;
   }
+}
 
-  span {
-    color: #9ca3af;
-    font-size: 12px;
-  }
+.comment_rate_row :deep(.arco-rate) {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.comment_rate_row :deep(.arco-rate-character-full),
+.comment_rate_row :deep(.arco-rate-character-half) {
+  color: #f7ba2a;
+}
+
+.comment_time {
+  margin-top: 6px;
+  color: #909399;
+  font-size: 13px;
 }
 
 .comment_content {
   margin-top: 10px;
-  color: #4b5563;
+  color: #303133;
+  font-size: 14px;
   line-height: 1.8;
 }
 
-.comment_meta {
-  margin-top: 8px;
-  color: #ff637a;
-  font-size: 12px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+.comment_image_list {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.comment_image_list :deep(.arco-image) {
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.comment_goods_line {
+  margin-top: 10px;
+  color: #909399;
+  font-size: 13px;
 }
 
 .empty_state,
@@ -842,11 +876,6 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 1100px) {
-  .detail_grid,
-  .level_grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .detail_grid {
     grid-template-columns: 1fr;
   }
@@ -889,7 +918,6 @@ onBeforeUnmount(() => {
   }
 
   .thumb_list,
-  .level_grid,
   .config_items,
   .info_grid {
     grid-template-columns: 1fr;
@@ -903,6 +931,18 @@ onBeforeUnmount(() => {
 
   .comment_head {
     flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .comment_filter_panel {
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .comment_sort_btn {
+    margin-left: 0;
+    width: 100%;
+    justify-content: flex-start;
   }
 }
 </style>
