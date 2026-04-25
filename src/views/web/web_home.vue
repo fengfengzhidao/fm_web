@@ -647,6 +647,22 @@ onMounted(() => {
     font-size: 15px;
     font-weight: 700;
   }
+
+  :deep(.arco-link) {
+    color: #ff647c;
+    font-size: 12px;
+    font-weight: 600;
+    transition: color .18s ease, transform .18s ease;
+  }
+
+  :deep(.arco-link:hover) {
+    color: #ff5370;
+  }
+
+  :deep(.arco-link:active) {
+    color: #ef4f75;
+    transform: translateY(1px);
+  }
 }
 
 .panel_head.compact {
