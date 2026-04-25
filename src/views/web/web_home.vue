@@ -106,7 +106,7 @@ function couponExpireText(item: acceptableCouponType): string {
   return `${dayjs(item.createdAt).add(item.validity, "hour").format("YYYY-MM-DD HH:mm")} 到期`
 }
 
-const couponDisplayList = computed(() => couponList.value.slice(0, 4))
+const couponDisplayList = computed(() => couponList.value.slice(0, 2))
 const featuredGoods = computed(() => goodsList.value.slice(0, 10))
 const userDisplayName = computed(() => store.userInfo.nickName || store.userInfo.userName || "佩奇")
 const activeBanner = computed(() => bannerList.value[activeBannerIndex.value] || null)
