@@ -434,11 +434,6 @@ onMounted(() => {
         </section>
 
         <section class="feature_filter_surface">
-          <div class="feature_filter_head">
-            <strong>列表筛选</strong>
-            <span>{{ featureDescription }}</span>
-          </div>
-
           <div class="feature_tabs">
             <button
               v-for="item in featureTabs"
@@ -677,7 +672,7 @@ onMounted(() => {
 .feature_tabs {
   display: flex;
   align-items: center;
-  gap: 22px;
+  gap: 18px;
   flex-wrap: wrap;
 }
 
@@ -691,6 +686,7 @@ onMounted(() => {
   color: #6b7280;
   font-size: 12px;
   cursor: pointer;
+  white-space: nowrap;
 
   &.active {
     color: #ff647c;
@@ -704,31 +700,13 @@ onMounted(() => {
 }
 
 .feature_filter_surface {
-  margin-top: 16px;
-  padding: 16px 18px;
-  border-radius: 14px;
-  border: 1px solid #eceef2;
-  background: linear-gradient(180deg, #fffafb, #fff);
-}
-
-.feature_filter_head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 12px;
-
-  strong {
-    color: #111827;
-    font-size: 14px;
-    font-weight: 700;
-  }
-
-  span {
-    color: #9ca3af;
-    font-size: 12px;
-    line-height: 1.7;
-  }
+  margin-top: 14px;
+  padding: 10px 16px;
+  border-radius: 0;
+  border: 1px solid #ff7f93;
+  background: #fff;
+  display: inline-flex;
+  max-width: 100%;
 }
 
 .hero_coupon,
@@ -1074,11 +1052,6 @@ onMounted(() => {
   .hero_secondary {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     grid-template-rows: none;
-  }
-
-  .feature_filter_head {
-    align-items: flex-start;
-    flex-direction: column;
   }
 
   .goods_grid {
