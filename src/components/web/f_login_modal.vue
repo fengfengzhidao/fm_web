@@ -89,7 +89,11 @@ async function emailLogin() {
               </a-input>
             </a-form-item>
             <a-form-item class="code_row">
-              <a-input class="code_input" placeholder="验证码"/>
+              <a-input class="code_input" placeholder="验证码">
+                <template #prefix>
+                  <icon-safe/>
+                </template>
+              </a-input>
               <div class="code_img" @click="refreshCaptcha">
                 <span>{{ captchaText }}</span>
               </div>
@@ -173,7 +177,7 @@ async function emailLogin() {
     margin-top: 6px;
     color: var(--color-text-3);
     font-size: 12px;
-    text-align: left;
+    text-align: center;
   }
 
   :deep(.arco-form-item) {
@@ -190,6 +194,13 @@ async function emailLogin() {
     column-gap: 12px;
     align-items: center;
     margin-top: 2px;
+
+    :deep(.arco-form-item-content) {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 96px;
+      column-gap: 12px;
+      align-items: center;
+    }
   }
 
   .code_input {
@@ -199,6 +210,7 @@ async function emailLogin() {
   .code_img {
     height: 36px;
     width: 100%;
+    justify-self: end;
     border: 1px solid rgba(255, 93, 114, .42);
     background:
       linear-gradient(135deg, rgba(255, 93, 114, .08), rgba(255, 255, 255, 1));
