@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, onMounted, ref} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import {useRouter} from "vue-router";
 import {Message} from "@arco-design/web-vue";
 import {
@@ -175,10 +175,19 @@ const selectedCouponCount = computed(() => selectedCouponIDs.value.length)
 const isEmpty = computed(() => !cart.value.goodsList.length)
 
 onMounted(() => {
-  if (!store.isLogin) {
-    Message.warning("请先登录后查看购物车")
+  if (store.isLogin) {
+    loadCart()
   }
-  loadCart()
+})
+
+watch(() => store.isLogin, (isLogin) => {
+  if (isLogin) {
+    loadCart()
+    return
+  }
+  cart.value = createEmptyCart()
+  selectedIds.value = []
+  selectedCouponIDs.value = []
 })
 </script>
 
