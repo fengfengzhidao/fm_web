@@ -48,8 +48,10 @@ const roleText = computed(() => store.isAdmin ? "管理员" : "普通用户")
           <IconLocation v-else-if="item.icon === 'location'"/>
           <IconGift v-else/>
         </span>
-        <strong>{{ item.title }}</strong>
-        <span>{{ item.desc }}</span>
+        <div class="quick_text">
+          <strong class="quick_name">{{ item.title }}</strong>
+          <span class="quick_desc">{{ item.desc }}</span>
+        </div>
       </button>
     </div>
   </div>
@@ -119,6 +121,7 @@ const roleText = computed(() => store.isAdmin ? "管理员" : "普通用户")
 
 .quick_card {
   text-align: left;
+  appearance: none;
   padding: 18px;
   border-radius: 14px;
   border: 1px solid #eceef2;
@@ -129,27 +132,13 @@ const roleText = computed(() => store.isAdmin ? "管理员" : "普通用户")
   grid-template-columns: 44px minmax(0, 1fr);
   column-gap: 14px;
   align-items: center;
+  min-height: 108px;
+  line-height: 1;
 
   &:hover {
     border-color: #ffccd5;
     background: #fff4f6;
     transform: translateY(-1px);
-  }
-
-  strong,
-  span {
-    display: block;
-  }
-
-  strong {
-    color: #111827;
-    font-size: 16px;
-  }
-
-  span:last-child {
-    margin-top: 6px;
-    font-size: 12px;
-    line-height: 1.7;
   }
 }
 
@@ -157,9 +146,10 @@ const roleText = computed(() => store.isAdmin ? "管理员" : "普通用户")
   width: 44px;
   height: 44px;
   border-radius: 14px;
-  display: grid;
-  place-items: center;
-  align-self: start;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
   flex-shrink: 0;
   background: linear-gradient(180deg, #fff8fa 0%, #fff 100%);
   border: 1px solid #ffe0e6;
@@ -173,8 +163,29 @@ const roleText = computed(() => store.isAdmin ? "管理员" : "普通用户")
   }
 }
 
-.quick_card :is(strong, span:last-child) {
-  grid-column: 2;
+.quick_text {
+  min-width: 0;
+  min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+}
+
+.quick_name,
+.quick_desc {
+  display: block;
+}
+
+.quick_name {
+  color: #111827;
+  font-size: 16px;
+}
+
+.quick_desc {
+  color: #6b7280;
+  font-size: 12px;
+  line-height: 1.7;
 }
 
 @media (max-width: 768px) {
