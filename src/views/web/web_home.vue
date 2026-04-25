@@ -838,7 +838,7 @@ onMounted(() => {
 .feature_tabs {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 24px;
   flex-wrap: wrap;
 }
 
@@ -847,29 +847,28 @@ onMounted(() => {
   background: transparent;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 7px;
   padding: 0;
   color: #6b7280;
-  font-size: 12px;
+  font-size: 15px;
   cursor: pointer;
   white-space: nowrap;
 
   &.active {
     color: #ff647c;
-    font-weight: 600;
+    font-weight: 700;
   }
 }
 
 .feature_icon {
-  font-size: 14px;
+  font-size: 16px;
   color: #ff647c;
 }
 
 .feature_filter_surface {
   margin-bottom: 16px;
-  padding: 10px 16px;
+  padding: 10px 0;
   border-radius: 0;
-  border: 1px solid #ff7f93;
   background: #fff;
   display: inline-flex;
   max-width: 100%;
