@@ -6,6 +6,8 @@ import {
   IconCheckCircle,
   IconDelete,
   IconHeart,
+  IconMinus,
+  IconPlus,
   IconSafe,
   IconStorage
 } from "@arco-design/web-vue/es/icon";
@@ -88,6 +90,14 @@ async function updateNum(item: carGoodsInfoType, num: number) {
   }
   Message.success("数量已更新")
   await loadCart(selectedIds.value)
+}
+
+function decreaseNum(item: carGoodsInfoType) {
+  updateNum(item, item.num - 1)
+}
+
+function increaseNum(item: carGoodsInfoType) {
+  updateNum(item, item.num + 1)
 }
 
 async function removeItem(item: carGoodsInfoType) {
@@ -258,7 +268,15 @@ watch(() => store.isLogin, (isLogin) => {
                 </div>
 
                 <div class="item_actions">
-                  <a-input-number :model-value="item.num" :min="1" @change="(value) => updateNum(item, Number(value || 1))"/>
+                  <div class="qty_stepper">
+                    <button type="button" class="qty_btn" @click="decreaseNum(item)">
+                      <IconMinus/>
+                    </button>
+                    <span class="qty_value">{{ item.num }}</span>
+                    <button type="button" class="qty_btn" @click="increaseNum(item)">
+                      <IconPlus/>
+                    </button>
+                  </div>
                   <div class="action_buttons">
                     <a-button @click="collectItem(item)">收藏</a-button>
                     <a-popconfirm content="确定删除该商品吗？" @ok="removeItem(item)">
@@ -543,6 +561,32 @@ watch(() => store.isLogin, (isLogin) => {
   justify-items: end;
 }
 
+.qty_stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qty_btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  border: 1px solid #d8dce3;
+  background: #fff;
+  color: #7b8088;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.qty_value {
+  min-width: 24px;
+  color: #444;
+  font-size: 15px;
+  text-align: center;
+}
+
 .action_buttons {
   display: flex;
   gap: 8px;
@@ -756,10 +800,6 @@ watch(() => store.isLogin, (isLogin) => {
   .action_buttons {
     justify-items: stretch;
     justify-content: flex-start;
-  }
-
-  .item_actions :deep(.arco-input-number) {
-    width: 100%;
   }
 }
 
