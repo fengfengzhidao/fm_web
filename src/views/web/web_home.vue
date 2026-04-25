@@ -9,7 +9,6 @@ import {
   IconArrowRight,
   IconFire,
   IconHeart,
-  IconLocation,
   IconMessage,
   IconStar,
   IconStorage,
@@ -119,7 +118,7 @@ function couponExpireText(item: acceptableCouponType): string {
   return `${dayjs(item.createdAt).add(item.validity, "hour").format("YYYY-MM-DD HH:mm")} 到期`
 }
 
-const couponSlots = computed(() => Array.from({length: 4}, (_, index) => couponList.value[index] || null))
+const couponDisplayList = computed(() => couponList.value.slice(0, 4))
 const featuredGoods = computed(() => goodsList.value.slice(0, 10))
 const userDisplayName = computed(() => store.userInfo.nickName || store.userInfo.userName || "佩奇")
 const activeBanner = computed(() => bannerList.value[activeBannerIndex.value] || null)
@@ -483,47 +482,31 @@ onMounted(() => {
             </div>
 
             <a-spin :loading="couponLoading" tip="加载中...">
-              <div class="coupon_compact_grid">
+              <div v-if="couponDisplayList.length" class="coupon_compact_grid">
                 <article
-                  v-for="(item, index) in couponSlots"
-                  :key="item?.id ?? `coupon-placeholder-${index}`"
+                  v-for="item in couponDisplayList"
+                  :key="item.id"
                   class="coupon_compact_card"
-                  :class="{placeholder: !item}"
                 >
-                  <template v-if="item">
-                    <div class="coupon_value_wrap">
-                      <div class="coupon_symbol">￥</div>
-                      <div class="coupon_value">{{ formatPrice(item.couponPrice) }}</div>
-                    </div>
-                    <div class="coupon_meta">
-                      <div class="coupon_name">{{ item.title || couponTypeText(item.type) }}</div>
-                      <div class="coupon_deadline">{{ couponExpireText(item) }}</div>
-                      <div class="coupon_tip">满 {{ formatPrice(item.threshold) }} 可用</div>
-                    </div>
-                    <a-button
-                      class="coupon_btn"
-                      :disabled="item.isReceive"
-                      @click="receiveCoupon(item)"
-                    >
-                      {{ item.isReceive ? "已领取" : "领取" }}
-                    </a-button>
-                  </template>
-                  <template v-else>
-                    <div class="coupon_value_wrap">
-                      <div class="coupon_symbol">￥</div>
-                      <div class="coupon_value placeholder_value">1</div>
-                    </div>
-                    <div class="coupon_meta">
-                      <div class="coupon_name">无门槛优惠券</div>
-                      <div class="coupon_deadline">持续更新中</div>
-                      <div class="coupon_tip">全场通用</div>
-                    </div>
-                    <a-button class="coupon_btn placeholder_btn" @click="router.push({name: 'web_user_center_coupon'})">
-                      查看
-                    </a-button>
-                  </template>
+                  <div class="coupon_value_wrap">
+                    <div class="coupon_symbol">￥</div>
+                    <div class="coupon_value">{{ formatPrice(item.couponPrice) }}</div>
+                  </div>
+                  <div class="coupon_meta">
+                    <div class="coupon_name">{{ item.title || couponTypeText(item.type) }}</div>
+                    <div class="coupon_deadline">{{ couponExpireText(item) }}</div>
+                    <div class="coupon_tip">满 {{ formatPrice(item.threshold) }} 可用</div>
+                  </div>
+                  <a-button
+                    class="coupon_btn"
+                    :disabled="item.isReceive"
+                    @click="receiveCoupon(item)"
+                  >
+                    {{ item.isReceive ? "已领取" : "领取" }}
+                  </a-button>
                 </article>
               </div>
+              <a-empty v-else description="暂无可领取优惠券"/>
             </a-spin>
           </div>
 
@@ -582,11 +565,6 @@ onMounted(() => {
                 <IconStorage/>
                 <span>购物车</span>
               </button>
-            </div>
-
-            <div class="user_address">
-              <IconLocation/>
-              <span>收货地址</span>
             </div>
           </aside>
         </section>
@@ -755,7 +733,7 @@ onMounted(() => {
 .hero_section {
   margin-top: 28px;
   display: grid;
-  grid-template-columns: 560px minmax(280px, 1fr) minmax(240px, .9fr);
+  grid-template-columns: 520px 360px minmax(252px, 1fr);
   gap: 12px;
   align-items: stretch;
 }
@@ -767,7 +745,7 @@ onMounted(() => {
 }
 
 .hero_main {
-  width: 560px;
+  width: 520px;
 }
 
 .hero_banner_surface,
@@ -779,7 +757,7 @@ onMounted(() => {
 }
 
 .hero_banner_surface {
-  width: 560px;
+  width: 520px;
   height: 300px;
   padding: 14px;
   background: linear-gradient(180deg, #fff8fa, #ffffff 62%);
@@ -1029,10 +1007,6 @@ onMounted(() => {
   font-weight: 700;
 }
 
-.placeholder_value {
-  opacity: .65;
-}
-
 .coupon_meta {
   grid-area: meta;
   min-width: 0;
@@ -1063,15 +1037,9 @@ onMounted(() => {
   font-size: 11px;
 }
 
-.placeholder_btn {
-  color: #ff6076;
-  background: #fff;
-  border: 1px solid #ffc6d0;
-}
-
 .hero_user {
   display: grid;
-  grid-template-rows: auto auto auto auto;
+  grid-template-rows: auto auto auto;
   gap: 14px;
 }
 
@@ -1159,14 +1127,6 @@ onMounted(() => {
       font-size: 11px;
     }
   }
-}
-
-.user_address {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: #6b7280;
-  font-size: 12px;
 }
 
 .goods_section {
