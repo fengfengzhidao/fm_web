@@ -116,19 +116,21 @@ function openNav(name: string) {
 
   .brand_text {
     display: grid;
-    gap: 2px;
+    gap: 6px;
 
     strong {
-      font-size: 17px;
-      line-height: 1.1;
+      font-size: 22px;
+      line-height: 1;
       font-weight: 700;
-      color: #111827;
+      color: #ff667d;
+      letter-spacing: .02em;
     }
 
     span {
-      color: var(--color-text-3);
+      color: #ff8b9b;
       font-size: 12px;
       line-height: 1;
+      letter-spacing: .18em;
     }
   }
 
