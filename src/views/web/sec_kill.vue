@@ -437,18 +437,21 @@ onMounted(loadDateList)
 .page_shell {
   width: min(1180px, calc(100% - 48px));
   margin: 0 auto;
-  padding: 26px 0 36px;
+  padding: 70px 0 36px;
 }
 
 .hero_surface,
 .panel_surface {
   border-radius: 18px;
-  background: #fff;
-  box-shadow: 0 20px 45px rgba(17, 24, 39, .05);
 }
 
 .hero_surface {
   padding: 24px 22px 22px;
+}
+
+.panel_surface {
+  background: #fff;
+  box-shadow: 0 20px 45px rgba(17, 24, 39, .05);
 }
 
 .hero_section {
