@@ -30,12 +30,6 @@ interface FeatureTab {
   category?: string
 }
 
-interface QuickEntry {
-  title: string
-  desc?: string
-  key: string
-}
-
 const router = useRouter()
 const store = userStorei()
 const searchKeyword = ref("")
@@ -86,21 +80,6 @@ const categoryIcons: Array<FeatureTab["icon"]> = [
   "apps",
   "storage",
 ]
-
-const quickEntries = computed<QuickEntry[]>(() => [
-  {
-    title: "购物车",
-    desc: userSummary.value.carNum > 0 ? String(userSummary.value.carNum) : undefined,
-    key: "cart",
-  },
-  {
-    title: "消息通知",
-    desc: userSummary.value.msgNum > 0 ? String(userSummary.value.msgNum) : undefined,
-    key: "message",
-  },
-  {title: "我的收藏", key: "collect"},
-  {title: "我的地址", key: "addr"},
-])
 
 function formatPrice(price?: number | null): string {
   if (price === null || price === undefined) {
@@ -348,16 +327,6 @@ function goGoodsDetail(id: number) {
   })
 }
 
-function openQuickEntry(key: string) {
-  const routeMap: Record<string, () => void> = {
-    cart: () => router.push({name: "web_cart"}),
-    message: () => router.push({name: "web_user_center_msg"}),
-    collect: () => router.push({name: "web_user_center_collect"}),
-    addr: () => router.push({name: "web_user_center_addr"}),
-  }
-  routeMap[key]?.()
-}
-
 function openUserShortcut(type: "collect" | "look" | "cart") {
   if (type === "collect") {
     router.push({name: "web_user_center_collect"})
@@ -416,19 +385,6 @@ onMounted(() => {
               @press-enter="handleSearch()"
             />
             <a-button type="primary" @click="handleSearch()">搜索</a-button>
-          </div>
-
-          <div class="header_quick_links">
-            <button
-              v-for="item in quickEntries"
-              :key="item.key"
-              class="quick_link"
-              type="button"
-              @click="openQuickEntry(item.key)"
-            >
-              <span>{{ item.title }}</span>
-              <em v-if="item.desc" class="quick_badge">{{ item.desc }}</em>
-            </button>
           </div>
         </header>
 
@@ -654,7 +610,7 @@ onMounted(() => {
 
 .home_header {
   display: grid;
-  grid-template-columns: 162px minmax(0, 1fr) auto;
+  grid-template-columns: 162px minmax(0, 1fr);
   gap: 20px;
   align-items: center;
 }
@@ -709,40 +665,6 @@ onMounted(() => {
     font-weight: 600;
     background: linear-gradient(135deg, #ff7a8f, #ff627a);
   }
-}
-
-.header_quick_links {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-}
-
-.quick_link {
-  border: 0;
-  background: transparent;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 0;
-  color: #4b5563;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.quick_badge {
-  min-width: 16px;
-  height: 16px;
-  padding: 0 4px;
-  border-radius: 999px;
-  display: inline-grid;
-  place-items: center;
-  color: #fff;
-  background: #ff6b7f;
-  font-style: normal;
-  font-size: 11px;
-  font-weight: 600;
 }
 
 .hero_section {
@@ -1248,11 +1170,6 @@ onMounted(() => {
 
   .home_header {
     grid-template-columns: 1fr;
-  }
-
-  .header_quick_links {
-    flex-wrap: wrap;
-    gap: 12px 16px;
   }
 
   .hero_banner_surface {

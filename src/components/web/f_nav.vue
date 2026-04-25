@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, ref} from "vue";
+import {slogan, enSlogan} from "@/conf/global";
 import {useRoute, useRouter} from "vue-router";
 
 const route = useRoute()
@@ -64,6 +65,13 @@ function openNav(name: string) {
 <template>
   <div class="f_nav" :class="{isShow}">
     <div class="container">
+      <router-link class="brand" to="/">
+        <div class="brand_text">
+          <strong>{{ slogan }}</strong>
+          <span>{{ enSlogan }}</span>
+        </div>
+      </router-link>
+
       <nav class="nav_links">
         <button
           v-for="item in navItems"
@@ -97,6 +105,31 @@ function openNav(name: string) {
     width: min(1180px, calc(100% - 48px));
     display: flex;
     align-items: center;
+    gap: 20px;
+  }
+
+  .brand {
+    text-decoration: none;
+    color: inherit;
+    flex: 0 0 auto;
+  }
+
+  .brand_text {
+    display: grid;
+    gap: 2px;
+
+    strong {
+      font-size: 17px;
+      line-height: 1.1;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    span {
+      color: var(--color-text-3);
+      font-size: 12px;
+      line-height: 1;
+    }
   }
 
   .nav_links {
@@ -158,6 +191,10 @@ function openNav(name: string) {
     .container {
       width: calc(100% - 16px);
       gap: 12px;
+    }
+
+    .brand {
+      display: none;
     }
 
     .nav_links {

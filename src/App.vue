@@ -38,12 +38,12 @@ if (ico) {
 
 <style lang="less">
 .router_shell.web_content {
-  padding-top: 72px;
+  padding-top: 54px;
 }
 
 @media (max-width: 768px) {
   .router_shell.web_content {
-    padding-top: 66px;
+    padding-top: 46px;
   }
 }
 
