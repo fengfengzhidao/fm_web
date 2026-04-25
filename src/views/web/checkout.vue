@@ -290,7 +290,7 @@ onMounted(loadData)
 }
 
 .hero_surface {
-  padding: 24px 22px 22px;
+  padding: 0;
 }
 
 .checkout_surface {
@@ -383,7 +383,7 @@ onMounted(loadData)
 
 .checkout_surface {
   margin-top: 18px;
-  padding: 18px;
+  padding: 0;
 }
 
 .checkout_grid {
@@ -597,13 +597,13 @@ onMounted(loadData)
   }
 
   .hero_surface {
-    padding: 16px 12px 14px;
+    padding: 0;
   }
 
   .checkout_surface,
   .panel {
-    padding-left: 12px;
-    padding-right: 12px;
+    padding-left: 0;
+    padding-right: 0;
   }
 
   .hero_copy h1,

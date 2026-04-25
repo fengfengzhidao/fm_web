@@ -446,7 +446,7 @@ onMounted(loadDateList)
 }
 
 .hero_surface {
-  padding: 24px 22px 22px;
+  padding: 0;
 }
 
 .panel_surface {
@@ -548,7 +548,7 @@ onMounted(loadDateList)
 
 .panel_surface {
   margin-top: 18px;
-  padding: 18px;
+  padding: 0;
 }
 
 .panel_head {
@@ -871,11 +871,11 @@ onMounted(loadDateList)
   }
 
   .hero_surface {
-    padding: 16px 12px 14px;
+    padding: 0;
   }
 
   .panel_surface {
-    padding: 14px 12px;
+    padding: 0;
   }
 
   .panel_title,

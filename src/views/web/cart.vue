@@ -334,7 +334,7 @@ onMounted(() => {
 }
 
 .hero_surface {
-  padding: 24px 22px 22px;
+  padding: 0;
 }
 
 .cart_surface {
@@ -427,7 +427,7 @@ onMounted(() => {
 
 .cart_surface {
   margin-top: 18px;
-  padding: 18px;
+  padding: 0;
 }
 
 .cart_grid {
@@ -728,14 +728,14 @@ onMounted(() => {
   }
 
   .hero_surface {
-    padding: 16px 12px 14px;
+    padding: 0;
   }
 
   .cart_surface,
   .goods_panel,
   .summary_panel {
-    padding-left: 12px;
-    padding-right: 12px;
+    padding-left: 0;
+    padding-right: 0;
   }
 
   .hero_copy h1,

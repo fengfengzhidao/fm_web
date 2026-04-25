@@ -208,7 +208,7 @@ onMounted(() => {
 }
 
 .search_surface {
-  padding: 24px 22px 18px;
+  padding: 0;
 }
 
 .result_surface {
@@ -354,7 +354,7 @@ onMounted(() => {
 
 .result_surface {
   margin-top: 18px;
-  padding: 18px;
+  padding: 0;
 }
 
 .result_head {
@@ -494,13 +494,13 @@ onMounted(() => {
   }
 
   .search_surface {
-    padding: 16px 12px 14px;
+    padding: 0;
   }
 
   .search_panel,
   .result_surface {
-    padding-left: 12px;
-    padding-right: 12px;
+    padding-left: 0;
+    padding-right: 0;
   }
 
   .brand_title,

@@ -442,7 +442,7 @@ onBeforeUnmount(() => {
 }
 
 .hero_surface {
-  padding: 24px 22px 22px;
+  padding: 0;
 }
 
 .comment_surface {
@@ -685,7 +685,7 @@ onBeforeUnmount(() => {
 
 .comment_surface {
   margin-top: 18px;
-  padding: 18px;
+  padding: 0;
 }
 
 .section_head {
@@ -871,14 +871,14 @@ onBeforeUnmount(() => {
   }
 
   .hero_surface {
-    padding: 16px 12px 14px;
+    padding: 0;
   }
 
   .comment_surface,
   .gallery_panel,
   .summary_panel {
-    padding-left: 12px;
-    padding-right: 12px;
+    padding-left: 0;
+    padding-right: 0;
   }
 
   .summary_panel h1,

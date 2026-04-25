@@ -113,7 +113,7 @@ function go(name: string) {
 }
 
 .hero_surface {
-  padding: 24px 22px 22px;
+  padding: 0;
 }
 
 .center_surface {
@@ -184,7 +184,7 @@ function go(name: string) {
 
 .center_surface {
   margin-top: 18px;
-  padding: 18px;
+  padding: 0;
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr);
   gap: 16px;
@@ -320,8 +320,8 @@ function go(name: string) {
   .center_surface,
   .side_panel,
   .content_panel {
-    padding-left: 12px;
-    padding-right: 12px;
+    padding-left: 0;
+    padding-right: 0;
   }
 
   .hero_meta h1,
