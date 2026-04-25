@@ -31,10 +31,26 @@ export const usePublicAxios = axios.create({
     baseURL: "",
 })
 
-useAxios.interceptors.request.use((config) => {
+function attachToken(config: any) {
     const userStore = userStorei()
-    config.headers.set("token", userStore.userInfo.token)
+    const token = userStore.userInfo.token || ""
+    if (!config.headers) {
+        config.headers = {}
+    }
+    if (typeof config.headers.set === "function") {
+        config.headers.set("token", token)
+    } else {
+        config.headers.token = token
+    }
     return config
+}
+
+useAxios.interceptors.request.use((config) => {
+    return attachToken(config)
+})
+
+usePublicAxios.interceptors.request.use((config) => {
+    return attachToken(config)
 })
 
 useAxios.interceptors.response.use((res) => {
