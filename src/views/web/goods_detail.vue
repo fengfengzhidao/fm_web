@@ -613,7 +613,7 @@ onBeforeUnmount(() => {
 .config_items {
   margin-top: 12px;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(112px, 112px));
   gap: 12px;
 }
 
@@ -625,16 +625,21 @@ onBeforeUnmount(() => {
 
   img {
     width: 100%;
-    aspect-ratio: 1;
+    height: 96px;
     object-fit: cover;
     display: block;
   }
 
   span {
     display: block;
-    padding: 10px 12px;
+    padding: 8px 10px 10px;
     color: #4b5563;
     font-size: 12px;
+    line-height: 1.4;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 

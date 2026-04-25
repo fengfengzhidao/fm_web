@@ -41,6 +41,9 @@ const saving = ref(false)
 const cropperVisible = ref(false)
 const cropperLoading = ref(false)
 const cropperImageSrc = ref("")
+const cropperTitle = ref("裁剪商品主图")
+const cropperTip = ref("请按 16:9 裁剪主图，前后台所有商品封面都会按这个比例展示。")
+const cropperAspectRatio = ref(16 / 9)
 const editorCardHeight = ref("auto")
 const isEdit = computed(() => route.name === "goodsEdit")
 const editorTheme = computed(() => appTheme.value === "dark" ? "dark" : "light")
@@ -49,11 +52,12 @@ const pageDesc = computed(() => isEdit.value ? "修改商品基础信息、Markd
 
 let pendingMainUpload:
   | {
-    file: File
-    target: {type: "main"; index: number}
-    option: RequestOption
-    aborted: boolean
-  }
+      file: File
+      target: {type: "main"; index: number} | {type: "sub"; groupIndex: number; subIndex: number}
+      option: RequestOption
+      aborted: boolean
+      mode: "main" | "sub"
+    }
   | null = null
 
 function createEmptySub(): goodsSubConfigType {
@@ -169,6 +173,28 @@ function uploadImageFile(
 }
 
 function openMainImageCropper(file: File, target: {type: "main"; index: number}, option: RequestOption) {
+  openCropper(file, target, option, "main")
+}
+
+function openSubImageCropper(
+  file: File,
+  target: {type: "sub"; groupIndex: number; subIndex: number},
+  option: RequestOption
+) {
+  openCropper(file, target, option, "sub")
+}
+
+function openCropper(
+  file: File,
+  target: {type: "main"; index: number} | {type: "sub"; groupIndex: number; subIndex: number},
+  option: RequestOption,
+  mode: "main" | "sub"
+) {
+  cropperTitle.value = mode === "main" ? "裁剪商品主图" : "裁剪高级配置图片"
+  cropperTip.value = mode === "main"
+    ? "请按 16:9 裁剪主图，前后台所有商品封面都会按这个比例展示。"
+    : "请按 1:1 裁剪高级配置图片，商品详情页会按正方形小图展示。"
+  cropperAspectRatio.value = mode === "main" ? 16 / 9 : 1
   const reader = new FileReader()
   reader.onload = () => {
     cropperImageSrc.value = typeof reader.result === "string" ? reader.result : ""
@@ -177,6 +203,7 @@ function openMainImageCropper(file: File, target: {type: "main"; index: number},
       target,
       option,
       aborted: false,
+      mode,
     }
     cropperVisible.value = true
   }
@@ -201,7 +228,33 @@ function createMainImageUploadRequest(target: {type: "main"; index: number}) {
 
     return {
       abort() {
-        if (pendingMainUpload?.target.index === target.index) {
+        if (pendingMainUpload?.target.type === "main" && pendingMainUpload.target.index === target.index) {
+          pendingMainUpload.aborted = true
+        }
+      },
+    }
+  }
+}
+
+function createSubImageUploadRequest(target: {type: "sub"; groupIndex: number; subIndex: number}) {
+  return (option: RequestOption): UploadRequest => {
+    const file = option.fileItem.file
+    if (!file) {
+      const msg = "请选择图片文件"
+      Message.error(msg)
+      option.onError(msg)
+      return {}
+    }
+
+    openSubImageCropper(file, target, option)
+
+    return {
+      abort() {
+        if (
+          pendingMainUpload?.target.type === "sub"
+          && pendingMainUpload.target.groupIndex === target.groupIndex
+          && pendingMainUpload.target.subIndex === target.subIndex
+        ) {
           pendingMainUpload.aborted = true
         }
       },
@@ -253,27 +306,6 @@ function cancelMainImageCrop() {
   cropperLoading.value = false
   cropperImageSrc.value = ""
   pendingMainUpload = null
-}
-
-function createImageUploadRequest(target: {type: "main"; index: number} | {type: "sub"; groupIndex: number; subIndex: number}) {
-  return (option: RequestOption): UploadRequest => {
-    const file = option.fileItem.file
-    if (!file) {
-      const msg = "请选择图片文件"
-      Message.error(msg)
-      option.onError(msg)
-      return {}
-    }
-
-    let aborted = false
-    uploadImageFile(file, target, option, () => aborted)
-
-    return {
-      abort() {
-        aborted = true
-      },
-    }
-  }
 }
 
 function syncEditorHeight() {
@@ -576,7 +608,7 @@ function backToList() {
                         class="sub_image_upload"
                         :show-file-list="false"
                         accept="image/png,image/jpeg,image/webp"
-                        :custom-request="createImageUploadRequest({type: 'sub', groupIndex, subIndex})"
+                        :custom-request="createSubImageUploadRequest({type: 'sub', groupIndex, subIndex})"
                       >
                         <template #upload-button>
                           <div class="image_preview upload_trigger sub_preview">
@@ -626,21 +658,21 @@ function backToList() {
 
     <a-modal
       v-model:visible="cropperVisible"
-      title="裁剪商品主图"
+      :title="cropperTitle"
       :width="920"
       :mask-closable="false"
       :on-before-ok="confirmMainImageCrop"
       @cancel="cancelMainImageCrop"
     >
       <div class="cropper_modal">
-        <div class="cropper_tip">请按 16:9 裁剪主图，前后台所有商品封面都会按这个比例展示。</div>
+        <div class="cropper_tip">{{ cropperTip }}</div>
         <Cropper
           v-if="cropperImageSrc"
           ref="cropperRef"
           class="main_image_cropper"
           :src="cropperImageSrc"
           image-restriction="stencil"
-          :stencil-props="{aspectRatio: 16 / 9}"
+          :stencil-props="{aspectRatio: cropperAspectRatio}"
         />
       </div>
     </a-modal>
