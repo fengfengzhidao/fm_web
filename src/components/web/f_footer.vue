@@ -24,9 +24,10 @@ const store = userStorei()
 
 <style lang="less">
 .f_footer {
-  background-color: #fff;
+  background:
+    linear-gradient(180deg, rgba(255, 249, 250, .96), rgba(255, 255, 255, .98));
   padding: 30px 16px 26px;
-  border-top: 1px solid var(--color-border-2);
+  border-top: 1px solid rgba(255, 217, 224, .82);
 
   .footer_inner {
     width: min(1240px, 100%);
@@ -35,27 +36,39 @@ const store = userStorei()
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding: 20px 22px;
+    border-radius: 20px;
+    border: 1px solid #f8dfe4;
+    background: rgba(255, 255, 255, .9);
+    box-shadow: 0 14px 34px rgba(255, 107, 127, .05);
 
     .brand {
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--color-text-1);
+      font-size: 26px;
+      line-height: 1.05;
+      font-weight: 800;
+      color: #ff667d;
     }
 
-      .links {
-        display: flex;
-        gap: 24px;
+    .links {
+      display: flex;
+      gap: 24px;
 
-        a,
-        .login_button {
-          color: var(--color-text-2);
-          text-decoration: none;
-          border: 0;
-          background: transparent;
-          padding: 0;
-          cursor: pointer;
-        }
+      a,
+      .login_button {
+        color: #6b7280;
+        text-decoration: none;
+        border: 0;
+        background: transparent;
+        padding: 0;
+        cursor: pointer;
+        transition: color .18s ease;
       }
+
+      a:hover,
+      .login_button:hover {
+        color: #ff647c;
+      }
+    }
   }
 
   .f_beian {
@@ -66,8 +79,12 @@ const store = userStorei()
 
     a {
       margin-left: 10px;
-      color: var(--color-text-2);
+      color: #9ca3af;
       text-decoration: none;
+
+      &:hover {
+        color: #ff647c;
+      }
     }
   }
 }

@@ -80,9 +80,9 @@ onUnmounted(() => {
   display: flex;
   justify-content: center;
   color: var(--color-text-1);
-  background: rgba(255, 255, 255, .96);
-  border-bottom: 1px solid rgba(226, 232, 240, .8);
-  box-shadow: 0 4px 16px rgba(15, 23, 42, .03);
+  background: rgba(255, 255, 255, .97);
+  border-bottom: 1px solid rgba(255, 217, 224, .82);
+  box-shadow: 0 8px 24px rgba(255, 107, 127, .06);
 
   .container {
     width: min(1240px, 100%);
@@ -109,8 +109,8 @@ onUnmounted(() => {
     place-items: center;
     color: #fff;
     font-weight: 800;
-    background: linear-gradient(135deg, #1d4ed8, #60a5fa);
-    box-shadow: 0 10px 20px rgba(37, 99, 235, .22);
+    background: linear-gradient(135deg, #ff8fa3, #ff667d);
+    box-shadow: 0 10px 22px rgba(255, 103, 125, .24);
   }
 
   .brand_text {
@@ -145,14 +145,14 @@ onUnmounted(() => {
       transition: all .18s ease;
 
       &:hover {
-        color: #1d4ed8;
-        background: rgba(29, 78, 216, .08);
+        color: #ff647c;
+        background: rgba(255, 100, 124, .08);
       }
     }
 
     a.router-link-exact-active {
-      color: #1d4ed8 !important;
-      background: rgba(29, 78, 216, .1);
+      color: #ff647c !important;
+      background: rgba(255, 100, 124, .12);
       font-weight: 600;
     }
   }
@@ -178,6 +178,11 @@ onUnmounted(() => {
     text-decoration: none;
     font-size: 14px;
     cursor: pointer;
+    transition: color .18s ease;
+
+    &:hover {
+      color: #ff647c;
+    }
   }
 }
 
