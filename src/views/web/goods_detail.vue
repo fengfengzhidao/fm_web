@@ -2,8 +2,12 @@
 import {computed, onMounted, ref, watch} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {Message} from "@arco-design/web-vue";
-import F_nav from "@/components/web/f_nav.vue";
-import F_main from "@/components/web/f_main.vue";
+import {
+  IconCheckCircle,
+  IconGift,
+  IconHeart,
+  IconStar
+} from "@arco-design/web-vue/es/icon";
 import F_footer from "@/components/web/f_footer.vue";
 import {goodsDetailApi, type goodsDetailType} from "@/api/goods_api";
 import {commentLevelApi, goodsCommentListApi, type commentLevelType, type goodsCommentListParams, type goodsCommentType} from "@/api/comment_api";
@@ -34,6 +38,7 @@ const commentFilters = [
 ]
 
 const goodsID = computed(() => Number(route.params.id))
+const previewImages = computed(() => detail.value?.images || [])
 
 function formatPrice(price?: number | null): string {
   if (price === null || price === undefined) {
@@ -121,7 +126,7 @@ async function addToCart() {
   if (!detail.value) return
   if (!store.isLogin) {
     Message.warning("请先登录后再加入购物车")
-    router.push({name: "login", query: {redirect: `/goods/${detail.value.id}`}})
+    store.openLoginModal(`/goods/${detail.value.id}`)
     return
   }
 
@@ -158,26 +163,37 @@ onMounted(() => {
 
 <template>
   <div class="goods_detail_view">
-    <f_nav no-scroll/>
-    <f_main>
-      <section class="detail_shell">
-        <a-button class="back_btn" @click="router.back()">返回</a-button>
+    <div class="page_shell">
+      <section class="hero_surface">
+        <header class="hero_header">
+          <router-link class="brand_block" to="/">
+            <div class="brand_title">枫枫商城</div>
+            <div class="brand_subtitle">享受快人一步</div>
+          </router-link>
+
+          <div class="header_actions">
+            <button type="button" @click="router.back()">返回</button>
+            <button type="button" @click="router.push({name: 'web_search'})">搜索商品</button>
+            <button type="button" @click="goCart">购物车</button>
+          </div>
+        </header>
 
         <a-spin :loading="loading" tip="加载中...">
           <div v-if="detail" class="detail_grid">
             <div class="gallery_panel">
               <div class="main_cover">
-                <img :src="currentImage || detail.images?.[0]" :alt="detail.title"></img>
+                <img :src="currentImage || detail.images?.[0]" :alt="detail.title">
               </div>
+
               <div class="thumb_list">
                 <button
-                  v-for="(img, index) in detail.images || []"
+                  v-for="(img, index) in previewImages"
                   :key="img + index"
                   class="thumb_item"
                   :class="{active: currentImage === img}"
                   @click="currentImage = img"
                 >
-                  <img :src="img" :alt="detail.title"></img>
+                  <img :src="img" :alt="detail.title">
                 </button>
               </div>
             </div>
@@ -188,7 +204,7 @@ onMounted(() => {
               <p class="summary">{{ detail.abstract }}</p>
 
               <div class="price_box">
-                <div class="price">￥{{ formatPrice(detail.price) }}</div>
+                <div class="price">￥ {{ formatPrice(detail.price) }}</div>
                 <div class="meta_row">
                   <span>销量 {{ detail.salesNum }}</span>
                   <span>浏览 {{ detail.lookCount }}</span>
@@ -196,30 +212,38 @@ onMounted(() => {
                 </div>
               </div>
 
-              <div class="info_list">
-                <div>分类：{{ detail.category }}</div>
-                <div>库存：{{ detail.inventory === null || detail.inventory === undefined ? "不限库存" : detail.inventory }}</div>
-                <div>收藏：{{ detail.isCollect ? "已收藏" : "未收藏" }}</div>
-                <div>优惠：{{ detail.isGoodCoupon ? "可领取" : "暂无" }}</div>
+              <div class="info_grid">
+                <div class="info_card">
+                  <span>分类</span>
+                  <strong>{{ detail.category }}</strong>
+                </div>
+                <div class="info_card">
+                  <span>库存</span>
+                  <strong>{{ detail.inventory === null || detail.inventory === undefined ? "不限库存" : detail.inventory }}</strong>
+                </div>
+                <div class="info_card">
+                  <span>收藏</span>
+                  <strong>{{ detail.isCollect ? "已收藏" : "未收藏" }}</strong>
+                </div>
+                <div class="info_card">
+                  <span>优惠</span>
+                  <strong>{{ detail.isGoodCoupon ? "可领取" : "暂无" }}</strong>
+                </div>
               </div>
 
               <div v-if="detail.goodsDetailCoupon" class="coupon_box">
-                <div class="coupon_title">商品优惠券</div>
+                <div class="coupon_title"><IconGift/> 商品优惠券</div>
                 <div class="coupon_desc">
                   满 {{ formatPrice(detail.goodsDetailCoupon.threshold) }} 减 {{ formatPrice(detail.goodsDetailCoupon.couponPrice) }}
                 </div>
               </div>
 
               <div v-if="detail.goodsConfigList?.length" class="config_box">
-                <div
-                  class="config_group"
-                  v-for="group in detail.goodsConfigList"
-                  :key="group.title"
-                >
+                <div class="config_group" v-for="group in detail.goodsConfigList" :key="group.title">
                   <div class="config_title">{{ group.title }}</div>
                   <div class="config_items">
                     <div class="config_item" v-for="item in group.subList" :key="item.title">
-                      <img :src="item.image" :alt="item.title"></img>
+                      <img :src="item.image" :alt="item.title">
                       <span>{{ item.title }}</span>
                     </div>
                   </div>
@@ -231,17 +255,27 @@ onMounted(() => {
                 <a-button type="primary" size="large" :loading="adding" @click="addToCart">加入购物车</a-button>
                 <a-button size="large" @click="goCart">去购物车</a-button>
               </div>
+
+              <div class="buy_hint">
+                <span><IconCheckCircle/> 正品保障</span>
+                <span><IconHeart/> 支持加入购物车后统一结算</span>
+              </div>
             </div>
           </div>
-          <a-empty v-else description="未找到商品"/>
+
+          <div v-else class="empty_state">
+            <div class="empty_title">未找到商品</div>
+            <div class="empty_desc">商品可能已下架或不存在，返回首页继续浏览其它商品。</div>
+            <a-button type="primary" @click="router.push({name: 'web_home'})">返回首页</a-button>
+          </div>
         </a-spin>
       </section>
 
-      <section v-if="detail" class="comment_shell">
+      <section v-if="detail" class="comment_surface">
         <div class="section_head">
           <div>
-            <h2>评论概览</h2>
-            <span>和原型保持同样的信息节奏，先展示摘要和少量评论。</span>
+            <div class="section_title">评论概览</div>
+            <div class="section_desc">保留评论摘要和筛选结构，把信息密度收得更接近前台主视觉节奏。</div>
           </div>
         </div>
 
@@ -274,7 +308,8 @@ onMounted(() => {
             :key="item.key"
             class="comment_filter"
             :class="{active: commentFilter === item.key}"
-            @click="changeCommentFilter(item.key)">
+            @click="changeCommentFilter(item.key)"
+          >
             {{ item.label }}
           </button>
         </div>
@@ -289,57 +324,111 @@ onMounted(() => {
                   <span>{{ dateTimeFormat(item.createdAt) }}</span>
                 </div>
                 <div class="comment_content">{{ item.content }}</div>
-                <div class="comment_meta">满意度 {{ item.level }} 星</div>
+                <div class="comment_meta">
+                  <IconStar/>
+                  <span>满意度 {{ item.level }} 星</span>
+                </div>
               </div>
             </article>
           </div>
-          <a-empty v-else description="暂无评论"/>
+          <div v-else class="empty_card large">暂无评论</div>
         </a-spin>
       </section>
-    </f_main>
+    </div>
     <f_footer/>
   </div>
 </template>
 
 <style scoped lang="less">
 .goods_detail_view {
+  min-height: 100vh;
   color: var(--color-text-1);
+  background:
+    linear-gradient(180deg, #f5f5f6 0, #f5f5f6 540px, #f2f3f5 540px, #f2f3f5 100%);
 }
 
-.detail_shell,
-.comment_shell {
-  margin: 20px max(16px, calc((100% - 1240px) / 2));
-  padding: 18px 18px 20px;
-  border-radius: 8px;
+.page_shell {
+  width: min(1180px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 26px 0 36px;
+}
+
+.hero_surface,
+.comment_surface {
+  border-radius: 18px;
   background: #fff;
-  border: 1px solid rgba(226, 232, 240, .95);
-  box-shadow: 0 6px 18px rgba(15, 23, 42, .03);
+  box-shadow: 0 20px 45px rgba(17, 24, 39, .05);
 }
 
-.detail_shell {
-  margin-top: 20px;
+.hero_surface {
+  padding: 24px 22px 22px;
 }
 
-.back_btn {
-  margin-bottom: 16px;
+.hero_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.brand_block {
+  text-decoration: none;
+  color: inherit;
+}
+
+.brand_title {
+  font-size: 28px;
+  line-height: 1.05;
+  color: #ff667d;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+
+.brand_subtitle {
+  margin-top: 6px;
+  color: #ff8b9b;
+  font-size: 12px;
+  letter-spacing: .18em;
+}
+
+.header_actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+
+  button {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    color: #4b5563;
+    font-size: 12px;
+    cursor: pointer;
+  }
 }
 
 .detail_grid {
+  margin-top: 24px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, .98fr);
-  gap: 28px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, .96fr);
+  gap: 22px;
+}
+
+.gallery_panel,
+.summary_panel {
+  border-radius: 16px;
+  border: 1px solid #eceef2;
+  background: #fff;
 }
 
 .gallery_panel {
-  display: grid;
-  gap: 14px;
+  padding: 16px;
 }
 
 .main_cover {
   aspect-ratio: 1;
-  border-radius: 8px;
+  border-radius: 14px;
   overflow: hidden;
-  background: var(--color-fill-1);
+  background: #f7f8fa;
 
   img {
     width: 100%;
@@ -350,16 +439,16 @@ onMounted(() => {
 }
 
 .thumb_list {
+  margin-top: 12px;
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 10px;
-  align-items: start;
 }
 
 .thumb_item {
   padding: 0;
   border: 0;
-  border-radius: 14px;
+  border-radius: 12px;
   overflow: hidden;
   background: transparent;
   opacity: .72;
@@ -367,7 +456,7 @@ onMounted(() => {
 
   &.active {
     opacity: 1;
-    box-shadow: 0 0 0 2px rgba(255, 93, 114, .36);
+    box-shadow: 0 0 0 2px #ffccd5;
   }
 
   img {
@@ -379,39 +468,41 @@ onMounted(() => {
 }
 
 .summary_panel {
-  padding: 4px 0;
+  padding: 22px 20px;
 }
 
 .eyebrow {
-  color: #ff5d72;
+  color: #ff647c;
   font-size: 14px;
   font-weight: 700;
-  letter-spacing: .08em;
+  letter-spacing: .12em;
 }
 
 .summary_panel h1 {
-  margin: 12px 0 10px;
-  font-size: 28px;
-  line-height: 1.15;
+  margin: 10px 0;
+  font-size: 34px;
+  line-height: 1.2;
+  color: #111827;
 }
 
 .summary {
   margin: 0;
-  color: var(--color-text-2);
+  color: #6b7280;
+  font-size: 14px;
   line-height: 1.8;
 }
 
 .price_box {
-  margin-top: 20px;
+  margin-top: 18px;
   padding: 18px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, rgba(255, 93, 114, .1), rgba(255, 93, 114, .03));
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(255, 93, 114, .1), rgba(255, 93, 114, .04));
 }
 
 .price {
-  color: #e11d48;
-  font-size: 24px;
-  font-weight: 800;
+  color: #ff637a;
+  font-size: 30px;
+  font-weight: 700;
 }
 
 .meta_row {
@@ -419,32 +510,59 @@ onMounted(() => {
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
-  color: var(--color-text-2);
+  color: #6b7280;
+  font-size: 12px;
 }
 
-.info_list {
+.info_grid {
   margin-top: 18px;
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
-  color: var(--color-text-2);
+}
+
+.info_card {
+  padding: 14px;
+  border-radius: 14px;
+  background: #fafafb;
+  border: 1px solid #eceef2;
+
+  span {
+    display: block;
+    color: #9ca3af;
+    font-size: 12px;
+  }
+
+  strong {
+    display: block;
+    margin-top: 8px;
+    color: #111827;
+    font-size: 15px;
+  }
 }
 
 .coupon_box,
 .config_box {
   margin-top: 18px;
   padding: 16px;
-  border-radius: 8px;
-  background: var(--color-fill-1);
+  border-radius: 14px;
+  background: #fffafb;
+  border: 1px solid #f4d8df;
 }
 
 .coupon_title,
 .config_title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #111827;
   font-weight: 700;
-  margin-bottom: 10px;
 }
 
 .coupon_desc {
-  color: var(--color-text-2);
+  margin-top: 10px;
+  color: #6b7280;
+  font-size: 13px;
 }
 
 .config_group + .config_group {
@@ -452,15 +570,16 @@ onMounted(() => {
 }
 
 .config_items {
+  margin-top: 12px;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 
 .config_item {
-  border-radius: 8px;
-  background: var(--color-bg-1);
-  border: 1px solid var(--color-border-2);
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid #eceef2;
   overflow: hidden;
 
   img {
@@ -473,6 +592,8 @@ onMounted(() => {
   span {
     display: block;
     padding: 10px 12px;
+    color: #4b5563;
+    font-size: 12px;
   }
 }
 
@@ -484,29 +605,67 @@ onMounted(() => {
   align-items: center;
 }
 
-.section_head {
+.buy_hint {
+  margin-top: 14px;
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 20px;
-  margin-bottom: 22px;
-
-  h2 {
-    margin: 0;
-    font-size: 30px;
-  }
+  flex-wrap: wrap;
+  gap: 14px;
+  color: #6b7280;
+  font-size: 12px;
 
   span {
-    display: block;
-    margin-top: 8px;
-    color: var(--color-text-2);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
   }
+}
+
+.comment_surface {
+  margin-top: 18px;
+  padding: 18px;
+}
+
+.section_head {
+  margin-bottom: 14px;
+}
+
+.section_title {
+  color: #111827;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.section_desc {
+  margin-top: 8px;
+  color: #9ca3af;
+  font-size: 13px;
 }
 
 .level_grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 14px;
+  gap: 12px;
+}
+
+.level_card {
+  padding: 16px;
+  border-radius: 14px;
+  background: #fafafb;
+  text-align: center;
+
+  strong {
+    display: block;
+    font-size: 24px;
+    color: #ff637a;
+  }
+
+  span {
+    margin-top: 8px;
+    display: block;
+    color: #6b7280;
+    font-size: 12px;
+  }
 }
 
 .comment_filter_row {
@@ -517,41 +676,24 @@ onMounted(() => {
 }
 
 .comment_filter {
-  border: 1px solid var(--color-border-2);
-  background: var(--color-fill-1);
+  border: 1px solid #eceef2;
+  background: #fafafb;
   border-radius: 999px;
   padding: 8px 14px;
   cursor: pointer;
-  color: var(--color-text-2);
+  color: #6b7280;
+  font-size: 12px;
 
   &.active {
-    color: #e11d48;
-    border-color: rgba(225, 29, 72, .28);
-    background: rgba(255, 93, 114, .1);
-  }
-}
-
-.level_card {
-  padding: 16px;
-  border-radius: 8px;
-  background: var(--color-fill-1);
-  text-align: center;
-
-  strong {
-    display: block;
-    font-size: 22px;
-    color: #ff5d72;
-  }
-
-  span {
-    color: var(--color-text-2);
+    color: #ff637a;
+    border-color: #ffccd5;
+    background: #fff4f6;
   }
 }
 
 .comment_list {
-  margin-top: 22px;
   display: grid;
-  gap: 14px;
+  gap: 12px;
 }
 
 .comment_card {
@@ -559,8 +701,8 @@ onMounted(() => {
   grid-template-columns: auto 1fr;
   gap: 14px;
   padding: 16px;
-  border-radius: 8px;
-  border: 1px solid var(--color-border-2);
+  border-radius: 14px;
+  border: 1px solid #eceef2;
 }
 
 .comment_body {
@@ -571,17 +713,69 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  color: var(--color-text-2);
+
+  strong {
+    color: #111827;
+  }
+
+  span {
+    color: #9ca3af;
+    font-size: 12px;
+  }
 }
 
 .comment_content {
   margin-top: 10px;
-  line-height: 1.75;
+  color: #4b5563;
+  line-height: 1.8;
 }
 
 .comment_meta {
   margin-top: 8px;
-  color: #ff5d72;
+  color: #ff637a;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.empty_state,
+.empty_card {
+  border-radius: 14px;
+  border: 1px dashed #f0d7dd;
+  background: linear-gradient(180deg, #fffafb, #fff);
+  color: #9ca3af;
+  font-size: 13px;
+  line-height: 1.8;
+  text-align: center;
+}
+
+.empty_state {
+  margin-top: 24px;
+  min-height: 260px;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 10px;
+  padding: 28px;
+}
+
+.empty_card {
+  padding: 18px;
+
+  &.large {
+    margin-top: 12px;
+  }
+}
+
+.empty_title {
+  color: #111827;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.empty_desc {
+  max-width: 420px;
 }
 
 @media (max-width: 1100px) {
@@ -590,40 +784,65 @@ onMounted(() => {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .config_items {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 768px) {
-  .detail_shell,
-  .comment_shell {
-    margin-left: 16px;
-    margin-right: 16px;
-    padding: 20px;
-  }
-
-  .detail_shell {
-    margin-top: 76px;
-  }
-
   .detail_grid {
     grid-template-columns: 1fr;
   }
+}
 
-  .thumb_list,
-  .level_grid,
-  .config_items {
-    grid-template-columns: 1fr;
+@media (max-width: 900px) {
+  .page_shell {
+    width: calc(100% - 24px);
+    padding-top: 12px;
   }
 
-  .summary_panel h1 {
-    font-size: 30px;
+  .hero_surface,
+  .comment_surface {
+    border-radius: 14px;
   }
 
-  .section_head {
+  .hero_header {
     align-items: flex-start;
     flex-direction: column;
+  }
+}
+
+@media (max-width: 640px) {
+  .page_shell {
+    width: calc(100% - 16px);
+  }
+
+  .hero_surface {
+    padding: 16px 12px 14px;
+  }
+
+  .comment_surface,
+  .gallery_panel,
+  .summary_panel {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .brand_title,
+  .summary_panel h1,
+  .section_title,
+  .price,
+  .empty_title {
+    font-size: 24px;
+  }
+
+  .header_actions,
+  .hero_tags,
+  .thumb_list,
+  .level_grid,
+  .config_items,
+  .info_grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .thumb_list {
+    display: grid;
   }
 
   .comment_head {
