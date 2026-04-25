@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import {onMounted, onUnmounted, ref} from "vue";
+import {computed, onMounted, onUnmounted, ref} from "vue";
 import {slogan, enSlogan} from "@/conf/global";
 import F_theme from "@/components/common/f_theme.vue";
 import F_user_dropdown from "@/components/common/f_user_dropdown.vue";
 import {userStorei} from "@/stores/user_store";
+import {useRoute, useRouter} from "vue-router";
 
 const store = userStorei()
+const route = useRoute()
+const router = useRouter()
 
 interface Props {
   noScroll?: boolean
@@ -16,6 +19,30 @@ const props = defineProps<Props>()
 const {noScroll = false, scrollTop = 200} = props
 
 const isShow = ref(noScroll)
+
+const navItems = computed(() => [
+  {
+    label: "购物车",
+    name: "web_cart",
+    active: route.name === "web_cart",
+    icon: "cart",
+  },
+  {
+    label: "消息通知",
+    name: "web_user_center_msg",
+    active: route.name === "web_user_center_msg",
+  },
+  {
+    label: "我的收藏",
+    name: "web_user_center_collect",
+    active: route.name === "web_user_center_collect",
+  },
+  {
+    label: "个人中心",
+    name: "web_user_center_info",
+    active: typeof route.name === "string" && route.name.startsWith("web_user_center"),
+  },
+])
 
 function updateNavState() {
   if (noScroll) {
@@ -38,6 +65,10 @@ onUnmounted(() => {
     window.removeEventListener("scroll", updateNavState)
   }
 })
+
+function openNav(name: string) {
+  router.push({name})
+}
 </script>
 
 <template>
@@ -52,12 +83,17 @@ onUnmounted(() => {
       </router-link>
 
       <nav class="nav_links">
-        <router-link to="/">商城首页</router-link>
-        <router-link :to="{name: 'web_sec_kill'}">秒杀专区</router-link>
-        <a href="#categories">商品分类</a>
-        <a href="#featured">精选商品</a>
-        <router-link :to="{name: 'web_cart'}">购物车</router-link>
-        <router-link v-if="store.isLogin" :to="{name: 'web_user_center_info'}">个人中心</router-link>
+        <button
+          v-for="item in navItems"
+          :key="item.name"
+          type="button"
+          class="nav_link_btn"
+          :class="{active: item.active}"
+          @click="openNav(item.name)"
+        >
+          <span v-if="item.icon === 'cart'" class="nav_icon" aria-hidden="true">🛒</span>
+          <span>{{ item.label }}</span>
+        </button>
       </nav>
 
       <div class="right">
@@ -136,24 +172,37 @@ onUnmounted(() => {
     flex: 1;
     min-width: 0;
 
-    a {
+    .nav_link_btn {
+      border: 0;
+      background: transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       padding: 8px 10px;
       border-radius: 999px;
-      text-decoration: none;
       color: var(--color-text-2);
       font-size: 14px;
       transition: all .18s ease;
+      cursor: pointer;
 
       &:hover {
         color: #ff647c;
         background: rgba(255, 100, 124, .08);
       }
+
+      &.active {
+        color: #ff647c;
+        background: rgba(255, 100, 124, .12);
+        font-weight: 600;
+      }
     }
 
-    a.router-link-exact-active {
-      color: #ff647c !important;
-      background: rgba(255, 100, 124, .12);
-      font-weight: 600;
+    .nav_icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      line-height: 1;
     }
   }
 

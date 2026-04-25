@@ -106,12 +106,6 @@ onMounted(() => {
             <div class="brand_title">枫枫商城</div>
             <div class="brand_subtitle">享受快人一步</div>
           </router-link>
-
-          <div class="header_actions">
-            <button type="button" @click="openCart">购物车</button>
-            <button type="button" @click="router.push({name: 'web_user_center_collect'})">我的收藏</button>
-            <button type="button" @click="openHome">返回首页</button>
-          </div>
         </header>
 
         <section class="search_panel">
@@ -222,13 +216,6 @@ onMounted(() => {
   padding: 24px 22px 18px;
 }
 
-.search_header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
 .brand_block {
   text-decoration: none;
   color: inherit;
@@ -249,23 +236,8 @@ onMounted(() => {
   letter-spacing: .18em;
 }
 
-.header_actions {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-
-  button {
-    border: 0;
-    background: transparent;
-    padding: 0;
-    color: #4b5563;
-    font-size: 12px;
-    cursor: pointer;
-  }
-}
-
 .search_panel {
-  margin-top: 22px;
+  margin-top: 8px;
   padding: 22px;
   border-radius: 16px;
   border: 1px solid #eceef2;
@@ -506,7 +478,6 @@ onMounted(() => {
     border-radius: 14px;
   }
 
-  .search_header,
   .result_head {
     align-items: flex-start;
     flex-direction: column;

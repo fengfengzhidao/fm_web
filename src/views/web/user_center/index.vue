@@ -41,19 +41,6 @@ function go(name: string) {
   <div class="user_center_view">
     <div class="page_shell">
       <section class="hero_surface">
-        <header class="hero_header">
-          <router-link class="brand_block" to="/">
-            <div class="brand_title">枫枫商城</div>
-            <div class="brand_subtitle">享受快人一步</div>
-          </router-link>
-
-          <div class="header_actions">
-            <button type="button" @click="router.push({name: 'web_home'})">商城首页</button>
-            <button type="button" @click="router.push({name: 'web_cart'})">购物车</button>
-            <button type="button" @click="router.push({name: 'web_search'})">搜索商品</button>
-          </div>
-        </header>
-
         <section class="hero_section">
           <div class="hero_meta">
             <div class="eyebrow">USER CENTER</div>
@@ -134,50 +121,7 @@ function go(name: string) {
   padding: 24px 22px 22px;
 }
 
-.hero_header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.brand_block {
-  text-decoration: none;
-  color: inherit;
-}
-
-.brand_title {
-  font-size: 28px;
-  line-height: 1.05;
-  color: #ff667d;
-  font-weight: 700;
-  letter-spacing: .02em;
-}
-
-.brand_subtitle {
-  margin-top: 6px;
-  color: #ff8b9b;
-  font-size: 12px;
-  letter-spacing: .18em;
-}
-
-.header_actions {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-
-  button {
-    border: 0;
-    background: transparent;
-    padding: 0;
-    color: #4b5563;
-    font-size: 12px;
-    cursor: pointer;
-  }
-}
-
 .hero_section {
-  margin-top: 24px;
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) 320px;
   gap: 14px;
@@ -365,10 +309,6 @@ function go(name: string) {
     border-radius: 14px;
   }
 
-  .hero_header {
-    align-items: flex-start;
-    flex-direction: column;
-  }
 }
 
 @media (max-width: 640px) {
@@ -384,15 +324,9 @@ function go(name: string) {
     padding-right: 12px;
   }
 
-  .brand_title,
   .hero_meta h1,
   .side_title {
     font-size: 24px;
-  }
-
-  .header_actions {
-    gap: 10px;
-    flex-wrap: wrap;
   }
 }
 </style>

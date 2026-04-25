@@ -255,19 +255,6 @@ onBeforeUnmount(() => {
   <div class="goods_detail_view">
     <div class="page_shell">
       <section class="hero_surface">
-        <header class="hero_header">
-          <router-link class="brand_block" to="/">
-            <div class="brand_title">枫枫商城</div>
-            <div class="brand_subtitle">享受快人一步</div>
-          </router-link>
-
-          <div class="header_actions">
-            <button type="button" @click="router.back()">返回</button>
-            <button type="button" @click="router.push({name: 'web_search'})">搜索商品</button>
-            <button type="button" @click="goCart">购物车</button>
-          </div>
-        </header>
-
         <a-spin :loading="loading" tip="加载中...">
           <div v-if="detail" class="detail_grid">
             <div class="gallery_panel">
@@ -463,50 +450,7 @@ onBeforeUnmount(() => {
   padding: 24px 22px 22px;
 }
 
-.hero_header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.brand_block {
-  text-decoration: none;
-  color: inherit;
-}
-
-.brand_title {
-  font-size: 28px;
-  line-height: 1.05;
-  color: #ff667d;
-  font-weight: 700;
-  letter-spacing: .02em;
-}
-
-.brand_subtitle {
-  margin-top: 6px;
-  color: #ff8b9b;
-  font-size: 12px;
-  letter-spacing: .18em;
-}
-
-.header_actions {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-
-  button {
-    border: 0;
-    background: transparent;
-    padding: 0;
-    color: #4b5563;
-    font-size: 12px;
-    cursor: pointer;
-  }
-}
-
 .detail_grid {
-  margin-top: 24px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, .96fr);
   gap: 22px;
@@ -914,10 +858,6 @@ onBeforeUnmount(() => {
     border-radius: 14px;
   }
 
-  .hero_header {
-    align-items: flex-start;
-    flex-direction: column;
-  }
 }
 
 @media (max-width: 640px) {
@@ -936,7 +876,6 @@ onBeforeUnmount(() => {
     padding-right: 12px;
   }
 
-  .brand_title,
   .summary_panel h1,
   .section_title,
   .price,
@@ -944,8 +883,6 @@ onBeforeUnmount(() => {
     font-size: 24px;
   }
 
-  .header_actions,
-  .hero_tags,
   .thumb_list,
   .level_grid,
   .config_items,

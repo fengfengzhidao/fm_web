@@ -5,6 +5,7 @@ import {userStorei} from "@/stores/user_store";
 import {title, ico} from "@/conf/global";
 import {loadTheme} from "@/components/common/f_theme";
 import F_login_modal from "@/components/web/f_login_modal.vue";
+import F_nav from "@/components/web/f_nav.vue";
 
 loadTheme()
 const store = userStorei()
@@ -27,12 +28,25 @@ if (ico) {
 
 <template>
   <div class="app_shell" :class="{web_theme: isWebRoute}">
-    <router-view></router-view>
+    <f_nav v-if="isWebRoute"/>
+    <div class="router_shell" :class="{web_content: isWebRoute}">
+      <router-view></router-view>
+    </div>
     <f_login_modal/>
   </div>
 </template>
 
 <style lang="less">
+.router_shell.web_content {
+  padding-top: 72px;
+}
+
+@media (max-width: 768px) {
+  .router_shell.web_content {
+    padding-top: 66px;
+  }
+}
+
 .app_shell.web_theme {
   --web-primary: #ff6f8e;
   --web-primary-hover: #ff6385;
