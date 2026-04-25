@@ -34,6 +34,14 @@ export interface collectGoodsType {
     goodsID: number
     // 商品名称缓存
     goodsTitle: string
+    // 商品封面
+    cover: string
+    // 商品标题
+    title: string
+    // 商品价格
+    price: number
+    // 销量
+    salesNum: number
 }
 
 export interface addrRequest {

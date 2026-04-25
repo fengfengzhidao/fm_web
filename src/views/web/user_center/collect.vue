@@ -32,6 +32,13 @@ function openDetail(item: collectGoodsType) {
   router.push({name: "web_goods_detail", params: {id: item.goodsID}})
 }
 
+function formatPrice(price?: number | null): string {
+  if (price === null || price === undefined) {
+    return "0.00"
+  }
+  return (price / 100).toFixed(price % 100 === 0 ? 0 : 2)
+}
+
 async function removeItem(item: collectGoodsType) {
   const res = await collectGoodsRemoveApi([item.id])
   if (res.code) {
@@ -59,15 +66,16 @@ onMounted(loadList)
       <div v-if="list.length" class="goods_grid">
         <article v-for="item in list" :key="item.id" class="goods_card">
           <div class="cover" @click="openDetail(item)">
-            <span class="cover_mark">{{ (item.goodsTitle || "商").slice(0, 1) }}</span>
-            <span class="cover_hint">COLLECT</span>
+            <img :src="item.cover" :alt="item.title || item.goodsTitle">
           </div>
           <div class="body">
             <div class="body_top">
-              <strong @click="openDetail(item)">{{ item.goodsTitle }}</strong>
+              <strong @click="openDetail(item)">{{ item.title || item.goodsTitle }}</strong>
               <span class="status_chip">已收藏</span>
             </div>
             <div class="meta_list">
+              <span>价格：￥{{ formatPrice(item.price) }}</span>
+              <span>销量：{{ item.salesNum }}</span>
               <span>商品ID：{{ item.goodsID }}</span>
               <span>收藏时间：{{ dateTimeFormat(item.createdAt) }}</span>
             </div>
@@ -146,30 +154,19 @@ onMounted(loadList)
 
 .cover {
   width: 120px;
-  height: 120px;
+  aspect-ratio: 16 / 9;
   border-radius: 20px;
   overflow: hidden;
-  background: linear-gradient(135deg, #fff1f4, #fffafb 62%, #ffffff);
+  background: #f7f8fa;
   cursor: pointer;
-  display: grid;
-  justify-items: center;
-  align-content: center;
-  gap: 8px;
   border: 1px solid #ffe1e7;
-}
 
-.cover_mark {
-  color: #ff5d72;
-  font-size: 40px;
-  line-height: 1;
-  font-weight: 800;
-}
-
-.cover_hint {
-  color: #ff95a5;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .14em;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
 }
 
 .body {
