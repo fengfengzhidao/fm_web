@@ -39,6 +39,12 @@ const roleText = computed(() => store.isAdmin ? "管理员" : "普通用户")
       </div>
     </div>
 
+    <div class="profile_actions">
+      <a-popconfirm content="确定退出当前登录状态吗？" @ok="store.userLogout()">
+        <a-button status="danger">退出登录</a-button>
+      </a-popconfirm>
+    </div>
+
     <div class="quick_grid">
       <button v-for="item in quickLinks" :key="item.name" class="quick_card" @click="router.push({name: item.name})">
         <span class="card_icon">
@@ -116,6 +122,11 @@ const roleText = computed(() => store.isAdmin ? "管理员" : "普通用户")
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
+}
+
+.profile_actions {
+  display: flex;
+  justify-content: flex-start;
 }
 
 .quick_card {
