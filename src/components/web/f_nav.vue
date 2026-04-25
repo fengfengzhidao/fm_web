@@ -69,7 +69,7 @@ function openNav(name: string) {
       <router-link v-if="showBrand" class="brand" to="/">
         <div class="brand_text">
           <strong>{{ slogan }}</strong>
-          <span>{{ enSlogan }}</span>
+          <span>享受快人一步</span>
         </div>
       </router-link>
 
