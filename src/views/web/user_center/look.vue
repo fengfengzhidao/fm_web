@@ -3,6 +3,7 @@ import {computed, onMounted, ref} from "vue";
 import dayjs from "dayjs";
 import {useRouter} from "vue-router";
 import {Message} from "@arco-design/web-vue";
+import {IconDelete} from "@arco-design/web-vue/es/icon";
 import {lookGoodsListApi, lookGoodsRemoveApi, type lookGoodsType} from "@/api/user_center_api";
 import {dateTimeFormat} from "@/utils/date";
 
@@ -136,9 +137,10 @@ onMounted(loadList)
                 </div>
               </div>
               <div class="card_actions">
-                <a-button type="text" size="mini" @click="openDetail(item)">查看</a-button>
                 <a-popconfirm content="确定删除足迹吗？" @ok="removeItem(item)">
-                  <a-button type="text" size="mini" status="danger">删除</a-button>
+                  <button type="button" class="icon_action delete_action" aria-label="删除足迹">
+                    <IconDelete/>
+                  </button>
                 </a-popconfirm>
               </div>
             </article>
@@ -266,6 +268,7 @@ onMounted(loadList)
   display: grid;
   gap: 8px;
   align-content: start;
+  position: relative;
 }
 
 .cover {
@@ -320,9 +323,65 @@ onMounted(loadList)
 }
 
 .card_actions {
+  position: absolute;
+  left: 50%;
+  top: 68px;
+  transform: translate(-50%, -50%);
   display: flex;
-  gap: 4px;
   align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s ease;
+}
+
+.goods_card:hover .card_actions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.icon_action {
+  width: 72px;
+  height: 72px;
+  border: 0;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, .94);
+  color: #9ca3af;
+  box-shadow: 0 12px 24px rgba(17, 24, 39, .14);
+  cursor: pointer;
+  transition: transform .18s ease, background-color .18s ease, color .18s ease;
+
+  :deep(svg) {
+    font-size: 34px;
+  }
+
+  &:hover {
+    transform: scale(1.04);
+    color: #ff647c;
+    background: #fff;
+  }
+}
+
+.delete_action {
+  color: #9ca3af;
+}
+
+@media (hover: none) {
+  .card_actions {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .icon_action {
+    width: 56px;
+    height: 56px;
+
+    :deep(svg) {
+      font-size: 28px;
+    }
+  }
 }
 
 .pager_wrap {
