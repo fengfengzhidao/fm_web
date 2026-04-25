@@ -29,11 +29,6 @@ const navItems = computed(() => [
     active: route.name === "web_user_center_msg",
   },
   {
-    label: "我的收藏",
-    name: "web_user_center_collect",
-    active: route.name === "web_user_center_collect",
-  },
-  {
     label: "个人中心",
     name: "web_user_center_info",
     active: typeof route.name === "string" && route.name.startsWith("web_user_center"),
@@ -110,8 +105,7 @@ function openNav(name: string) {
   box-shadow: 0 8px 24px rgba(255, 107, 127, .06);
 
   .container {
-    width: min(1240px, 100%);
-    padding: 0 20px;
+    width: min(1180px, calc(100% - 48px));
     display: flex;
     align-items: center;
     gap: 24px;
@@ -198,12 +192,20 @@ function openNav(name: string) {
   }
 }
 
+@media (max-width: 900px) {
+  .f_nav {
+    .container {
+      width: calc(100% - 24px);
+    }
+  }
+}
+
 @media (max-width: 768px) {
   .f_nav {
     height: 66px;
 
     .container {
-      padding: 0 16px;
+      width: calc(100% - 16px);
       gap: 12px;
     }
 
