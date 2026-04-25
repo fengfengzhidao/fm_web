@@ -22,8 +22,8 @@ const showBrand = computed(() => route.name !== "web_home")
 const navItems = computed(() => [
   ...(store.isAdmin ? [{
     label: "后台管理",
-    name: "admin",
-    active: typeof route.name === "string" && route.name.startsWith("admin"),
+    name: "home",
+    active: route.name === "home" || route.name === "dataStatistics",
   }] : []),
   {
     label: "购物车",
