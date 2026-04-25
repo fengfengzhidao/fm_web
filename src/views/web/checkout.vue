@@ -298,6 +298,10 @@ onMounted(loadData)
   box-shadow: 0 20px 45px rgba(17, 24, 39, .05);
 }
 
+.checkout_surface :deep(.arco-spin) {
+  width: 100%;
+}
+
 .hero_section {
   display: grid;
   grid-template-columns: minmax(0, 1.7fr) 320px;
