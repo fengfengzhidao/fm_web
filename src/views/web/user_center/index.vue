@@ -94,7 +94,7 @@ function go(name: string) {
                 <IconGift v-else-if="item.icon === 'gift'"/>
                 <IconMessage v-else/>
               </span>
-              <div>
+              <div class="menu_text">
                 <strong>{{ item.title }}</strong>
                 <span>{{ item.desc }}</span>
               </div>
@@ -279,13 +279,13 @@ function go(name: string) {
   border: 1px solid #eceef2;
   background: #fafafb;
   border-radius: 14px;
-  padding: 14px 14px 14px 12px;
+  padding: 13px 14px;
   cursor: pointer;
   transition: .18s ease;
   display: grid;
-  grid-template-columns: 28px minmax(0, 1fr);
-  gap: 10px;
-  align-items: start;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
 
   strong,
   span {
@@ -309,16 +309,35 @@ function go(name: string) {
     background: #fff4f6;
     box-shadow: 0 8px 20px rgba(255, 93, 114, .06);
   }
+
+  &:hover {
+    border-color: #ffd5dd;
+    background: #fff7f8;
+    transform: translateY(-1px);
+  }
 }
 
 .menu_icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 999px;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
   display: grid;
   place-items: center;
-  background: #fff;
+  flex-shrink: 0;
+  background: linear-gradient(180deg, #fff8fa 0%, #fff 100%);
+  border: 1px solid #ffe0e6;
   color: #ff637a;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9);
+
+  :deep(svg) {
+    width: 20px;
+    height: 20px;
+    display: block;
+  }
+}
+
+.menu_text {
+  min-width: 0;
 }
 
 @media (max-width: 1100px) {

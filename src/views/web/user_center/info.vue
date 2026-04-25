@@ -125,10 +125,15 @@ const roleText = computed(() => store.isAdmin ? "管理员" : "普通用户")
   background: #fafafb;
   cursor: pointer;
   transition: .18s ease;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  column-gap: 14px;
+  align-items: center;
 
   &:hover {
     border-color: #ffccd5;
     background: #fff4f6;
+    transform: translateY(-1px);
   }
 
   strong,
@@ -137,7 +142,6 @@ const roleText = computed(() => store.isAdmin ? "管理员" : "普通用户")
   }
 
   strong {
-    margin-top: 12px;
     color: #111827;
     font-size: 16px;
   }
@@ -150,14 +154,27 @@ const roleText = computed(() => store.isAdmin ? "管理员" : "普通用户")
 }
 
 .card_icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
   display: grid;
   place-items: center;
-  background: #fff;
+  align-self: start;
+  flex-shrink: 0;
+  background: linear-gradient(180deg, #fff8fa 0%, #fff 100%);
+  border: 1px solid #ffe0e6;
   color: #ff637a;
-  font-size: 18px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9);
+
+  :deep(svg) {
+    width: 20px;
+    height: 20px;
+    display: block;
+  }
+}
+
+.quick_card :is(strong, span:last-child) {
+  grid-column: 2;
 }
 
 @media (max-width: 768px) {
