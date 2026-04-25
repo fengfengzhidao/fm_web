@@ -2,7 +2,9 @@
 import {computed, onMounted, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
 import {Message} from "@arco-design/web-vue";
+import type {RequestOption, UploadRequest} from "@arco-design/web-vue";
 import {commentCreateApi, type commentCreateItem} from "@/api/comment_api";
+import {imageUploadApi} from "@/api/image_api";
 import {orderRevGoodsApi, orderUserListApi, orderUserRemoveApi, type orderUserType} from "@/api/order_api";
 import {dateTimeFormat} from "@/utils/date";
 import {canCommentOrder, canReceiveOrder, commentLevelText, formatPrice, orderStatusColor, orderStatusText} from "@/views/web/user_center/utils";
@@ -16,9 +18,17 @@ const goodsTitle = ref("")
 const page = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
-const formMap = reactive<Record<number, {content: string; level: number}>>({})
+const maxCommentImages = 6
+const formMap = reactive<Record<number, {content: string; level: number; images: string[]; uploading: boolean}>>({})
 
 const count = computed(() => total.value || orders.value.length)
+
+function ensureCommentForm(orderGoodsID: number) {
+  if (!formMap[orderGoodsID]) {
+    formMap[orderGoodsID] = {content: "", level: 5, images: [], uploading: false}
+  }
+  return formMap[orderGoodsID]
+}
 
 async function loadOrders(resetPage = false) {
   if (resetPage) {
@@ -40,9 +50,7 @@ async function loadOrders(resetPage = false) {
     total.value = res.data.count || 0
     orders.value.forEach((order) => {
       order.orderGoodsList.forEach((goods) => {
-        if (!formMap[goods.orderGoodsID]) {
-          formMap[goods.orderGoodsID] = {content: "", level: 5}
-        }
+        ensureCommentForm(goods.orderGoodsID)
       })
     })
   } catch (error) {
@@ -68,7 +76,7 @@ function openDetail(item: orderUserType) {
 }
 
 async function submitComment(orderGoodsID: number) {
-  const form = formMap[orderGoodsID]
+  const form = ensureCommentForm(orderGoodsID)
   if (!form?.content.trim()) {
     Message.warning("请输入评价内容")
     return
@@ -80,7 +88,7 @@ async function submitComment(orderGoodsID: number) {
       orderGoodsID,
       content: form.content.trim(),
       level: form.level,
-      images: [],
+      images: [...form.images],
     }
     const res = await commentCreateApi({list: [payload]})
     if (res.code) {
@@ -90,6 +98,7 @@ async function submitComment(orderGoodsID: number) {
     Message.success("评价已提交")
     form.content = ""
     form.level = 5
+    form.images = []
     await loadOrders()
   } catch (error) {
     console.error(error)
@@ -122,6 +131,74 @@ async function removeOrder(item: orderUserType) {
 function onPageChange(nextPage: number) {
   page.value = nextPage
   loadOrders()
+}
+
+function createCommentUploadRequest(orderGoodsID: number) {
+  return (option: RequestOption): UploadRequest => {
+    const form = ensureCommentForm(orderGoodsID)
+    if (form.images.length >= maxCommentImages) {
+      const msg = `最多上传 ${maxCommentImages} 张图片`
+      Message.warning(msg)
+      option.onError(msg)
+      return {}
+    }
+
+    const file = option.fileItem.file
+    if (!file) {
+      const msg = "请选择图片文件"
+      Message.error(msg)
+      option.onError(msg)
+      return {}
+    }
+
+    form.uploading = true
+    let aborted = false
+
+    imageUploadApi(file).then((res) => {
+      if (aborted) {
+        return
+      }
+      if (res.code) {
+        Message.error(res.msg)
+        option.onError(res.msg)
+        return
+      }
+
+      if (form.images.length >= maxCommentImages) {
+        const msg = `最多上传 ${maxCommentImages} 张图片`
+        Message.warning(msg)
+        option.onError(msg)
+        return
+      }
+
+      form.images = [...form.images, res.data]
+      Message.success("图片上传成功")
+      option.onSuccess(res)
+    }).catch((error) => {
+      if (aborted) {
+        return
+      }
+      console.error(error)
+      Message.error("图片上传失败")
+      option.onError(error)
+    }).then(() => {
+      if (!aborted) {
+        form.uploading = false
+      }
+    })
+
+    return {
+      abort() {
+        aborted = true
+        form.uploading = false
+      },
+    }
+  }
+}
+
+function removeCommentImage(orderGoodsID: number, index: number) {
+  const form = ensureCommentForm(orderGoodsID)
+  form.images.splice(index, 1)
 }
 
 onMounted(loadOrders)
@@ -176,6 +253,38 @@ onMounted(loadOrders)
                     placeholder="写下你的真实感受"
                     :auto-size="{minRows: 3, maxRows: 5}"
                   />
+                  <div class="comment_upload_block">
+                    <div class="upload_head">
+                      <span class="upload_label">评价图片</span>
+                      <span class="upload_tip">最多 {{ maxCommentImages }} 张</span>
+                    </div>
+                    <div class="upload_row">
+                      <a-upload
+                        accept="image/png,image/jpeg,image/webp"
+                        :show-file-list="false"
+                        :custom-request="createCommentUploadRequest(goods.orderGoodsID)"
+                      >
+                        <template #upload-button>
+                          <a-button :loading="formMap[goods.orderGoodsID].uploading">
+                            上传图片
+                          </a-button>
+                        </template>
+                      </a-upload>
+                      <span class="upload_tip">
+                        已上传 {{ formMap[goods.orderGoodsID].images.length }}/{{ maxCommentImages }}
+                      </span>
+                    </div>
+                    <div v-if="formMap[goods.orderGoodsID].images.length" class="comment_image_list">
+                      <div
+                        v-for="(img, index) in formMap[goods.orderGoodsID].images"
+                        :key="img + index"
+                        class="comment_image_item"
+                      >
+                        <a-image :src="img" :width="72" :height="72" fit="cover"/>
+                        <a-button size="mini" status="danger" @click="removeCommentImage(goods.orderGoodsID, index)">删除</a-button>
+                      </div>
+                    </div>
+                  </div>
                   <div class="comment_actions">
                     <a-button type="primary" :loading="submiting" @click="submitComment(goods.orderGoodsID)">提交评价</a-button>
                   </div>
@@ -378,6 +487,53 @@ onMounted(loadOrders)
 .comment_editor :deep(.arco-textarea-wrapper) {
   border-radius: 12px;
   background: #fffafb;
+}
+
+.comment_upload_block {
+  display: grid;
+  gap: 10px;
+}
+
+.upload_head,
+.upload_row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.upload_head {
+  justify-content: space-between;
+}
+
+.upload_label,
+.upload_tip {
+  font-size: 12px;
+}
+
+.upload_label {
+  color: #111827;
+  font-weight: 700;
+}
+
+.upload_tip {
+  color: #9ca3af;
+}
+
+.comment_image_list {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.comment_image_item {
+  width: 72px;
+  display: grid;
+  gap: 6px;
+}
+
+.comment_image_item :deep(.arco-image-img) {
+  border-radius: 10px;
 }
 
 .order_bottom {
