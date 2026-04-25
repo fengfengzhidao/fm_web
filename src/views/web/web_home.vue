@@ -670,7 +670,7 @@ onMounted(() => {
   display: grid;
   grid-template-columns: 520px 360px minmax(252px, 1fr);
   gap: 12px;
-  align-items: stretch;
+  align-items: start;
 }
 
 .hero_main,
@@ -860,6 +860,8 @@ onMounted(() => {
 .hero_coupon,
 .hero_user {
   padding: 16px;
+  height: 292px;
+  overflow: hidden;
 }
 
 .panel_head {
@@ -898,12 +900,22 @@ onMounted(() => {
 
 .hero_coupon :deep(.arco-spin) {
   width: 100%;
+  flex: 1;
+}
+
+.hero_coupon :deep(.arco-spin),
+.hero_coupon :deep(.arco-spin-children) {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .coupon_compact_grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 10px;
+  min-height: 0;
+  overflow: auto;
 }
 
 .coupon_compact_card {
@@ -980,6 +992,7 @@ onMounted(() => {
 }
 
 .hero_user {
+  align-content: start;
   display: grid;
   grid-template-rows: auto auto auto;
   gap: 14px;
@@ -1179,6 +1192,11 @@ onMounted(() => {
   }
 
   .hero_banner_surface {
+    height: auto;
+  }
+
+  .hero_coupon,
+  .hero_user {
     height: auto;
   }
 
