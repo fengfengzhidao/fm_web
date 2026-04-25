@@ -8,7 +8,6 @@ import {
   IconHeart,
   IconStar
 } from "@arco-design/web-vue/es/icon";
-import F_footer from "@/components/web/f_footer.vue";
 import {goodsDetailApi, type goodsDetailType} from "@/api/goods_api";
 import {commentLevelApi, goodsCommentListApi, type commentLevelType, type goodsCommentListParams, type goodsCommentType} from "@/api/comment_api";
 import {carCreateApi} from "@/api/car_api";
@@ -421,7 +420,6 @@ onBeforeUnmount(() => {
         </a-spin>
       </section>
     </div>
-    <f_footer/>
   </div>
 </template>
 

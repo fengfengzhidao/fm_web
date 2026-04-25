@@ -10,7 +10,6 @@ import {
   IconNotification,
   IconThunderbolt
 } from "@arco-design/web-vue/es/icon";
-import F_footer from "@/components/web/f_footer.vue";
 import {
   secKillApi,
   secKillDateListApi,
@@ -425,7 +424,6 @@ onMounted(loadDateList)
         </div>
       </a-spin>
     </a-modal>
-    <f_footer/>
   </div>
 </template>
 

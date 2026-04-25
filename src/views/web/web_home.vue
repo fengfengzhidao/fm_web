@@ -15,7 +15,6 @@ import {
   IconUser
 } from "@arco-design/web-vue/es/icon";
 import {useRouter} from "vue-router";
-import F_footer from "@/components/web/f_footer.vue";
 import {goodsCategoryListApi, goodsIndexListApi, type goodsIndexType} from "@/api/goods_api";
 import {couponAcceptableListApi, couponReceiveApi, type acceptableCouponType} from "@/api/coupon_api";
 import {dataUserStatisticApi} from "@/api/data_api";
@@ -631,7 +630,6 @@ onMounted(() => {
         </a-spin>
       </section>
     </div>
-    <f_footer/>
   </div>
 </template>
 

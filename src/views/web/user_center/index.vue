@@ -11,7 +11,6 @@ import {
   IconStar,
   IconUser
 } from "@arco-design/web-vue/es/icon";
-import F_footer from "@/components/web/f_footer.vue";
 import {userStorei} from "@/stores/user_store";
 
 const router = useRouter()
@@ -92,7 +91,6 @@ function go(name: string) {
         </main>
       </section>
     </div>
-    <f_footer/>
   </div>
 </template>
 

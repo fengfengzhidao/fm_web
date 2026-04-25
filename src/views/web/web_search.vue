@@ -8,7 +8,6 @@ import {
   IconStorage
 } from "@arco-design/web-vue/es/icon";
 import {Message} from "@arco-design/web-vue";
-import F_footer from "@/components/web/f_footer.vue";
 import {goodsIndexListApi, type goodsIndexType} from "@/api/goods_api";
 
 const route = useRoute()
@@ -187,7 +186,6 @@ onMounted(() => {
         </a-spin>
       </section>
     </div>
-    <f_footer/>
   </div>
 </template>
 

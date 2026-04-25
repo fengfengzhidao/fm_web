@@ -9,7 +9,6 @@ import {
   IconSafe,
   IconStorage
 } from "@arco-design/web-vue/es/icon";
-import F_footer from "@/components/web/f_footer.vue";
 import {carListApi, carNumUpdateApi, carRemoveApi, carToCollectApi, type carGoodsInfoType, type carListType} from "@/api/car_api";
 import {userStorei} from "@/stores/user_store";
 
@@ -313,7 +312,6 @@ onMounted(() => {
         </a-spin>
       </section>
     </div>
-    <f_footer/>
   </div>
 </template>
 

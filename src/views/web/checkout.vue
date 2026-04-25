@@ -8,7 +8,6 @@ import {
   IconLocation,
   IconSafe
 } from "@arco-design/web-vue/es/icon";
-import F_footer from "@/components/web/f_footer.vue";
 import {carListApi, type carGoodsInfoType} from "@/api/car_api";
 import {addrListApi, type addrType} from "@/api/user_center_api";
 import {orderConfirmApi, orderPayApi, type orderConfirmType, type orderGoodsRequest} from "@/api/order_api";
@@ -269,7 +268,6 @@ onMounted(loadData)
         </a-spin>
       </section>
     </div>
-    <f_footer/>
   </div>
 </template>
 
