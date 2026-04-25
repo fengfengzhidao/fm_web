@@ -20,6 +20,18 @@ const detail = ref<orderDetailType | null>(null)
 
 const orderID = computed(() => Number(route.params.id))
 
+function resolvePayRoute(payUrl: string): string {
+  try {
+    const target = new URL(payUrl, window.location.origin)
+    if (target.pathname.startsWith("/order/pay")) {
+      return `${target.pathname}${target.search}`
+    }
+    return target.toString()
+  } catch (error) {
+    return payUrl
+  }
+}
+
 async function loadDetail() {
   const id = orderID.value
   if (!id) {
@@ -65,7 +77,7 @@ async function goPay() {
   actionLoading.value = true
   try {
     if (detail.value.payUrl) {
-      window.open(detail.value.payUrl, "_blank")
+      router.push(resolvePayRoute(detail.value.payUrl))
       return
     }
     Message.warning("当前订单没有支付地址")

@@ -54,6 +54,15 @@ const router = createRouter({
                     }
                 },
                 {
+                    name: "web_order_pay",
+                    path: "order/pay",
+                    component: () => import("@/views/web/order_pay.vue"),
+                    meta: {
+                        auth: true,
+                        title: "订单支付",
+                    }
+                },
+                {
                     name: "web_user_center",
                     path: "user_center",
                     component: () => import("@/views/web/user_center/index.vue"),

@@ -39,6 +39,18 @@ const orderGoodsList = computed<orderGoodsRequest[]>(() => goodsList.value.map((
 const totalPrice = computed(() => formatPrice(confirm.value?.price || 0))
 const goodsCount = computed(() => confirm.value?.goodsList.reduce((sum, item) => sum + item.num, 0) || 0)
 
+function resolvePayRoute(payUrl: string): string {
+  try {
+    const target = new URL(payUrl, window.location.origin)
+    if (target.pathname.startsWith("/order/pay")) {
+      return `${target.pathname}${target.search}`
+    }
+    return target.toString()
+  } catch (error) {
+    return payUrl
+  }
+}
+
 function toggleCoupon(id: number, checked: boolean) {
   const next = new Set(selectedCouponIDs.value)
   if (checked) {
@@ -130,8 +142,8 @@ async function submitOrder() {
     }
     Message.success("下单成功")
     if (res.data.payUrl) {
-      Message.info("已生成支付地址")
-      window.open(res.data.payUrl, "_blank")
+      router.push(resolvePayRoute(res.data.payUrl))
+      return
     }
     router.push({name: "web_user_center_order"})
   } catch (error) {
