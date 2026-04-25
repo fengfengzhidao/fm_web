@@ -6,22 +6,27 @@ import {Message} from "@arco-design/web-vue";
 import {userStorei} from "@/stores/user_store";
 import router from "@/router";
 import {useRoute} from "vue-router";
+import {captchaGenerateApi} from "@/api/captcha_api";
 
 const store = userStorei()
 const route = useRoute()
 const form = reactive<emailLoginRequest>({
   username: "",
-  password: ""
+  password: "",
+  captchaID: "",
+  captchaCode: "",
 })
 
 const formRef = ref()
 const visible = computed(() => store.loginModalVisible)
-const captchaText = ref("")
+const captchaImage = ref("")
 
 watch(visible, val => {
   if (!val) return
   form.username = ""
   form.password = ""
+  form.captchaID = ""
+  form.captchaCode = ""
   refreshCaptcha()
 })
 
@@ -29,17 +34,21 @@ function closeLogin() {
   store.closeLoginModal()
 }
 
-function randomCaptchaText(length = 4) {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
-  let result = ""
-  for (let i = 0; i < length; i += 1) {
-    result += chars[Math.floor(Math.random() * chars.length)]
+async function refreshCaptcha() {
+  try {
+    const res = await captchaGenerateApi()
+    if (res.code) {
+      Message.error(res.msg)
+      return
+    }
+    form.captchaID = res.data.captchaID
+    captchaImage.value = res.data.captcha.startsWith("data:image")
+      ? res.data.captcha
+      : `data:image/png;base64,${res.data.captcha}`
+  } catch (error) {
+    console.error(error)
+    Message.error("验证码加载失败")
   }
-  return result
-}
-
-function refreshCaptcha() {
-  captchaText.value = randomCaptchaText()
 }
 
 async function emailLogin() {
@@ -48,6 +57,7 @@ async function emailLogin() {
   const res = await emailLoginApi(form)
   if (res.code) {
     Message.error(res.msg)
+    refreshCaptcha()
     return
   }
 
@@ -88,14 +98,14 @@ async function emailLogin() {
                 </template>
               </a-input>
             </a-form-item>
-            <a-form-item class="code_row">
-              <a-input class="code_input" placeholder="验证码">
+            <a-form-item class="code_row" field="captchaCode" :rules="[{required:true,message:'请输入验证码'}]">
+              <a-input v-model="form.captchaCode" class="code_input" placeholder="验证码">
                 <template #prefix>
                   <icon-safe/>
                 </template>
               </a-input>
               <div class="code_img" @click="refreshCaptcha">
-                <span>{{ captchaText }}</span>
+                <img v-if="captchaImage" :src="captchaImage" alt="验证码">
               </div>
             </a-form-item>
             <a-form-item class="action_row">
@@ -189,28 +199,24 @@ async function emailLogin() {
   }
 
   .code_row {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 96px;
-    column-gap: 12px;
-    align-items: center;
     margin-top: 2px;
 
     :deep(.arco-form-item-content) {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 96px;
-      column-gap: 12px;
+      display: flex;
       align-items: center;
+      width: 100%;
     }
   }
 
   .code_input {
-    width: 100%;
+    flex: 1 1 auto;
   }
 
   .code_img {
     height: 36px;
-    width: 100%;
-    justify-self: end;
+    width: 200px;
+    margin-left: 10px;
+    flex: 0 0 200px;
     border: 1px solid rgba(255, 93, 114, .42);
     background:
       linear-gradient(135deg, rgba(255, 93, 114, .08), rgba(255, 255, 255, 1));
@@ -218,10 +224,15 @@ async function emailLogin() {
     cursor: pointer;
     display: grid;
     place-items: center;
-    color: #5b5b8d;
-    font-weight: 700;
-    letter-spacing: .16em;
     user-select: none;
+
+    img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      border-radius: 4px;
+    }
   }
 
   .action_row {
