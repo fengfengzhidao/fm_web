@@ -5,6 +5,8 @@ import {Message} from "@arco-design/web-vue";
 import {
   IconApps,
   IconCalendarClock,
+  IconArrowLeft,
+  IconArrowRight,
   IconFire,
   IconHeart,
   IconLocation,
@@ -160,6 +162,20 @@ function switchBanner(index: number) {
     return
   }
   activeBannerIndex.value = index % bannerList.value.length
+}
+
+function prevBanner() {
+  if (!bannerList.value.length) {
+    return
+  }
+  activeBannerIndex.value = (activeBannerIndex.value - 1 + bannerList.value.length) % bannerList.value.length
+}
+
+function nextBanner() {
+  if (!bannerList.value.length) {
+    return
+  }
+  activeBannerIndex.value = (activeBannerIndex.value + 1) % bannerList.value.length
 }
 
 async function loadGoods(category?: string) {
@@ -350,11 +366,6 @@ onMounted(() => {
         <section class="hero_section">
           <div class="hero_main">
             <div class="hero_banner_surface">
-              <div class="panel_head compact banner_head">
-                <h2>猜你喜欢</h2>
-                <span>点击海报即可进入商品详情</span>
-              </div>
-
               <a-spin :loading="bannerLoading" tip="加载中...">
                 <div v-if="activeBanner" class="hero_banner_stage">
                   <transition name="banner_fade" mode="out-in">
@@ -368,14 +379,27 @@ onMounted(() => {
                       @keydown.space.prevent="goGoodsDetail(activeBanner.id)"
                     >
                       <img :src="activeBanner.cover || homeBg" :alt="activeBanner.title">
-                      <div class="hero_banner_overlay">
-                        <div class="hero_banner_tag">猜你喜欢</div>
-                        <h3>{{ activeBanner.title }}</h3>
-                        <p>￥ {{ formatPrice(activeBanner.price) }} · {{ activeBanner.salesNum }} 人购买</p>
-                        <span class="hero_banner_action">查看详情</span>
-                      </div>
                     </article>
                   </transition>
+
+                  <button
+                    v-if="bannerList.length > 1"
+                    type="button"
+                    class="hero_banner_arrow hero_banner_arrow_left"
+                    aria-label="上一张"
+                    @click="prevBanner"
+                  >
+                    <IconArrowLeft/>
+                  </button>
+                  <button
+                    v-if="bannerList.length > 1"
+                    type="button"
+                    class="hero_banner_arrow hero_banner_arrow_right"
+                    aria-label="下一张"
+                    @click="nextBanner"
+                  >
+                    <IconArrowRight/>
+                  </button>
 
                   <div v-if="bannerList.length > 1" class="hero_banner_dots" aria-label="轮播切换">
                     <button
@@ -392,7 +416,6 @@ onMounted(() => {
 
                 <div v-else class="hero_banner_empty">
                   <img :src="homeBg" alt="猜你喜欢">
-                  <div class="hero_banner_empty_text">猜你喜欢商品加载中</div>
                 </div>
               </a-spin>
             </div>
@@ -703,18 +726,8 @@ onMounted(() => {
   overflow: hidden;
 }
 
-.banner_head {
-  align-items: flex-end;
-  margin-bottom: 10px;
-
-  span {
-    color: #9ca3af;
-    font-size: 12px;
-  }
-}
-
 .hero_banner_stage {
-  height: calc(100% - 42px);
+  height: 100%;
   position: relative;
 }
 
@@ -744,53 +757,6 @@ onMounted(() => {
   transform: scale(.985);
 }
 
-.hero_banner_overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 24px;
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.02), rgba(15, 23, 42, 0.58));
-  color: #fff;
-
-  h3 {
-    margin: 8px 0 0;
-    font-size: 22px;
-    line-height: 1.2;
-    font-weight: 700;
-    max-width: 80%;
-  }
-
-  p {
-    margin: 10px 0 0;
-    font-size: 14px;
-    line-height: 1.5;
-    opacity: .95;
-  }
-}
-
-.hero_banner_tag {
-  align-self: flex-start;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: rgba(255, 103, 125, .92);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.hero_banner_action {
-  margin-top: 14px;
-  align-self: flex-start;
-  padding: 7px 14px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, .92);
-  color: #ff5f74;
-  font-size: 12px;
-  font-weight: 700;
-}
-
 .hero_banner_dots {
   position: absolute;
   left: 16px;
@@ -818,8 +784,46 @@ onMounted(() => {
   }
 }
 
+.hero_banner_arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: rgba(15, 23, 42, .34);
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+  z-index: 2;
+  transition: background-color .18s ease, transform .18s ease, opacity .18s ease;
+
+  :deep(svg) {
+    font-size: 16px;
+  }
+
+  &:hover {
+    background: rgba(15, 23, 42, .48);
+  }
+
+  &:active {
+    transform: translateY(-50%) scale(.96);
+  }
+}
+
+.hero_banner_arrow_left {
+  left: 12px;
+}
+
+.hero_banner_arrow_right {
+  right: 12px;
+}
+
 .hero_banner_empty {
-  height: calc(100% - 42px);
+  height: 100%;
   border-radius: 12px;
   overflow: hidden;
   position: relative;
@@ -831,18 +835,6 @@ onMounted(() => {
     object-fit: cover;
     display: block;
   }
-}
-
-.hero_banner_empty_text {
-  position: absolute;
-  left: 18px;
-  bottom: 18px;
-  padding: 7px 12px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, .9);
-  color: #ff5f74;
-  font-size: 12px;
-  font-weight: 600;
 }
 
 .feature_tabs {
@@ -1221,15 +1213,6 @@ onMounted(() => {
     height: 220px;
   }
 
-  .hero_banner_overlay {
-    padding: 18px;
-
-    h3 {
-      max-width: 100%;
-      font-size: 18px;
-    }
-  }
-
   .goods_grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1255,11 +1238,6 @@ onMounted(() => {
   .feature_tabs {
     gap: 14px;
     overflow-x: auto;
-  }
-
-  .banner_head {
-    align-items: flex-start;
-    flex-direction: column;
   }
 
   .hero_banner_dots {
