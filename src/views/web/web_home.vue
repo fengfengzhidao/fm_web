@@ -316,25 +316,6 @@ onMounted(() => {
                 </article>
               </div>
             </div>
-
-            <div class="feature_tabs">
-              <button
-                v-for="item in featureTabs"
-                :key="item.key"
-                class="feature_tab"
-                :class="{active: item.key === activeFeatureKey}"
-                type="button"
-                @click="selectFeature(item)"
-              >
-                <IconHeart v-if="item.icon === 'heart'" class="feature_icon"/>
-                <IconFire v-else-if="item.icon === 'fire'" class="feature_icon"/>
-                <IconApps v-else-if="item.icon === 'apps'" class="feature_icon"/>
-                <IconStorage v-else class="feature_icon"/>
-                <span>{{ item.title }}</span>
-              </button>
-            </div>
-
-            <div class="feature_desc">{{ featureDescription }}</div>
           </div>
 
           <div class="hero_coupon">
@@ -450,6 +431,30 @@ onMounted(() => {
               <span>收货地址</span>
             </div>
           </aside>
+        </section>
+
+        <section class="feature_filter_surface">
+          <div class="feature_filter_head">
+            <strong>列表筛选</strong>
+            <span>{{ featureDescription }}</span>
+          </div>
+
+          <div class="feature_tabs">
+            <button
+              v-for="item in featureTabs"
+              :key="item.key"
+              class="feature_tab"
+              :class="{active: item.key === activeFeatureKey}"
+              type="button"
+              @click="selectFeature(item)"
+            >
+              <IconHeart v-if="item.icon === 'heart'" class="feature_icon"/>
+              <IconFire v-else-if="item.icon === 'fire'" class="feature_icon"/>
+              <IconApps v-else-if="item.icon === 'apps'" class="feature_icon"/>
+              <IconStorage v-else class="feature_icon"/>
+              <span>{{ item.title }}</span>
+            </button>
+          </div>
         </section>
       </section>
 
@@ -673,7 +678,6 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 22px;
-  padding: 16px 4px 0;
   flex-wrap: wrap;
 }
 
@@ -694,16 +698,37 @@ onMounted(() => {
   }
 }
 
-.feature_desc {
-  margin-top: 10px;
-  color: #9ca3af;
-  font-size: 12px;
-  line-height: 1.7;
-}
-
 .feature_icon {
   font-size: 14px;
   color: #ff647c;
+}
+
+.feature_filter_surface {
+  margin-top: 16px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  border: 1px solid #eceef2;
+  background: linear-gradient(180deg, #fffafb, #fff);
+}
+
+.feature_filter_head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+
+  strong {
+    color: #111827;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  span {
+    color: #9ca3af;
+    font-size: 12px;
+    line-height: 1.7;
+  }
 }
 
 .hero_coupon,
@@ -1049,6 +1074,11 @@ onMounted(() => {
   .hero_secondary {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     grid-template-rows: none;
+  }
+
+  .feature_filter_head {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .goods_grid {
