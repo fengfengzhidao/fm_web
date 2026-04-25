@@ -104,7 +104,7 @@ onMounted(loadList)
       <div>
         <div class="eyebrow">EVALUATE</div>
         <h2>评论商品</h2>
-        <p>从已购订单里挑商品提交评价。</p>
+        <p>从已购订单里挑选商品提交评价，订单页会直接跳转到这里完成评论。</p>
       </div>
     </div>
 
@@ -113,7 +113,7 @@ onMounted(loadList)
         <article v-for="order in visibleOrders" :key="order.id" class="order_card" :class="{target_order: targetOrderID === order.id}">
           <div class="order_head">
             <strong>{{ order.no }}</strong>
-            <span>订单金额 ￥{{ formatPrice(order.price) }}</span>
+            <span class="order_price">订单金额 ￥{{ formatPrice(order.price) }}</span>
           </div>
 
           <div class="goods_list">
@@ -131,11 +131,14 @@ onMounted(loadList)
                   <span>数量 x{{ goods.num }}</span>
                   <span>订单商品ID：{{ goods.orderGoodsID }}</span>
                 </div>
-                <a-rate v-model="formMap[goods.orderGoodsID].level" allow-clear/>
+                <div class="rate_row">
+                  <a-rate v-model="formMap[goods.orderGoodsID].level" allow-clear/>
+                  <span class="rate_text">{{ commentLevelText(formMap[goods.orderGoodsID].level) }}</span>
+                </div>
                 <a-textarea v-model="formMap[goods.orderGoodsID].content" placeholder="写下你的真实感受" :auto-size="{minRows: 3, maxRows: 5}"/>
                 <div class="goods_actions">
                   <a-button type="primary" :loading="submiting" @click="submitComment(goods.orderGoodsID)">提交评价</a-button>
-                  <a-tag>{{ commentLevelText(formMap[goods.orderGoodsID].level) }}</a-tag>
+                  <span class="target_chip" v-if="isTargetGoods(goods.orderGoodsID)">当前商品</span>
                 </div>
               </div>
             </section>
@@ -153,9 +156,16 @@ onMounted(loadList)
   gap: 18px;
 }
 
+.panel_head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+}
+
 .panel_head h2 {
   margin: 8px 0 8px;
-  font-size: 28px;
+  font-size: 30px;
 }
 
 .panel_head p,
@@ -168,7 +178,7 @@ onMounted(loadList)
   color: #ff5d72;
   font-size: 14px;
   font-weight: 700;
-  letter-spacing: .08em;
+  letter-spacing: .12em;
 }
 
 .order_list {
@@ -177,16 +187,16 @@ onMounted(loadList)
 }
 
 .order_card {
-  padding: 16px;
-  border-radius: 20px;
-  background: var(--color-bg-1);
-  border: 1px solid var(--color-border-2);
-  box-shadow: 0 8px 24px rgba(15, 23, 42, .03);
+  padding: 18px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #fffafb, #fff);
+  border: 1px solid #eceef2;
+  box-shadow: 0 12px 30px rgba(17, 24, 39, .04);
 }
 
 .order_card.target_order {
-  border-color: rgba(255, 93, 114, .35);
-  box-shadow: 0 12px 30px rgba(255, 93, 114, .08);
+  border-color: rgba(255, 93, 114, .28);
+  box-shadow: 0 14px 32px rgba(255, 93, 114, .08);
 }
 
 .order_head {
@@ -195,6 +205,11 @@ onMounted(loadList)
   gap: 12px;
   align-items: center;
   margin-bottom: 14px;
+}
+
+.order_price {
+  color: #ff647c !important;
+  font-weight: 700;
 }
 
 .goods_list {
@@ -208,12 +223,12 @@ onMounted(loadList)
   gap: 14px;
   padding: 14px;
   border-radius: 18px;
-  background: var(--color-fill-1);
-  border: 1px solid var(--color-border-2);
+  background: #fafafb;
+  border: 1px solid #eceef2;
 }
 
 .goods_card.target_goods {
-  background: rgba(255, 93, 114, .06);
+  background: rgba(255, 93, 114, .05);
   border: 1px solid rgba(255, 93, 114, .24);
 }
 
@@ -239,6 +254,39 @@ onMounted(loadList)
   gap: 12px;
   flex-wrap: wrap;
   color: var(--color-text-2);
+}
+
+.rate_row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  :deep(.arco-rate-character-full),
+  :deep(.arco-rate-character-half),
+  :deep(.arco-rate-character:hover) {
+    color: #ff647c;
+  }
+}
+
+.rate_text,
+.target_chip {
+  padding: 7px 12px;
+  border-radius: 999px;
+  color: #ff647c;
+  font-size: 12px;
+  font-weight: 700;
+  background: #fff2f5;
+  border: 1px solid #ffd4dc;
+}
+
+.goods_body {
+  display: grid;
+  gap: 10px;
+}
+
+.goods_body :deep(.arco-textarea-wrapper) {
+  border-radius: 14px;
+  background: #fff;
 }
 
 .goods_actions {

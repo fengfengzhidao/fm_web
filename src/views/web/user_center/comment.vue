@@ -34,7 +34,7 @@ onMounted(loadList)
       <div>
         <div class="eyebrow">COMMENT</div>
         <h2>我的评价</h2>
-        <p>已经发布过的评价记录。</p>
+        <p>集中查看已经发布过的评价记录，便于回顾商品体验和下单价格。</p>
       </div>
     </div>
 
@@ -43,7 +43,7 @@ onMounted(loadList)
         <article v-for="item in list" :key="item.id" class="comment_card">
           <div class="comment_top">
             <strong>{{ item.goodsTitle || `商品 #${item.goodsID}` }}</strong>
-            <a-tag>{{ commentLevelText(item.level) }}</a-tag>
+            <span class="comment_level">{{ commentLevelText(item.level) }}</span>
           </div>
           <div class="comment_body">{{ item.content || "无评价内容" }}</div>
           <div v-if="item.images?.length" class="image_list">
@@ -67,9 +67,16 @@ onMounted(loadList)
   gap: 18px;
 }
 
+.panel_head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+}
+
 .panel_head h2 {
   margin: 8px 0 8px;
-  font-size: 28px;
+  font-size: 30px;
 }
 
 .panel_head p,
@@ -81,7 +88,7 @@ onMounted(loadList)
   color: #ff5d72;
   font-size: 14px;
   font-weight: 700;
-  letter-spacing: .08em;
+  letter-spacing: .12em;
 }
 
 .comment_list {
@@ -90,11 +97,11 @@ onMounted(loadList)
 }
 
 .comment_card {
-  padding: 16px;
-  border-radius: 20px;
-  background: var(--color-bg-1);
-  border: 1px solid var(--color-border-2);
-  box-shadow: 0 8px 24px rgba(15, 23, 42, .03);
+  padding: 18px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #fffafb, #fff);
+  border: 1px solid #eceef2;
+  box-shadow: 0 12px 30px rgba(17, 24, 39, .04);
 }
 
 .comment_top,
@@ -105,18 +112,30 @@ onMounted(loadList)
   align-items: flex-start;
 }
 
+.comment_level {
+  flex: 0 0 auto;
+  padding: 7px 12px;
+  border-radius: 999px;
+  color: #ff647c;
+  font-size: 12px;
+  font-weight: 700;
+  background: #fff2f5;
+  border: 1px solid #ffd4dc;
+}
+
 .comment_body {
   margin: 12px 0;
   line-height: 1.8;
-  padding: 12px 14px;
+  padding: 14px 16px;
   border-radius: 16px;
-  background: var(--color-fill-1);
+  background: #fafafb;
 }
 
 .image_list {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  margin-bottom: 12px;
 }
 
 @media (max-width: 768px) {
