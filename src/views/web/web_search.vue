@@ -71,14 +71,6 @@ function doSearch(key?: string) {
   })
 }
 
-function openHome() {
-  router.push({name: "web_home"})
-}
-
-function openCart() {
-  router.push({name: "web_cart"})
-}
-
 function openGoodsDetail(id: number) {
   router.push({
     name: "web_goods_detail",
@@ -100,13 +92,6 @@ onMounted(() => {
   <div class="web_search_view">
     <div class="page_shell">
       <section class="search_surface">
-        <header class="search_header">
-          <router-link class="brand_block" to="/">
-            <div class="brand_title">枫枫商城</div>
-            <div class="brand_subtitle">享受快人一步</div>
-          </router-link>
-        </header>
-
         <section class="search_panel">
           <div class="search_intro">
             <div class="intro_badge">SEARCH</div>
@@ -216,28 +201,8 @@ onMounted(() => {
   box-shadow: 0 20px 45px rgba(17, 24, 39, .05);
 }
 
-.brand_block {
-  text-decoration: none;
-  color: inherit;
-}
-
-.brand_title {
-  font-size: 28px;
-  line-height: 1.05;
-  color: #ff667d;
-  font-weight: 700;
-  letter-spacing: .02em;
-}
-
-.brand_subtitle {
-  margin-top: 6px;
-  color: #ff8b9b;
-  font-size: 12px;
-  letter-spacing: .18em;
-}
-
 .search_panel {
-  margin-top: 8px;
+  margin-top: 0;
   padding: 22px;
   border-radius: 16px;
   border: 1px solid #eceef2;
@@ -503,7 +468,6 @@ onMounted(() => {
     padding-right: 0;
   }
 
-  .brand_title,
   .result_title {
     font-size: 24px;
   }
