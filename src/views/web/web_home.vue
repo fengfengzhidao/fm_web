@@ -39,6 +39,7 @@ interface QuickEntry {
 
 const router = useRouter()
 const store = userStorei()
+const searchKeyword = ref("")
 const goodsList = ref<goodsIndexType[]>([])
 const bannerGoods = ref<goodsIndexType[]>([])
 const couponList = ref<acceptableCouponType[]>([])
@@ -226,6 +227,14 @@ function nextBanner() {
   activeBannerIndex.value = (activeBannerIndex.value + 1) % bannerList.value.length
 }
 
+function handleSearch(key?: string) {
+  const value = (key ?? searchKeyword.value).trim()
+  router.push({
+    name: "web_search",
+    query: value ? {key: value} : undefined,
+  })
+}
+
 async function loadGoods(category?: string) {
   loading.value = true
   try {
@@ -382,6 +391,16 @@ onMounted(() => {
               <div class="brand_title">枫枫商城</div>
               <div class="brand_subtitle">享受快人一步</div>
             </router-link>
+          </div>
+
+          <div class="header_search">
+            <a-input
+              v-model="searchKeyword"
+              allow-clear
+              placeholder="搜索你需要的商品"
+              @press-enter="handleSearch()"
+            />
+            <a-button type="primary" @click="handleSearch()">搜索</a-button>
           </div>
 
           <div class="header_quick_links">
@@ -622,7 +641,7 @@ onMounted(() => {
 
 .home_header {
   display: grid;
-  grid-template-columns: 162px minmax(0, 1fr);
+  grid-template-columns: 162px minmax(0, 1fr) auto;
   gap: 20px;
   align-items: center;
 }
@@ -646,6 +665,37 @@ onMounted(() => {
   color: #ff8b9b;
   font-size: 12px;
   letter-spacing: .18em;
+}
+
+.header_search {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 86px;
+  align-items: center;
+  min-height: 46px;
+  border-radius: 999px;
+  border: 2px solid #ff8fa0;
+  overflow: hidden;
+  background: #fff;
+
+  :deep(.arco-input-wrapper) {
+    height: 42px;
+    border: 0;
+    box-shadow: none;
+    padding-left: 14px;
+    background: transparent;
+  }
+
+  :deep(.arco-input) {
+    font-size: 13px;
+  }
+
+  :deep(.arco-btn) {
+    height: 42px;
+    border-radius: 999px;
+    margin: 2px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #ff7a8f, #ff627a);
+  }
 }
 
 .header_quick_links {
@@ -1213,6 +1263,10 @@ onMounted(() => {
 
   .brand_title {
     font-size: 24px;
+  }
+
+  .header_search {
+    grid-template-columns: minmax(0, 1fr) 74px;
   }
 
   .feature_tabs {
