@@ -8,29 +8,30 @@ import {
   IconStorage
 } from "@arco-design/web-vue/es/icon";
 import {Message} from "@arco-design/web-vue";
-import {goodsIndexListApi, type goodsIndexType} from "@/api/goods_api";
+import {goodsCategoryListApi, goodsIndexListApi, type goodsIndexType} from "@/api/goods_api";
+import type {optionsType} from "@/api";
 
 const route = useRoute()
 const router = useRouter()
 const keyword = ref("")
 const loading = ref(false)
 const goodsList = ref<goodsIndexType[]>([])
+const categoryList = ref<optionsType[]>([])
 
-const quickKeys = [
-  "数码家电",
-  "品质生活",
-  "服饰运动",
-  "食品生鲜",
-  "秒杀",
-  "优惠券",
-]
-
-const navTabs = [
+const baseTabs = [
   {title: "猜你喜欢", key: "推荐", icon: "heart"},
   {title: "秒杀专区", key: "秒杀", icon: "fire"},
-  {title: "数码产品", key: "数码家电", icon: "apps"},
-  {title: "办公文具", key: "办公", icon: "storage"},
 ]
+const categoryIcons = ["apps", "storage"] as const
+const quickKeys = computed(() => categoryList.value.slice(0, 6).map((item) => item.label))
+const navTabs = computed(() => ([
+  ...baseTabs,
+  ...categoryList.value.slice(0, 4).map((item, index) => ({
+    title: item.label,
+    key: item.label,
+    icon: categoryIcons[index % categoryIcons.length],
+  })),
+]))
 
 const currentKey = computed(() => (route.query.key as string || "").trim())
 const resultText = computed(() => currentKey.value || "全部商品")
@@ -63,6 +64,22 @@ async function loadGoods(key?: string) {
   }
 }
 
+async function loadCategories() {
+  try {
+    const res = await goodsCategoryListApi()
+    if (res.code) {
+      Message.warning(res.msg)
+      categoryList.value = []
+      return
+    }
+    categoryList.value = res.data || []
+  } catch (error) {
+    console.error(error)
+    Message.warning("商品分类加载失败")
+    categoryList.value = []
+  }
+}
+
 function doSearch(key?: string) {
   const value = (key ?? keyword.value).trim()
   router.push({
@@ -85,6 +102,7 @@ watch(currentKey, (value) => {
 
 onMounted(() => {
   keyword.value = currentKey.value
+  loadCategories()
 })
 </script>
 
@@ -332,7 +350,7 @@ onMounted(() => {
 
 .result_title {
   color: #111827;
-  font-size: 30px;
+  font-size: 24px;
   font-weight: 700;
   line-height: 1.1;
 }
@@ -347,6 +365,15 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 14px;
+
+  :deep(.arco-link) {
+    color: #ff647c;
+    font-weight: 600;
+  }
+
+  :deep(.arco-link:hover) {
+    color: #ff4f69;
+  }
 }
 
 .result_filter {
@@ -469,7 +496,7 @@ onMounted(() => {
   }
 
   .result_title {
-    font-size: 24px;
+    font-size: 20px;
   }
 
   .search_bar {
