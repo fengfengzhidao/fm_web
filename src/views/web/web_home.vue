@@ -598,13 +598,13 @@ onMounted(() => {
 .page_shell {
   width: min(1180px, calc(100% - 48px));
   margin: 0 auto;
-  padding: 22px 0 36px;
+  padding: 32px 0 36px;
 }
 
 .home_surface {
   background: #fff;
   border-radius: 18px;
-  padding: 26px 22px 24px;
+  padding: 0;
   box-shadow: 0 20px 45px rgba(17, 24, 39, .06);
 }
 
