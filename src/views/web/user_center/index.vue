@@ -276,16 +276,18 @@ function go(name: string) {
 .menu_item {
   width: 100%;
   text-align: left;
+  appearance: none;
   border: 1px solid #eceef2;
   background: #fafafb;
   border-radius: 14px;
   padding: 13px 14px;
   cursor: pointer;
   transition: .18s ease;
-  display: grid;
-  grid-template-columns: 42px minmax(0, 1fr);
+  display: flex;
   gap: 12px;
   align-items: center;
+  min-height: 68px;
+  line-height: 1;
 
   strong,
   span {
@@ -321,8 +323,10 @@ function go(name: string) {
   width: 42px;
   height: 42px;
   border-radius: 14px;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
   flex-shrink: 0;
   background: linear-gradient(180deg, #fff8fa 0%, #fff 100%);
   border: 1px solid #ffe0e6;
@@ -337,11 +341,13 @@ function go(name: string) {
 }
 
 .menu_text {
+  flex: 1;
   min-width: 0;
   min-height: 42px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  gap: 4px;
 }
 
 @media (max-width: 1100px) {
