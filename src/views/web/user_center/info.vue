@@ -1,16 +1,22 @@
 <script setup lang="ts">
 import {computed} from "vue";
 import {useRouter} from "vue-router";
+import {
+  IconGift,
+  IconLocation,
+  IconOrderedList,
+  IconStar
+} from "@arco-design/web-vue/es/icon";
 import {userStorei} from "@/stores/user_store";
 
 const router = useRouter()
 const store = userStorei()
 
 const quickLinks = [
-  {title: "我的订单", name: "web_user_center_order"},
-  {title: "我的收藏", name: "web_user_center_collect"},
-  {title: "我的地址", name: "web_user_center_addr"},
-  {title: "我的优惠券", name: "web_user_center_coupon"},
+  {title: "我的订单", desc: "查看订单记录与详情", name: "web_user_center_order", icon: "order"},
+  {title: "我的收藏", desc: "管理收藏商品", name: "web_user_center_collect", icon: "star"},
+  {title: "我的地址", desc: "维护收货地址", name: "web_user_center_addr", icon: "location"},
+  {title: "我的优惠券", desc: "查看可用优惠券", name: "web_user_center_coupon", icon: "gift"},
 ]
 
 const roleText = computed(() => store.isAdmin ? "管理员" : "普通用户")
@@ -19,15 +25,13 @@ const roleText = computed(() => store.isAdmin ? "管理员" : "普通用户")
 <template>
   <div class="info_view">
     <div class="panel_head">
-      <div>
-        <div class="eyebrow">PROFILE</div>
-        <h2>个人中心</h2>
-        <p>查看当前账号信息，并快速进入常用模块。</p>
-      </div>
+      <div class="eyebrow">PROFILE</div>
+      <h2>个人中心</h2>
+      <p>查看当前账号信息，并快速进入最常用的订单、收藏、地址和优惠券模块。</p>
     </div>
 
     <div class="profile_card">
-      <a-avatar :size="84" :image-url="store.userInfo.avatar || '/logo.png'"/>
+      <a-avatar :size="88" :image-url="store.userInfo.avatar || '/logo.png'"/>
       <div class="profile_body">
         <strong>{{ store.userInfo.nickName || store.userInfo.userName || "未命名用户" }}</strong>
         <span>用户名：{{ store.userInfo.userName || "-" }}</span>
@@ -38,8 +42,14 @@ const roleText = computed(() => store.isAdmin ? "管理员" : "普通用户")
 
     <div class="quick_grid">
       <button v-for="item in quickLinks" :key="item.name" class="quick_card" @click="router.push({name: item.name})">
+        <span class="card_icon">
+          <IconOrderedList v-if="item.icon === 'order'"/>
+          <IconStar v-else-if="item.icon === 'star'"/>
+          <IconLocation v-else-if="item.icon === 'location'"/>
+          <IconGift v-else/>
+        </span>
         <strong>{{ item.title }}</strong>
-        <span>进入对应管理页</span>
+        <span>{{ item.desc }}</span>
       </button>
     </div>
   </div>
@@ -51,32 +61,40 @@ const roleText = computed(() => store.isAdmin ? "管理员" : "普通用户")
   gap: 18px;
 }
 
+.eyebrow {
+  color: #ff647c;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .12em;
+}
+
 .panel_head h2 {
-  margin: 8px 0 8px;
-  font-size: 28px;
+  margin: 10px 0 8px;
+  color: #111827;
+  font-size: 32px;
+  line-height: 1.1;
 }
 
 .panel_head p,
-.profile_body span {
-  color: var(--color-text-2);
+.profile_body span,
+.quick_card span:last-child {
+  color: #6b7280;
 }
 
-.eyebrow {
-  color: #ff5d72;
+.panel_head p {
+  margin: 0;
   font-size: 14px;
-  font-weight: 700;
-  letter-spacing: .08em;
+  line-height: 1.8;
 }
 
 .profile_card {
   display: flex;
   gap: 18px;
   align-items: center;
-  padding: 20px;
-  border-radius: 22px;
-  background: var(--color-bg-1);
-  border: 1px solid var(--color-border-2);
-  box-shadow: 0 10px 30px rgba(15, 23, 42, .04);
+  padding: 22px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #fffafb, #ffffff 62%);
+  border: 1px solid #eceef2;
 }
 
 .profile_body {
@@ -85,33 +103,61 @@ const roleText = computed(() => store.isAdmin ? "管理员" : "普通用户")
 }
 
 .profile_body strong {
-  font-size: 22px;
+  color: #111827;
+  font-size: 24px;
+}
+
+.profile_body span {
+  font-size: 13px;
 }
 
 .quick_grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: 12px;
 }
 
 .quick_card {
   text-align: left;
   padding: 18px;
-  border-radius: 18px;
-  border: 1px solid var(--color-border-2);
-  background: var(--color-fill-1);
+  border-radius: 14px;
+  border: 1px solid #eceef2;
+  background: #fafafb;
   cursor: pointer;
-  box-shadow: 0 8px 22px rgba(15, 23, 42, .03);
+  transition: .18s ease;
+
+  &:hover {
+    border-color: #ffccd5;
+    background: #fff4f6;
+  }
 
   strong,
   span {
     display: block;
   }
 
-  span {
-    margin-top: 6px;
-    color: var(--color-text-2);
+  strong {
+    margin-top: 12px;
+    color: #111827;
+    font-size: 16px;
   }
+
+  span:last-child {
+    margin-top: 6px;
+    font-size: 12px;
+    line-height: 1.7;
+  }
+}
+
+.card_icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  color: #ff637a;
+  font-size: 18px;
 }
 
 @media (max-width: 768px) {
