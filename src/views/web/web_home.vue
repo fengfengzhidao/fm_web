@@ -19,6 +19,8 @@ import {useRouter} from "vue-router";
 import F_footer from "@/components/web/f_footer.vue";
 import {goodsCategoryListApi, goodsIndexListApi, type goodsIndexType} from "@/api/goods_api";
 import {couponAcceptableListApi, couponReceiveApi, type acceptableCouponType} from "@/api/coupon_api";
+import {dataUserStatisticApi} from "@/api/data_api";
+import {userCouponListApi} from "@/api/coupon_api";
 import {userStorei} from "@/stores/user_store";
 import homeBg from "@/assets/img/home_bg.png";
 
@@ -49,6 +51,12 @@ const categoryTabs = ref<FeatureTab[]>([])
 const activeFeatureKey = ref("recommend")
 const activeBannerIndex = ref(0)
 let bannerTimer: number | undefined
+const userSummary = ref({
+  couponCount: 0,
+  obligation: 0,
+  pendingShipment: 0,
+  pendingComment: 0,
+})
 
 const featureTabs = computed<FeatureTab[]>(() => [
   {title: "猜你喜欢", key: "recommend", icon: "heart", type: "recommend"},
@@ -137,6 +145,48 @@ async function loadBannerGoods() {
     Message.error("轮播商品加载失败")
   } finally {
     bannerLoading.value = false
+  }
+}
+
+async function loadUserSummary() {
+  if (!store.isLogin) {
+    userSummary.value = {
+      couponCount: 0,
+      obligation: 0,
+      pendingShipment: 0,
+      pendingComment: 0,
+    }
+    return
+  }
+
+  try {
+    const [userRes, couponRes] = await Promise.all([
+      dataUserStatisticApi(),
+      userCouponListApi({page: 1, limit: 1}),
+    ])
+
+    if (userRes.code) {
+      Message.warning(userRes.msg)
+    }
+    if (couponRes.code) {
+      Message.warning(couponRes.msg)
+    }
+
+    userSummary.value = {
+      couponCount: couponRes.code ? 0 : (couponRes.data?.count || 0),
+      obligation: userRes.code ? 0 : (userRes.data?.obligation || 0),
+      pendingShipment: userRes.code ? 0 : (userRes.data?.pendingShipment || 0),
+      pendingComment: userRes.code ? 0 : (userRes.data?.pendingComment || 0),
+    }
+  } catch (error) {
+    console.error(error)
+    Message.error("用户数据加载失败")
+    userSummary.value = {
+      couponCount: 0,
+      obligation: 0,
+      pendingShipment: 0,
+      pendingComment: 0,
+    }
   }
 }
 
@@ -315,6 +365,10 @@ watch(bannerList, () => {
   startBannerTimer()
 }, {immediate: true})
 
+watch(() => store.isLogin, () => {
+  void loadUserSummary()
+}, {immediate: true})
+
 onBeforeUnmount(() => {
   stopBannerTimer()
 })
@@ -324,6 +378,7 @@ onMounted(() => {
   loadBannerGoods()
   loadGoods()
   loadCoupons()
+  void loadUserSummary()
 })
 </script>
 
@@ -498,19 +553,19 @@ onMounted(() => {
             <div class="user_stats">
               <div class="user_stat">
                 <span>优惠券</span>
-                <strong>7</strong>
+                <strong>{{ userSummary.couponCount }}</strong>
               </div>
               <div class="user_stat">
                 <span>待付款</span>
-                <strong>2</strong>
+                <strong>{{ userSummary.obligation }}</strong>
               </div>
               <div class="user_stat">
                 <span>待发货</span>
-                <strong>3</strong>
+                <strong>{{ userSummary.pendingShipment }}</strong>
               </div>
               <div class="user_stat">
                 <span>待评价</span>
-                <strong>4</strong>
+                <strong>{{ userSummary.pendingComment }}</strong>
               </div>
             </div>
 
