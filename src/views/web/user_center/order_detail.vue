@@ -153,84 +153,101 @@ onMounted(loadDetail)
     </div>
 
     <a-spin :loading="loading">
-      <div v-if="detail" class="detail_grid">
-        <section class="detail_card summary_card span_2">
-          <div class="card_title">订单信息</div>
-          <div class="summary_box">
-            <div>
-              <span>订单号</span>
-              <strong>{{ detail.no }}</strong>
+      <div v-if="detail" class="detail_stack">
+        <section class="status_card">
+          <div class="status_main">
+            <div class="status_copy">
+              <div class="card_label">订单状态</div>
+              <div class="status_row">
+                <h3>{{ orderStatusText(detail.status) }}</h3>
+                <a-tag :color="orderStatusColor(detail.status)">{{ orderStatusText(detail.status) }}</a-tag>
+              </div>
+              <div class="status_no">订单号：{{ detail.no }}</div>
             </div>
-            <div>
-              <span>订单状态</span>
-              <a-tag :color="orderStatusColor(detail.status)">{{ orderStatusText(detail.status) }}</a-tag>
-            </div>
-            <div>
-              <span>订单金额</span>
+
+            <div class="status_price">
+              <span>实付金额</span>
               <strong>￥{{ formatPrice(detail.price) }}</strong>
-            </div>
-            <div>
-              <span>优惠金额</span>
-              <strong>￥{{ formatPrice(detail.coupon) }}</strong>
+              <em>已优惠 ￥{{ formatPrice(detail.coupon) }}</em>
             </div>
           </div>
-          <div class="summary_hint">
+
+          <div class="status_meta">
             <span><IconCheckCircle/> 创建时间：{{ dateTimeFormat(detail.createdAt) }}</span>
             <span><IconSafe/> 更新时间：{{ dateTimeFormat(detail.updatedAt) }}</span>
           </div>
         </section>
 
-        <section class="detail_card">
-          <div class="card_title">收货地址</div>
-          <div class="addr_box">
-            <strong>{{ detail.addrInfo.name }}</strong>
-            <span>{{ detail.addrInfo.tel }}</span>
-            <span>{{ detail.addrInfo.addr }} {{ detail.addrInfo.detailAddr }}</span>
-          </div>
-          <div class="hint_row">
-            <IconLocation/>
-            <span>下单后默认按照该地址进行配送</span>
-          </div>
-        </section>
-
-        <section class="detail_card">
-          <div class="card_title">支付信息</div>
-          <div class="info_list">
-            <div>支付方式：{{ detail.payType }}</div>
-            <div>
-              支付地址：
-              <a-link v-if="detail.payUrl" :href="detail.payUrl" target="_blank">打开支付页</a-link>
-              <span v-else>暂无</span>
+        <section class="content_card">
+          <section class="content_section">
+            <div class="section_head">
+              <div class="card_title">收货与支付</div>
             </div>
-          </div>
-          <div class="hint_row">
-            <IconGift/>
-            <span>如果后端生成了支付地址，会从这里直接跳转</span>
-          </div>
-        </section>
 
-        <section class="detail_card detail_goods span_2">
-          <div class="card_title">商品列表</div>
-          <article v-for="item in detail.goodsList" :key="item.orderGoodsID" class="goods_row">
-            <img :src="item.cover" :alt="item.title">
-            <div class="goods_meta">
-              <strong>{{ item.title }}</strong>
-              <span>单价 ￥{{ formatPrice(item.price) }}</span>
-              <span>数量 x{{ item.num }}</span>
-              <span>备注：{{ item.note || "无" }}</span>
-            </div>
-          </article>
-        </section>
+            <div class="info_grid">
+              <div class="info_block">
+                <div class="block_title">收货地址</div>
+                <div class="addr_box">
+                  <strong>{{ detail.addrInfo.name }} {{ detail.addrInfo.tel }}</strong>
+                  <span>{{ detail.addrInfo.addr }} {{ detail.addrInfo.detailAddr }}</span>
+                </div>
+                <div class="hint_row">
+                  <IconLocation/>
+                  <span>下单后默认按照该地址进行配送</span>
+                </div>
+              </div>
 
-        <section class="detail_card span_2">
-          <div class="card_title">优惠券</div>
-          <div v-if="detail.couponList.length" class="coupon_list">
-            <div v-for="coupon in detail.couponList" :key="coupon.couponPrice + coupon.type" class="coupon_item">
-              <strong>￥{{ formatPrice(coupon.couponPrice) }}</strong>
-              <span>类型 {{ coupon.type }}</span>
+              <div class="info_block">
+                <div class="block_title">支付信息</div>
+                <div class="info_list">
+                  <div><span>支付方式</span><strong>{{ detail.payType }}</strong></div>
+                  <div>
+                    <span>支付地址</span>
+                    <a-link v-if="detail.payUrl" :href="detail.payUrl" target="_blank">打开支付页</a-link>
+                    <strong v-else>暂无</strong>
+                  </div>
+                </div>
+                <div class="hint_row">
+                  <IconGift/>
+                  <span>如果后端生成了支付地址，会从这里直接跳转</span>
+                </div>
+              </div>
             </div>
-          </div>
-          <div v-else class="empty_card">暂无优惠券</div>
+          </section>
+
+          <section class="content_section">
+            <div class="section_head">
+              <div class="card_title">商品列表</div>
+            </div>
+
+            <div class="goods_list">
+              <article v-for="item in detail.goodsList" :key="item.orderGoodsID" class="goods_row">
+                <img :src="item.cover" :alt="item.title">
+                <div class="goods_meta">
+                  <strong>{{ item.title }}</strong>
+                  <div class="goods_desc">
+                    <span>单价 ￥{{ formatPrice(item.price) }}</span>
+                    <span>数量 x{{ item.num }}</span>
+                    <span>备注：{{ item.note || "无" }}</span>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section class="content_section">
+            <div class="section_head">
+              <div class="card_title">优惠券</div>
+            </div>
+
+            <div v-if="detail.couponList.length" class="coupon_list">
+              <div v-for="coupon in detail.couponList" :key="coupon.couponPrice + coupon.type" class="coupon_item">
+                <strong>￥{{ formatPrice(coupon.couponPrice) }}</strong>
+                <span>类型 {{ coupon.type }}</span>
+              </div>
+            </div>
+            <div v-else class="empty_card">暂无优惠券</div>
+          </section>
         </section>
       </div>
       <div v-else class="empty_card">未找到订单</div>
@@ -288,68 +305,86 @@ onMounted(loadDetail)
   line-height: 1.8;
 }
 
-.detail_grid {
+.detail_stack {
   display: grid;
-  gap: 14px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
 }
 
-.detail_card {
-  padding: 18px;
+.status_card,
+.content_card {
+  padding: 20px;
   border-radius: 16px;
   background: #fff;
   border: 1px solid #eceef2;
 }
 
-.summary_card {
+.status_card {
   background: linear-gradient(180deg, #fffafb, #ffffff 62%);
 }
 
-.span_2 {
-  grid-column: 1 / -1;
-}
-
-.card_title {
-  color: #111827;
-  font-size: 24px;
-  font-weight: 700;
-  line-height: 1.1;
-  margin-bottom: 12px;
-}
-
-.summary_box {
+.status_main {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+}
+
+.card_label {
+  color: #ff647c;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+
+.status_row {
+  margin-top: 6px;
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
+  align-items: center;
+}
 
-  > div {
-    padding: 14px;
-    border-radius: 14px;
-    background: #fff;
-    border: 1px solid #eceef2;
-  }
+.status_row h3 {
+  margin: 0;
+  color: #111827;
+  font-size: 30px;
+  line-height: 1.1;
+}
 
-  span {
-    display: block;
-    color: #9ca3af;
+.status_no {
+  margin-top: 12px;
+  color: #6b7280;
+  font-size: 14px;
+  word-break: break-all;
+}
+
+.status_price {
+  display: grid;
+  justify-items: end;
+  gap: 4px;
+
+  span,
+  em {
+    color: #6b7280;
     font-size: 12px;
+    font-style: normal;
   }
 
   strong {
-    display: block;
-    margin-top: 8px;
-    color: #111827;
-    font-size: 18px;
-    line-height: 1.4;
-    word-break: break-all;
+    color: #ff637a;
+    font-size: 34px;
+    line-height: 1;
   }
 }
 
-.summary_hint {
-  margin-top: 12px;
+.status_meta {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #f0f2f5;
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
+  color: #6b7280;
   font-size: 12px;
 
   span {
@@ -359,10 +394,71 @@ onMounted(loadDetail)
   }
 }
 
+.content_card {
+  display: grid;
+  gap: 0;
+}
+
+.content_section {
+  padding: 4px 0 0;
+
+  & + .content_section {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid #f0f2f5;
+  }
+}
+
+.section_head {
+  margin-bottom: 14px;
+}
+
+.card_title {
+  color: #111827;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.info_grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.info_block {
+  min-width: 0;
+}
+
+.block_title {
+  margin-bottom: 10px;
+  color: #111827;
+  font-size: 16px;
+  font-weight: 700;
+}
+
 .info_list {
   display: grid;
-  gap: 8px;
+  gap: 10px;
   line-height: 1.7;
+
+  > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    align-items: center;
+  }
+
+  span {
+    color: #9ca3af;
+    font-size: 13px;
+  }
+
+  strong {
+    color: #111827;
+    font-size: 14px;
+    font-weight: 600;
+  }
 }
 
 .addr_box {
@@ -382,9 +478,10 @@ onMounted(loadDetail)
   align-items: center;
   gap: 6px;
   font-size: 12px;
+  color: #6b7280;
 }
 
-.detail_goods {
+.goods_list {
   display: grid;
   gap: 12px;
 }
@@ -393,10 +490,9 @@ onMounted(loadDetail)
   display: grid;
   grid-template-columns: 96px minmax(0, 1fr);
   gap: 14px;
-  padding: 12px;
+  padding: 14px;
   border-radius: 14px;
   background: #fafafb;
-  border: 1px solid #eceef2;
 }
 
 .goods_row img {
@@ -408,13 +504,22 @@ onMounted(loadDetail)
 
 .goods_meta {
   display: grid;
-  gap: 4px;
+  gap: 8px;
 }
 
 .goods_meta strong,
 .coupon_item strong {
   color: #111827;
   font-size: 16px;
+}
+
+.goods_desc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.7;
 }
 
 .coupon_list {
@@ -426,7 +531,10 @@ onMounted(loadDetail)
   padding: 12px 14px;
   border-radius: 14px;
   background: #fafafb;
-  border: 1px solid #eceef2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .empty_card {
@@ -448,9 +556,13 @@ onMounted(loadDetail)
     justify-content: flex-start;
   }
 
-  .detail_grid,
-  .summary_box {
+  .status_main,
+  .info_grid {
     grid-template-columns: 1fr;
+  }
+
+  .status_price {
+    justify-items: flex-start;
   }
 }
 
