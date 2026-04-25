@@ -14,6 +14,7 @@ import {commentLevelApi, goodsCommentListApi, type commentLevelType, type goodsC
 import {carCreateApi} from "@/api/car_api";
 import {userStorei} from "@/stores/user_store";
 import {dateTimeFormat} from "@/utils/date";
+import homeBg from "@/assets/img/home_bg.png";
 
 const route = useRoute()
 const router = useRouter()
@@ -38,7 +39,10 @@ const commentFilters = [
 ]
 
 const goodsID = computed(() => Number(route.params.id))
-const previewImages = computed(() => detail.value?.images || [])
+const previewImages = computed(() => {
+  const list = detail.value?.images?.filter((item) => Boolean(item)) || []
+  return list.length ? list : [homeBg]
+})
 
 function formatPrice(price?: number | null): string {
   if (price === null || price === undefined) {
@@ -73,7 +77,7 @@ async function loadDetail() {
 
     detail.value = detailRes.data
     level.value = levelRes.code ? null : levelRes.data
-    currentImage.value = detailRes.data.images?.[0] || detailRes.data.goodsConfigList?.[0]?.subList?.[0]?.image || ""
+    currentImage.value = detailRes.data.images?.find((item) => Boolean(item)) || detailRes.data.goodsConfigList?.[0]?.subList?.[0]?.image || homeBg
     buyNum.value = 1
     await loadComments(commentFilter.value)
   } catch (error) {
@@ -82,6 +86,15 @@ async function loadDetail() {
   } finally {
     loading.value = false
   }
+}
+
+function handleImageError(event: Event) {
+  const target = event.target as HTMLImageElement | null
+  if (!target || target.dataset.fallbackApplied === "1") {
+    return
+  }
+  target.dataset.fallbackApplied = "1"
+  target.src = homeBg
 }
 
 function buildCommentParams(filter: string): goodsCommentListParams {
@@ -156,7 +169,7 @@ watch(goodsID, () => {
 
 onMounted(() => {
   if (detail.value?.images?.length && !currentImage.value) {
-    currentImage.value = detail.value.images[0]
+    currentImage.value = detail.value.images.find((item) => Boolean(item)) || homeBg
   }
 })
 </script>
@@ -182,10 +195,10 @@ onMounted(() => {
           <div v-if="detail" class="detail_grid">
             <div class="gallery_panel">
               <div class="main_cover">
-                <img :src="currentImage || detail.images?.[0]" :alt="detail.title">
+                <img :src="currentImage || previewImages[0]" :alt="detail.title" @error="handleImageError">
               </div>
 
-              <div class="thumb_list">
+              <div v-if="previewImages.length > 1" class="thumb_list">
                 <button
                   v-for="(img, index) in previewImages"
                   :key="img + index"
@@ -193,7 +206,7 @@ onMounted(() => {
                   :class="{active: currentImage === img}"
                   @click="currentImage = img"
                 >
-                  <img :src="img" :alt="detail.title">
+                  <img :src="img" :alt="detail.title" @error="handleImageError">
                 </button>
               </div>
             </div>
