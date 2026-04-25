@@ -8,18 +8,22 @@ import {dateTimeFormat} from "@/utils/date";
 const router = useRouter()
 const loading = ref(false)
 const list = ref<collectGoodsType[]>([])
+const total = ref(0)
+const currentPage = ref(1)
+const pageSize = ref(12)
 
-const count = computed(() => list.value.length)
+const count = computed(() => total.value)
 
 async function loadList() {
   loading.value = true
   try {
-    const res = await collectGoodsListApi({limit: 50, page: 1})
+    const res = await collectGoodsListApi({limit: pageSize.value, page: currentPage.value})
     if (res.code) {
       Message.error(res.msg)
       return
     }
     list.value = res.data.list || []
+    total.value = res.data.count || 0
   } catch (error) {
     console.error(error)
     Message.error("收藏列表加载失败")
@@ -46,6 +50,14 @@ async function removeItem(item: collectGoodsType) {
     return
   }
   Message.success("已取消收藏")
+  if (list.value.length === 1 && currentPage.value > 1) {
+    currentPage.value -= 1
+  }
+  await loadList()
+}
+
+async function handlePageChange(page: number) {
+  currentPage.value = page
   await loadList()
 }
 
@@ -90,6 +102,16 @@ onMounted(loadList)
       </div>
       <a-empty v-else description="暂无收藏"/>
     </a-spin>
+
+    <div v-if="count > pageSize" class="pager_wrap">
+      <a-pagination
+        :total="count"
+        :current="currentPage"
+        :page-size="pageSize"
+        :show-total="true"
+        @change="handlePageChange"
+      />
+    </div>
   </div>
 </template>
 
@@ -209,6 +231,25 @@ onMounted(loadList)
   justify-content: flex-end;
 }
 
+.pager_wrap {
+  display: flex;
+  justify-content: flex-end;
+
+  :deep(.arco-pagination-item-active),
+  :deep(.arco-pagination-item:hover) {
+    border-color: #ffccd5;
+    color: #ff647c;
+  }
+
+  :deep(.arco-pagination-item-active) {
+    background: #fff2f5;
+  }
+
+  :deep(.arco-pagination-item-active:hover) {
+    background: #fff0f4;
+  }
+}
+
 @media (max-width: 768px) {
   .panel_head,
   .goods_card {
@@ -225,6 +266,10 @@ onMounted(loadList)
   }
 
   .actions {
+    justify-content: flex-start;
+  }
+
+  .pager_wrap {
     justify-content: flex-start;
   }
 }
