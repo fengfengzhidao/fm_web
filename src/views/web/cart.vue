@@ -16,13 +16,29 @@ import {userStorei} from "@/stores/user_store";
 const router = useRouter()
 const store = userStorei()
 const loading = ref(false)
-const cart = ref<carListType>({
-  goodsList: [],
-  couponList: [],
-  price: 0,
-})
 const selectedIds = ref<number[]>([])
 const selectedCouponIDs = ref<number[]>([])
+
+function createEmptyCart(): carListType {
+  return {
+    goodsList: [],
+    couponList: [],
+    price: 0,
+  }
+}
+
+function normalizeCartData(data?: Partial<carListType> | null): carListType {
+  const goodsList = data?.goodsList
+  const couponList = data?.couponList
+
+  return {
+    goodsList: Array.isArray(goodsList) ? goodsList : [],
+    couponList: Array.isArray(couponList) ? couponList : [],
+    price: typeof data?.price === "number" ? data.price : 0,
+  }
+}
+
+const cart = ref<carListType>(createEmptyCart())
 
 function formatPrice(price?: number | null): string {
   if (price === null || price === undefined) {
@@ -42,7 +58,7 @@ async function loadCart(nextSelectedIds?: number[]) {
       Message.error(res.msg)
       return
     }
-    cart.value = res.data
+    cart.value = normalizeCartData(res.data)
     selectedIds.value = cart.value.goodsList.filter((item) => item.used).map((item) => item.carID)
 
     if (!selectedIds.value.length && cart.value.goodsList.length && !nextSelectedIds) {
@@ -52,6 +68,9 @@ async function loadCart(nextSelectedIds?: number[]) {
     }
   } catch (error) {
     console.error(error)
+    cart.value = createEmptyCart()
+    selectedIds.value = []
+    selectedCouponIDs.value = []
     Message.error("购物车加载失败")
   } finally {
     loading.value = false

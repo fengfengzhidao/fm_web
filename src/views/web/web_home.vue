@@ -33,7 +33,7 @@ interface FeatureTab {
 
 interface QuickEntry {
   title: string
-  desc: string
+  desc?: string
   key: string
 }
 
@@ -51,7 +51,9 @@ const activeFeatureKey = ref("recommend")
 const activeBannerIndex = ref(0)
 let bannerTimer: number | undefined
 const userSummary = ref({
+  carNum: 0,
   couponCount: 0,
+  msgNum: 0,
   obligation: 0,
   pendingShipment: 0,
   pendingComment: 0,
@@ -86,12 +88,20 @@ const categoryIcons: Array<FeatureTab["icon"]> = [
   "storage",
 ]
 
-const quickEntries: QuickEntry[] = [
-  {title: "购物车", desc: "12", key: "cart"},
-  {title: "消息通知", desc: "3", key: "message"},
-  {title: "我的收藏", desc: "", key: "collect"},
-  {title: "我的地址", desc: "", key: "addr"},
-]
+const quickEntries = computed<QuickEntry[]>(() => [
+  {
+    title: "购物车",
+    desc: userSummary.value.carNum > 0 ? String(userSummary.value.carNum) : undefined,
+    key: "cart",
+  },
+  {
+    title: "消息通知",
+    desc: userSummary.value.msgNum > 0 ? String(userSummary.value.msgNum) : undefined,
+    key: "message",
+  },
+  {title: "我的收藏", key: "collect"},
+  {title: "我的地址", key: "addr"},
+])
 
 function formatPrice(price?: number | null): string {
   if (price === null || price === undefined) {
@@ -150,7 +160,9 @@ async function loadBannerGoods() {
 async function loadUserSummary() {
   if (!store.isLogin) {
     userSummary.value = {
+      carNum: 0,
       couponCount: 0,
+      msgNum: 0,
       obligation: 0,
       pendingShipment: 0,
       pendingComment: 0,
@@ -172,7 +184,9 @@ async function loadUserSummary() {
     }
 
     userSummary.value = {
+      carNum: userRes.code ? 0 : (userRes.data?.carNum || 0),
       couponCount: couponRes.code ? 0 : (couponRes.data?.count || 0),
+      msgNum: userRes.code ? 0 : (userRes.data?.msgNum || 0),
       obligation: userRes.code ? 0 : (userRes.data?.obligation || 0),
       pendingShipment: userRes.code ? 0 : (userRes.data?.pendingShipment || 0),
       pendingComment: userRes.code ? 0 : (userRes.data?.pendingComment || 0),
@@ -181,7 +195,9 @@ async function loadUserSummary() {
     console.error(error)
     Message.error("用户数据加载失败")
     userSummary.value = {
+      carNum: 0,
       couponCount: 0,
+      msgNum: 0,
       obligation: 0,
       pendingShipment: 0,
       pendingComment: 0,
