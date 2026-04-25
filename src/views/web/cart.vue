@@ -212,16 +212,18 @@ onMounted(() => {
           <div v-if="!isEmpty" class="cart_grid">
             <div class="goods_panel">
               <div class="panel_head_row">
-                <div>
-                  <div class="panel_title">商品列表</div>
-                </div>
                 <a-checkbox
+                  class="head_select"
                   :model-value="allSelected"
                   :indeterminate="selectedIds.length > 0 && !allSelected"
                   @change="(checked) => toggleSelectAll(Boolean(checked))"
                 >
                   全选
                 </a-checkbox>
+
+                <div class="head_title">
+                  <div class="panel_title">商品列表</div>
+                </div>
               </div>
 
               <article class="cart_item" v-for="item in cart.goodsList" :key="item.carID">
@@ -338,8 +340,8 @@ onMounted(() => {
 }
 
 .cart_surface {
-  background: #fff;
-  box-shadow: 0 20px 45px rgba(17, 24, 39, .05);
+  background: transparent;
+  box-shadow: none;
 }
 
 .hero_section {
@@ -445,11 +447,19 @@ onMounted(() => {
 }
 
 .panel_head_row {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 112px minmax(0, 1fr) 180px;
   align-items: flex-start;
-  justify-content: space-between;
   gap: 12px;
   margin-bottom: 14px;
+}
+
+.head_select {
+  align-self: center;
+}
+
+.head_title {
+  grid-column: 2 / 5;
 }
 
 .panel_title {
@@ -680,6 +690,24 @@ onMounted(() => {
   justify-content: center;
 }
 
+:deep(.arco-spin),
+:deep(.arco-spin-children) {
+  width: 100%;
+}
+
+:deep(.arco-checkbox) {
+  --color-primary-light-1: #fff2f5;
+  --color-primary-light-2: #ffdce5;
+  --color-primary-light-3: #ffc3d1;
+  --color-primary-light-4: #ffadc0;
+  --color-primary-light-5: #ff90aa;
+  --color-primary-light-6: #ff748f;
+  --color-primary: #ff637a;
+  --color-primary-hover: #ff4f69;
+  --color-primary-active: #f0425d;
+  --color-primary-disabled: #ffb8c6;
+}
+
 @media (max-width: 1100px) {
   .hero_section,
   .cart_grid {
@@ -699,8 +727,12 @@ onMounted(() => {
   }
 
   .panel_head_row {
+    grid-template-columns: 1fr;
     align-items: flex-start;
-    flex-direction: column;
+  }
+
+  .head_title {
+    grid-column: auto;
   }
 
   .cart_item {
