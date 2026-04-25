@@ -83,7 +83,6 @@ onMounted(loadList)
           <div class="body">
             <div class="body_top">
               <strong @click="openDetail(item)">{{ item.title || item.goodsTitle }}</strong>
-              <span class="status_chip">已收藏</span>
             </div>
             <div class="meta_list">
               <span>价格：￥{{ formatPrice(item.price) }}</span>
@@ -206,17 +205,6 @@ onMounted(loadList)
 .body strong {
   font-size: 18px;
   cursor: pointer;
-}
-
-.status_chip {
-  flex: 0 0 auto;
-  padding: 6px 10px;
-  border-radius: 999px;
-  color: #ff647c;
-  font-size: 11px;
-  font-weight: 700;
-  background: #fff2f5;
-  border: 1px solid #ffd4dc;
 }
 
 .meta_list {
