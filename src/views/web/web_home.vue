@@ -5,7 +5,6 @@ import {Message} from "@arco-design/web-vue";
 import {
   IconApps,
   IconCalendarClock,
-  IconCompass,
   IconFire,
   IconHeart,
   IconLocation,
@@ -16,7 +15,7 @@ import {
 } from "@arco-design/web-vue/es/icon";
 import {useRouter} from "vue-router";
 import F_footer from "@/components/web/f_footer.vue";
-import {goodsIndexListApi, type goodsIndexType} from "@/api/goods_api";
+import {goodsCategoryListApi, goodsIndexListApi, type goodsIndexType} from "@/api/goods_api";
 import {couponAcceptableListApi, couponReceiveApi, type acceptableCouponType} from "@/api/coupon_api";
 import {userStorei} from "@/stores/user_store";
 import homeBg from "@/assets/img/home_bg.png";
@@ -25,6 +24,8 @@ interface FeatureTab {
   title: string
   key: string
   icon: "heart" | "fire" | "apps" | "storage"
+  type: "recommend" | "seckill" | "category"
+  category?: string
 }
 
 interface QuickEntry {
@@ -40,12 +41,35 @@ const goodsList = ref<goodsIndexType[]>([])
 const couponList = ref<acceptableCouponType[]>([])
 const loading = ref(false)
 const couponLoading = ref(false)
+const categoryTabs = ref<FeatureTab[]>([])
+const activeFeatureKey = ref("recommend")
 
-const featureTabs: FeatureTab[] = [
-  {title: "猜你喜欢", key: "推荐", icon: "heart"},
-  {title: "秒杀专区", key: "秒杀", icon: "fire"},
-  {title: "数码产品", key: "数码家电", icon: "apps"},
-  {title: "办公文具", key: "办公", icon: "storage"},
+const featureTabs = computed<FeatureTab[]>(() => [
+  {title: "猜你喜欢", key: "recommend", icon: "heart", type: "recommend"},
+  {title: "秒杀专区", key: "seckill", icon: "fire", type: "seckill"},
+  ...categoryTabs.value,
+])
+
+const featureDescription = computed(() => {
+  const active = featureTabs.value.find((item) => item.key === activeFeatureKey.value)
+  if (!active || active.type === "recommend") {
+    return "当前展示首页推荐商品列表，切换分类后会在这里直接刷新对应商品。"
+  }
+  return `当前展示“${active.title}”分类商品列表，点击秒杀专区会单独跳转到秒杀页面。`
+})
+
+const goodsSectionTitle = computed(() => {
+  const active = featureTabs.value.find((item) => item.key === activeFeatureKey.value)
+  return active?.title || "猜你喜欢"
+})
+
+const goodsEmptyText = computed(() => `暂无${goodsSectionTitle.value}商品`)
+
+const categoryIcons: Array<FeatureTab["icon"]> = [
+  "apps",
+  "storage",
+  "apps",
+  "storage",
 ]
 
 const quickEntries: QuickEntry[] = [
@@ -89,10 +113,14 @@ function openGoodsLink(item: goodsIndexType) {
   goGoodsDetail(item.id)
 }
 
-async function loadGoods() {
+async function loadGoods(category?: string) {
   loading.value = true
   try {
-    const res = await goodsIndexListApi({page: 1, limit: 10})
+    const res = await goodsIndexListApi({
+      page: 1,
+      limit: 10,
+      category: category || undefined,
+    })
     if (res.code) {
       Message.error(res.msg)
       return
@@ -103,6 +131,28 @@ async function loadGoods() {
     Message.error("商品加载失败")
   } finally {
     loading.value = false
+  }
+}
+
+async function loadCategories() {
+  try {
+    const res = await goodsCategoryListApi()
+    if (res.code) {
+      Message.warning(res.msg)
+      categoryTabs.value = []
+      return
+    }
+    categoryTabs.value = (res.data || []).map((item, index) => ({
+      title: item.label,
+      key: `category-${item.value}`,
+      icon: categoryIcons[index % categoryIcons.length],
+      type: "category",
+      category: String(item.value),
+    }))
+  } catch (error) {
+    console.error(error)
+    Message.warning("商品分类加载失败")
+    categoryTabs.value = []
   }
 }
 
@@ -147,6 +197,21 @@ function handleSearch(key?: string) {
   })
 }
 
+async function selectFeature(item: FeatureTab) {
+  if (item.type === "seckill") {
+    router.push({name: "web_sec_kill"})
+    return
+  }
+
+  activeFeatureKey.value = item.key
+  await loadGoods(item.type === "category" ? item.category : undefined)
+}
+
+function refreshFeaturedGoods() {
+  const active = featureTabs.value.find((item) => item.key === activeFeatureKey.value)
+  void loadGoods(active?.type === "category" ? active.category : undefined)
+}
+
 function goGoodsDetail(id: number) {
   router.push({
     name: "web_goods_detail",
@@ -181,6 +246,7 @@ function openLoginModal() {
 }
 
 onMounted(() => {
+  loadCategories()
   loadGoods()
   loadCoupons()
 })
@@ -256,9 +322,9 @@ onMounted(() => {
                 v-for="item in featureTabs"
                 :key="item.key"
                 class="feature_tab"
-                :class="{active: item.key === '推荐'}"
+                :class="{active: item.key === activeFeatureKey}"
                 type="button"
-                @click="item.key === '秒杀' ? router.push({name: 'web_sec_kill'}) : handleSearch(item.key)"
+                @click="selectFeature(item)"
               >
                 <IconHeart v-if="item.icon === 'heart'" class="feature_icon"/>
                 <IconFire v-else-if="item.icon === 'fire'" class="feature_icon"/>
@@ -267,6 +333,8 @@ onMounted(() => {
                 <span>{{ item.title }}</span>
               </button>
             </div>
+
+            <div class="feature_desc">{{ featureDescription }}</div>
           </div>
 
           <div class="hero_coupon">
@@ -388,9 +456,9 @@ onMounted(() => {
       <section class="goods_section">
         <div class="panel_head goods_head">
           <div>
-            <h2>猜你喜欢</h2>
+            <h2>{{ goodsSectionTitle }}</h2>
           </div>
-          <a-link @click="loadGoods">刷新商品</a-link>
+          <a-link @click="refreshFeaturedGoods">刷新商品</a-link>
         </div>
 
         <a-spin :loading="loading" tip="加载中...">
@@ -406,7 +474,7 @@ onMounted(() => {
               </div>
             </article>
           </div>
-          <a-empty v-else description="暂无推荐商品"/>
+          <a-empty v-else :description="goodsEmptyText"/>
         </a-spin>
       </section>
     </div>
@@ -606,6 +674,7 @@ onMounted(() => {
   align-items: center;
   gap: 22px;
   padding: 16px 4px 0;
+  flex-wrap: wrap;
 }
 
 .feature_tab {
@@ -623,6 +692,13 @@ onMounted(() => {
     color: #ff647c;
     font-weight: 600;
   }
+}
+
+.feature_desc {
+  margin-top: 10px;
+  color: #9ca3af;
+  font-size: 12px;
+  line-height: 1.7;
 }
 
 .feature_icon {
