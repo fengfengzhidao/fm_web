@@ -269,6 +269,15 @@ onMounted(loadList)
   gap: 8px;
   align-content: start;
   position: relative;
+  padding: 12px;
+  border-radius: 14px;
+  transition: background-color .18s ease, box-shadow .18s ease, transform .18s ease;
+
+  &:hover {
+    background: linear-gradient(180deg, #fff7f9, #fff);
+    box-shadow: 0 10px 24px rgba(255, 93, 114, .08);
+    transform: translateY(-1px);
+  }
 }
 
 .cover {
