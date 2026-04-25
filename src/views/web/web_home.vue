@@ -896,9 +896,13 @@ onMounted(() => {
   margin-bottom: 12px;
 }
 
+.hero_coupon :deep(.arco-spin) {
+  width: 100%;
+}
+
 .coupon_compact_grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 10px;
 }
 
