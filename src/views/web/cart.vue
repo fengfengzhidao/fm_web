@@ -204,7 +204,6 @@ onMounted(() => {
           <div class="hero_copy">
             <div class="eyebrow">CART</div>
             <h1>购物车</h1>
-            <p>把购物车页压成更接近原型的前台结算面板，突出已选商品、优惠券和总价这三层核心信息。</p>
 
             <div class="hero_tags">
               <span><IconStorage/> 勾选结算</span>
@@ -229,7 +228,6 @@ onMounted(() => {
               <div class="panel_head_row">
                 <div>
                   <div class="panel_title">商品列表</div>
-                  <div class="panel_desc">勾选商品后会同步刷新优惠和应付金额</div>
                 </div>
                 <a-checkbox
                   :model-value="allSelected"

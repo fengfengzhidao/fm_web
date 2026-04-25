@@ -51,7 +51,6 @@ onMounted(loadList)
       <div>
         <div class="eyebrow">COLLECT</div>
         <h2>我的收藏</h2>
-        <p>集中查看收藏过的商品，方便继续回到详情页完成浏览和下单。</p>
       </div>
       <div class="summary_badge">共 {{ count }} 件</div>
     </div>

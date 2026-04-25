@@ -51,7 +51,6 @@ onMounted(loadList)
       <div>
         <div class="eyebrow">COUPON</div>
         <h2>我的优惠券</h2>
-        <p>集中查看可领取、未使用和已使用的优惠券，结算时会直接读取可用状态。</p>
       </div>
     </div>
 

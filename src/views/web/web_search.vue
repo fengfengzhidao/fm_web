@@ -118,7 +118,6 @@ onMounted(() => {
           <div class="search_intro">
             <div class="intro_badge">SEARCH</div>
             <h1>搜索商品</h1>
-            <p>围绕首页同款搜索结构收紧信息层级，让结果页和首页保持统一的前台视觉。</p>
           </div>
 
           <div class="search_bar">

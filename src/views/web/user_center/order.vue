@@ -102,7 +102,6 @@ onMounted(loadOrders)
       <div>
         <div class="eyebrow">ORDERS</div>
         <h2>我的订单</h2>
-        <p>查看订单列表、下单时间、金额和状态，并快速进入详情、确认收货或评价。</p>
       </div>
       <div class="head_tag">共 {{ count }} 单</div>
     </div>

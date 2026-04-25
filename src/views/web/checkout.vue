@@ -171,7 +171,6 @@ onMounted(loadData)
           <div class="hero_copy">
             <div class="eyebrow">CHECKOUT</div>
             <h1>确认订单</h1>
-            <p>把收货地址、优惠券和支付摘要压到一页里，延续首页到购物车的前台白底卡片风格，让下单前的关键信息更集中。</p>
 
             <div class="hero_tags">
               <span><IconLocation/> 确认地址</span>
@@ -194,7 +193,6 @@ onMounted(loadData)
           <div v-if="confirm" class="checkout_grid">
             <section class="panel">
               <div class="panel_title">商品清单</div>
-              <div class="panel_desc">确认商品、数量和单价，提交前最后核对一次</div>
 
               <article class="goods_item" v-for="item in confirm.goodsList" :key="item.goodsID">
                 <img :src="item.cover" :alt="item.title">
@@ -208,7 +206,6 @@ onMounted(loadData)
 
             <section class="panel">
               <div class="panel_title">收货地址</div>
-              <div class="panel_desc">默认优先选中默认地址，没有地址时先到个人中心补充</div>
 
               <div v-if="addrList.length" class="addr_list">
                 <label v-for="item in addrList" :key="item.id" class="addr_item" :class="{active: selectedAddrID === item.id}">
@@ -224,7 +221,6 @@ onMounted(loadData)
 
             <section class="panel">
               <div class="panel_title">优惠券</div>
-              <div class="panel_desc">勾选优惠券后，会重新计算本次订单的应付金额</div>
 
               <div v-if="confirm.couponList.length" class="coupon_list">
                 <label v-for="coupon in confirm.couponList" :key="coupon.id" class="coupon_item">

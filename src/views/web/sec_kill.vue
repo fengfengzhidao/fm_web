@@ -280,7 +280,6 @@ onMounted(loadDateList)
           <div class="hero_copy">
             <div class="eyebrow">FLASH SALE</div>
             <h1>秒杀专区</h1>
-            <p>先选时间段，再看场次商品。页面结构沿用首页和搜索页的前台白底卡片风格，把秒杀信息压成更直接的抢购视图。</p>
 
             <div class="hero_tags">
               <span><IconThunderbolt/> 限时抢购</span>
@@ -306,7 +305,6 @@ onMounted(loadDateList)
         <div class="panel_head">
           <div>
             <div class="panel_title">秒杀码段</div>
-            <div class="panel_desc">选择一个时间场次后，再查看对应的秒杀商品和抢购状态</div>
           </div>
           <a-button size="small" @click="loadDateList">刷新日期</a-button>
         </div>
@@ -336,7 +334,6 @@ onMounted(loadDateList)
         <div class="panel_head">
           <div>
             <div class="panel_title">秒杀商品</div>
-            <div class="panel_desc">按当前场次展示库存、进度和开抢时间，卡片信息和首页商品区保持统一</div>
           </div>
           <a-button size="small" @click="loadGoods">刷新商品</a-button>
         </div>

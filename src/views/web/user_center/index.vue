@@ -59,7 +59,6 @@ function go(name: string) {
           <div class="hero_meta">
             <div class="eyebrow">USER CENTER</div>
             <h1>用户中心</h1>
-            <p>围绕订单、收藏、足迹、地址、优惠券和消息做一体化个人后台，继续沿用前台白底卡片风格。</p>
           </div>
 
           <aside class="hero_card">

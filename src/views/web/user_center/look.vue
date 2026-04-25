@@ -50,7 +50,6 @@ onMounted(loadList)
       <div>
         <div class="eyebrow">LOOK</div>
         <h2>我的足迹</h2>
-        <p>整理最近浏览过的商品，快速回到感兴趣的商品详情页。</p>
       </div>
       <div class="summary_badge">共 {{ count }} 条</div>
     </div>

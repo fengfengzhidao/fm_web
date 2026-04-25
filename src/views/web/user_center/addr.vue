@@ -96,7 +96,6 @@ onMounted(loadList)
       <div>
         <div class="eyebrow">ADDRESS</div>
         <h2>我的地址</h2>
-        <p>统一维护收货信息，确认订单时会直接读取这里的默认地址。</p>
       </div>
       <a-button type="primary" @click="openCreate">新增地址</a-button>
     </div>

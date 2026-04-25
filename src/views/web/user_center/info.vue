@@ -27,7 +27,6 @@ const roleText = computed(() => store.isAdmin ? "管理员" : "普通用户")
     <div class="panel_head">
       <div class="eyebrow">PROFILE</div>
       <h2>个人中心</h2>
-      <p>查看当前账号信息，并快速进入最常用的订单、收藏、地址和优惠券模块。</p>
     </div>
 
     <div class="profile_card">

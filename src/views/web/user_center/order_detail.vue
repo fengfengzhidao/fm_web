@@ -144,7 +144,6 @@ onMounted(loadDetail)
       <div>
         <div class="eyebrow">ORDER DETAIL</div>
         <h2>订单详情</h2>
-        <p>查看订单状态、收货地址、商品列表和优惠信息，把订单的关键信息压缩进一页内完成确认。</p>
       </div>
       <div class="head_actions">
         <a-button @click="refreshStatus">刷新状态</a-button>

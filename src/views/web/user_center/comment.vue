@@ -34,7 +34,6 @@ onMounted(loadList)
       <div>
         <div class="eyebrow">COMMENT</div>
         <h2>我的评价</h2>
-        <p>集中查看已经发布过的评价记录，便于回顾商品体验和下单价格。</p>
       </div>
     </div>
 

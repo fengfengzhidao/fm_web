@@ -375,7 +375,6 @@ onBeforeUnmount(() => {
         <div class="section_head">
           <div>
             <div class="section_title">评论概览</div>
-            <div class="section_desc">保留评论摘要和筛选结构，把信息密度收得更接近前台主视觉节奏。</div>
           </div>
         </div>
 

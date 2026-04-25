@@ -104,7 +104,6 @@ onMounted(loadList)
       <div>
         <div class="eyebrow">EVALUATE</div>
         <h2>评论商品</h2>
-        <p>从已购订单里挑选商品提交评价，订单页会直接跳转到这里完成评论。</p>
       </div>
     </div>
 

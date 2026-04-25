@@ -89,7 +89,6 @@ onMounted(loadList)
       <div>
         <div class="eyebrow">MESSAGE</div>
         <h2>消息通知</h2>
-        <p>统一查看订单、商品和系统提醒，支持快速跳转来源并管理已读状态。</p>
       </div>
       <div class="head_actions">
         <span class="summary_badge">未读 {{ unreadCount }}</span>
