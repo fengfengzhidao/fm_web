@@ -338,6 +338,10 @@ function go(name: string) {
 
 .menu_text {
   min-width: 0;
+  min-height: 42px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 @media (max-width: 1100px) {
