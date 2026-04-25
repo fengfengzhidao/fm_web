@@ -210,6 +210,10 @@ async function emailLogin() {
 
   .code_input {
     flex: 1 1 auto;
+
+    :deep(.arco-input-wrapper) {
+      height: 36px;
+    }
   }
 
   .code_img {
