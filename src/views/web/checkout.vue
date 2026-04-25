@@ -281,7 +281,7 @@ onMounted(loadData)
 .page_shell {
   width: min(1180px, calc(100% - 48px));
   margin: 0 auto;
-  padding: 70px 0 36px;
+  padding: 0 0 36px;
 }
 
 .hero_surface,
