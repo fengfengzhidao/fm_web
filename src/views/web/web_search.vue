@@ -1,37 +1,14 @@
 <script setup lang="ts">
-import {computed, onMounted, ref, watch} from "vue";
+import {computed, ref, watch} from "vue";
 import {useRoute, useRouter} from "vue-router";
-import {
-  IconApps,
-  IconFire,
-  IconHeart,
-  IconStorage
-} from "@arco-design/web-vue/es/icon";
 import {Message} from "@arco-design/web-vue";
-import {goodsCategoryListApi, goodsIndexListApi, type goodsIndexType} from "@/api/goods_api";
-import type {optionsType} from "@/api";
+import {goodsIndexListApi, type goodsIndexType} from "@/api/goods_api";
 
 const route = useRoute()
 const router = useRouter()
 const keyword = ref("")
 const loading = ref(false)
 const goodsList = ref<goodsIndexType[]>([])
-const categoryList = ref<optionsType[]>([])
-
-const baseTabs = [
-  {title: "猜你喜欢", key: "推荐", icon: "heart"},
-  {title: "秒杀专区", key: "秒杀", icon: "fire"},
-]
-const categoryIcons = ["apps", "storage"] as const
-const quickKeys = computed(() => categoryList.value.slice(0, 6).map((item) => item.label))
-const navTabs = computed(() => ([
-  ...baseTabs,
-  ...categoryList.value.slice(0, 4).map((item, index) => ({
-    title: item.label,
-    key: item.label,
-    icon: categoryIcons[index % categoryIcons.length],
-  })),
-]))
 
 const currentKey = computed(() => (route.query.key as string || "").trim())
 const resultText = computed(() => currentKey.value || "全部商品")
@@ -64,22 +41,6 @@ async function loadGoods(key?: string) {
   }
 }
 
-async function loadCategories() {
-  try {
-    const res = await goodsCategoryListApi()
-    if (res.code) {
-      Message.warning(res.msg)
-      categoryList.value = []
-      return
-    }
-    categoryList.value = res.data || []
-  } catch (error) {
-    console.error(error)
-    Message.warning("商品分类加载失败")
-    categoryList.value = []
-  }
-}
-
 function doSearch(key?: string) {
   const value = (key ?? keyword.value).trim()
   router.push({
@@ -99,11 +60,6 @@ watch(currentKey, (value) => {
   keyword.value = value
   loadGoods(value)
 }, {immediate: true})
-
-onMounted(() => {
-  keyword.value = currentKey.value
-  loadCategories()
-})
 </script>
 
 <template>
@@ -124,36 +80,6 @@ onMounted(() => {
               @press-enter="doSearch()"
             />
             <a-button type="primary" @click="doSearch()">搜索</a-button>
-          </div>
-
-          <div class="search_hotline">
-            <span class="hotline_label">热门搜索</span>
-            <button
-              v-for="item in quickKeys"
-              :key="item"
-              class="hotline_item"
-              type="button"
-              @click="doSearch(item)"
-            >
-              {{ item }}
-            </button>
-          </div>
-
-          <div class="search_tabs">
-            <button
-              v-for="item in navTabs"
-              :key="item.key"
-              class="search_tab"
-              :class="{active: currentKey === item.key || (!currentKey && item.key === '推荐')}"
-              type="button"
-              @click="item.key === '推荐' ? doSearch() : doSearch(item.key)"
-            >
-              <IconHeart v-if="item.icon === 'heart'" class="tab_icon"/>
-              <IconFire v-else-if="item.icon === 'fire'" class="tab_icon"/>
-              <IconApps v-else-if="item.icon === 'apps'" class="tab_icon"/>
-              <IconStorage v-else class="tab_icon"/>
-              <span>{{ item.title }}</span>
-            </button>
           </div>
         </section>
       </section>
@@ -280,59 +206,6 @@ onMounted(() => {
     font-weight: 600;
     background: linear-gradient(135deg, #ff7a8f, #ff627a);
   }
-}
-
-.search_hotline {
-  margin-top: 16px;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.hotline_label {
-  color: #9ca3af;
-  font-size: 12px;
-}
-
-.hotline_item {
-  border: 0;
-  background: #fff4f6;
-  color: #ff6178;
-  padding: 7px 12px;
-  border-radius: 999px;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.search_tabs {
-  margin-top: 16px;
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  flex-wrap: wrap;
-}
-
-.search_tab {
-  border: 0;
-  background: transparent;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 0;
-  color: #6b7280;
-  font-size: 12px;
-  cursor: pointer;
-
-  &.active {
-    color: #ff647c;
-    font-weight: 600;
-  }
-}
-
-.tab_icon {
-  color: #ff647c;
-  font-size: 14px;
 }
 
 .result_surface {
@@ -501,13 +374,6 @@ onMounted(() => {
 
   .search_bar {
     grid-template-columns: minmax(0, 1fr) 76px;
-  }
-
-  .search_tabs {
-    gap: 14px;
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    padding-bottom: 2px;
   }
 
   .result_grid {
