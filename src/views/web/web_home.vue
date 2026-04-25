@@ -755,7 +755,7 @@ onMounted(() => {
 .hero_section {
   margin-top: 28px;
   display: grid;
-  grid-template-columns: minmax(0, 2.05fr) minmax(280px, 1.28fr) minmax(240px, .9fr);
+  grid-template-columns: 560px minmax(280px, 1fr) minmax(240px, .9fr);
   gap: 12px;
   align-items: stretch;
 }
@@ -764,6 +764,10 @@ onMounted(() => {
 .hero_coupon,
 .hero_user {
   min-width: 0;
+}
+
+.hero_main {
+  width: 560px;
 }
 
 .hero_banner_surface,
@@ -775,19 +779,28 @@ onMounted(() => {
 }
 
 .hero_banner_surface {
+  width: 560px;
   height: 300px;
   padding: 14px;
   background: linear-gradient(180deg, #fff8fa, #ffffff 62%);
   overflow: hidden;
+
+  :deep(.arco-spin),
+  :deep(.arco-spin-children) {
+    width: 100%;
+    height: 100%;
+  }
 }
 
 .hero_banner_stage {
+  width: 100%;
   height: 100%;
   position: relative;
 }
 
 .hero_banner_card {
   position: relative;
+  width: 100%;
   height: 100%;
   overflow: hidden;
   border-radius: 12px;
@@ -1232,6 +1245,11 @@ onMounted(() => {
 @media (max-width: 1180px) {
   .hero_section {
     grid-template-columns: 1fr;
+  }
+
+  .hero_main,
+  .hero_banner_surface {
+    width: 100%;
   }
 
   .goods_grid {
