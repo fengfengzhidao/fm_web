@@ -22,7 +22,6 @@ const menus = [
   {name: "web_user_center_info", title: "个人中心", desc: "账号资料与快捷入口", icon: "user"},
   {name: "web_user_center_order", title: "我的订单", desc: "订单记录与详情", icon: "book"},
   {name: "web_user_center_comment", title: "我的评价", desc: "已发布的评价", icon: "star"},
-  {name: "web_user_center_evaluate", title: "评论商品", desc: "给已购商品打分", icon: "star"},
   {name: "web_user_center_collect", title: "我的收藏", desc: "收藏商品管理", icon: "heart"},
   {name: "web_user_center_look", title: "我的足迹", desc: "浏览记录", icon: "history"},
   {name: "web_user_center_addr", title: "我的地址", desc: "收货地址维护", icon: "location"},

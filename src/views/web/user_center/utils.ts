@@ -10,8 +10,8 @@ export function orderStatusText(status: number): string {
         1: "待付款",
         2: "已付款",
         3: "待收货",
-        4: "已收货",
-        5: "待评价",
+        4: "待评价",
+        5: "已评价",
         6: "已评价",
         7: "已取消",
         8: "超时",
@@ -21,8 +21,8 @@ export function orderStatusText(status: number): string {
 
 export function orderStatusColor(status: number): "blue" | "green" | "orange" | "red" | "gray" {
     if (status === 1) return "blue"
-    if (status === 2 || status === 4 || status === 6) return "green"
-    if (status === 3 || status === 5) return "orange"
+    if (status === 2 || status === 5 || status === 6) return "green"
+    if (status === 3 || status === 4) return "orange"
     if (status === 7 || status === 8) return "red"
     return "gray"
 }
@@ -36,7 +36,7 @@ export function canReceiveOrder(status: number): boolean {
 }
 
 export function canCommentOrder(status: number): boolean {
-    return status === 4 || status === 5
+    return status === 4
 }
 
 export function userCouponStatusText(status: number): string {

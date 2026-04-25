@@ -1,19 +1,22 @@
 <script setup lang="ts">
-import {computed, onMounted, ref} from "vue";
+import {computed, onMounted, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
 import {Message} from "@arco-design/web-vue";
+import {commentCreateApi, type commentCreateItem} from "@/api/comment_api";
 import {orderRevGoodsApi, orderUserListApi, orderUserRemoveApi, type orderUserType} from "@/api/order_api";
 import {dateTimeFormat} from "@/utils/date";
-import {canCommentOrder, canReceiveOrder, formatPrice, orderStatusColor, orderStatusText} from "@/views/web/user_center/utils";
+import {canCommentOrder, canReceiveOrder, commentLevelText, formatPrice, orderStatusColor, orderStatusText} from "@/views/web/user_center/utils";
 
 const router = useRouter()
 const loading = ref(false)
+const submiting = ref(false)
 const orders = ref<orderUserType[]>([])
 const orderNo = ref("")
 const goodsTitle = ref("")
 const page = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
+const formMap = reactive<Record<number, {content: string; level: number}>>({})
 
 const count = computed(() => total.value || orders.value.length)
 
@@ -35,6 +38,13 @@ async function loadOrders(resetPage = false) {
     }
     orders.value = res.data.list || []
     total.value = res.data.count || 0
+    orders.value.forEach((order) => {
+      order.orderGoodsList.forEach((goods) => {
+        if (!formMap[goods.orderGoodsID]) {
+          formMap[goods.orderGoodsID] = {content: "", level: 5}
+        }
+      })
+    })
   } catch (error) {
     console.error(error)
     Message.error("订单加载失败")
@@ -57,15 +67,36 @@ function openDetail(item: orderUserType) {
   router.push({name: "web_user_center_order_detail", params: {id: item.id}})
 }
 
-function goEvaluate(item: orderUserType) {
-  const firstGoods = item.orderGoodsList[0]
-  router.push({
-    name: "web_user_center_evaluate",
-    query: {
-      orderID: item.id,
-      ...(firstGoods ? {orderGoodsID: firstGoods.orderGoodsID} : {}),
-    },
-  })
+async function submitComment(orderGoodsID: number) {
+  const form = formMap[orderGoodsID]
+  if (!form?.content.trim()) {
+    Message.warning("请输入评价内容")
+    return
+  }
+
+  submiting.value = true
+  try {
+    const payload: commentCreateItem = {
+      orderGoodsID,
+      content: form.content.trim(),
+      level: form.level,
+      images: [],
+    }
+    const res = await commentCreateApi({list: [payload]})
+    if (res.code) {
+      Message.error(res.msg)
+      return
+    }
+    Message.success("评价已提交")
+    form.content = ""
+    form.level = 5
+    await loadOrders()
+  } catch (error) {
+    console.error(error)
+    Message.error("提交评价失败")
+  } finally {
+    submiting.value = false
+  }
 }
 
 async function receiveOrder(item: orderUserType) {
@@ -132,6 +163,23 @@ onMounted(loadOrders)
                 <span>单价 ￥ {{ formatPrice(goods.goodsPrice) }}</span>
                 <span>数量 x{{ goods.num }}</span>
                 <span>备注：{{ goods.note || "无" }}</span>
+                <div v-if="canCommentOrder(item.status)" class="comment_editor">
+                  <div class="comment_editor_head">
+                    <span class="comment_label">商品评价</span>
+                    <div class="rate_row">
+                      <a-rate v-model="formMap[goods.orderGoodsID].level" allow-clear/>
+                      <span class="rate_text">{{ commentLevelText(formMap[goods.orderGoodsID].level) }}</span>
+                    </div>
+                  </div>
+                  <a-textarea
+                    v-model="formMap[goods.orderGoodsID].content"
+                    placeholder="写下你的真实感受"
+                    :auto-size="{minRows: 3, maxRows: 5}"
+                  />
+                  <div class="comment_actions">
+                    <a-button type="primary" :loading="submiting" @click="submitComment(goods.orderGoodsID)">提交评价</a-button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -144,7 +192,6 @@ onMounted(loadOrders)
             <div class="action_line">
               <a-button type="primary" @click="openDetail(item)">查看详情</a-button>
               <a-button v-if="canReceiveOrder(item.status)" @click="receiveOrder(item)">确认收货</a-button>
-              <a-button v-if="canCommentOrder(item.status)" @click="goEvaluate(item)">去评价</a-button>
               <a-popconfirm content="确定删除该订单吗？" @ok="removeOrder(item)">
                 <a-button status="danger">删除</a-button>
               </a-popconfirm>
@@ -288,6 +335,51 @@ onMounted(loadOrders)
   font-size: 16px;
 }
 
+.comment_editor {
+  margin-top: 8px;
+  padding: 14px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid #f3d6dd;
+  display: grid;
+  gap: 12px;
+}
+
+.comment_editor_head,
+.rate_row,
+.comment_actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.comment_editor_head {
+  justify-content: space-between;
+}
+
+.comment_label,
+.rate_text {
+  color: #ff647c;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.rate_row {
+  justify-content: flex-end;
+}
+
+.comment_editor :deep(.arco-rate-character-full),
+.comment_editor :deep(.arco-rate-character-half),
+.comment_editor :deep(.arco-rate-character:hover) {
+  color: #ff647c;
+}
+
+.comment_editor :deep(.arco-textarea-wrapper) {
+  border-radius: 12px;
+  background: #fffafb;
+}
+
 .order_bottom {
   margin-top: 16px;
   align-items: center;
@@ -343,6 +435,11 @@ onMounted(loadOrders)
 
   .filter_bar {
     grid-template-columns: 1fr;
+  }
+
+  .comment_editor_head,
+  .rate_row {
+    justify-content: flex-start;
   }
 
   .action_line {

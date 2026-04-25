@@ -143,15 +143,6 @@ const router = createRouter({
                                 auth: true,
                                 title: "我的评价",
                             }
-                        },
-                        {
-                            name: "web_user_center_evaluate",
-                            path: "evaluate",
-                            component: () => import("@/views/web/user_center/evaluate.vue"),
-                            meta: {
-                                auth: true,
-                                title: "评论商品",
-                            }
                         }
                     ]
                 }

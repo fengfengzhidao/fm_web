@@ -10,7 +10,7 @@ import {
 } from "@arco-design/web-vue/es/icon";
 import {orderCallbackApi, orderDetailApi, orderRevGoodsApi, orderStatusApi, type orderDetailType} from "@/api/order_api";
 import {dateTimeFormat} from "@/utils/date";
-import {canCommentOrder, canPayOrder, canReceiveOrder, formatPrice, orderStatusColor, orderStatusText} from "@/views/web/user_center/utils";
+import {canPayOrder, canReceiveOrder, formatPrice, orderStatusColor, orderStatusText} from "@/views/web/user_center/utils";
 
 const route = useRoute()
 const router = useRouter()
@@ -119,20 +119,6 @@ async function simulatePaid() {
   }
 }
 
-function goEvaluate() {
-  if (!detail.value) {
-    return
-  }
-  const firstOrderGoodsID = detail.value.goodsList[0]?.orderGoodsID
-  router.push({
-    name: "web_user_center_evaluate",
-    query: {
-      orderID: detail.value.id,
-      ...(firstOrderGoodsID ? {orderGoodsID: firstOrderGoodsID} : {}),
-    },
-  })
-}
-
 watch(orderID, loadDetail, {immediate: true})
 
 onMounted(loadDetail)
@@ -150,7 +136,6 @@ onMounted(loadDetail)
         <a-button v-if="detail && canPayOrder(detail.status)" type="primary" :loading="actionLoading" @click="goPay">去支付</a-button>
         <a-button v-if="detail && canPayOrder(detail.status)" :loading="actionLoading" @click="simulatePaid">模拟支付完成</a-button>
         <a-button v-if="detail && canReceiveOrder(detail.status)" type="primary" :loading="actionLoading" @click="receiveGoods">确认收货</a-button>
-        <a-button v-if="detail && canCommentOrder(detail.status)" @click="goEvaluate">去评价</a-button>
         <a-button @click="router.back()">返回</a-button>
       </div>
     </div>
