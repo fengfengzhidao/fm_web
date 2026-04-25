@@ -95,8 +95,8 @@ function go(name: string) {
                 <IconMessage v-else/>
               </span>
               <div class="menu_text">
-                <strong>{{ item.title }}</strong>
-                <span>{{ item.desc }}</span>
+                <strong class="menu_name">{{ item.title }}</strong>
+                <span class="menu_desc">{{ item.desc }}</span>
               </div>
             </button>
           </div>
@@ -289,23 +289,6 @@ function go(name: string) {
   min-height: 68px;
   line-height: 1;
 
-  strong,
-  span {
-    display: block;
-  }
-
-  strong {
-    color: #111827;
-    font-size: 15px;
-  }
-
-  span:last-child {
-    margin-top: 4px;
-    color: #6b7280;
-    font-size: 12px;
-    line-height: 1.6;
-  }
-
   &.active {
     border-color: #ffccd5;
     background: #fff4f6;
@@ -348,6 +331,22 @@ function go(name: string) {
   flex-direction: column;
   justify-content: center;
   gap: 4px;
+}
+
+.menu_name,
+.menu_desc {
+  display: block;
+}
+
+.menu_name {
+  color: #111827;
+  font-size: 15px;
+}
+
+.menu_desc {
+  color: #6b7280;
+  font-size: 12px;
+  line-height: 1.6;
 }
 
 @media (max-width: 1100px) {
