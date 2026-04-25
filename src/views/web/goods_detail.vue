@@ -472,7 +472,7 @@ onBeforeUnmount(() => {
 .goods_detail_view {
   min-height: 100vh;
   color: var(--color-text-1);
-  background: #fff;
+  background: var(--web-page-bg);
 }
 
 .page_shell {
@@ -491,7 +491,7 @@ onBeforeUnmount(() => {
 }
 
 .comment_surface {
-  background: #fff;
+  background: var(--web-page-bg);
   box-shadow: none;
 }
 
@@ -504,8 +504,8 @@ onBeforeUnmount(() => {
 .gallery_panel,
 .summary_panel {
   border-radius: 16px;
-  border: 1px solid #eceef2;
-  background: #fff;
+  border: 1px solid var(--web-border);
+  background: var(--web-surface);
 }
 
 .gallery_panel {
@@ -516,7 +516,7 @@ onBeforeUnmount(() => {
   aspect-ratio: 16 / 9;
   border-radius: 14px;
   overflow: hidden;
-  background: #f7f8fa;
+  background: var(--web-soft-bg);
 
   img {
     width: 100%;
@@ -570,12 +570,12 @@ onBeforeUnmount(() => {
   margin: 8px 0 10px;
   font-size: 26px;
   line-height: 1.35;
-  color: #111827;
+  color: var(--web-text);
 }
 
 .summary {
   margin: 0;
-  color: #6b7280;
+  color: var(--web-text-soft);
   font-size: 13px;
   line-height: 1.7;
 }
@@ -584,7 +584,7 @@ onBeforeUnmount(() => {
   margin-top: 18px;
   padding: 16px 20px;
   border-radius: 12px;
-  background: linear-gradient(180deg, #fff7f8 0%, #fff 100%);
+  background: var(--web-soft-grad);
 }
 
 .price_main {
@@ -623,7 +623,7 @@ onBeforeUnmount(() => {
   display: flex;
   flex-wrap: wrap;
   gap: 24px;
-  color: #6b7280;
+  color: var(--web-text-soft);
   font-size: 14px;
 
   strong {
@@ -647,13 +647,13 @@ onBeforeUnmount(() => {
 }
 
 .detail_label {
-  color: #666;
+  color: var(--web-text-soft);
   font-size: 15px;
   line-height: 1.4;
 }
 
 .detail_value {
-  color: #2b2b2b;
+  color: var(--web-text);
   font-size: 15px;
   line-height: 1.6;
 }
@@ -668,8 +668,8 @@ onBeforeUnmount(() => {
 .coupon_inline {
   padding: 12px 14px;
   border-radius: 12px;
-  background: #fff7f8;
-  border: 1px solid #f9dde3;
+  background: var(--web-soft-bg);
+  border: 1px solid var(--web-border);
 }
 
 .coupon_title,
@@ -677,13 +677,13 @@ onBeforeUnmount(() => {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #111827;
+  color: var(--web-text);
   font-weight: 700;
 }
 
 .coupon_desc {
   margin-top: 6px;
-  color: #6b7280;
+  color: var(--web-text-soft);
   font-size: 13px;
 }
 
@@ -711,8 +711,8 @@ onBeforeUnmount(() => {
   min-height: 52px;
   padding: 8px;
   border-radius: 12px;
-  background: #fff;
-  border: 1px solid #eceef2;
+  background: var(--web-surface);
+  border: 1px solid var(--web-border);
 
   img {
     width: 44px;
@@ -724,7 +724,7 @@ onBeforeUnmount(() => {
 
   span {
     padding: 0;
-    color: #4b5563;
+    color: var(--web-text-soft);
     font-size: 13px;
     line-height: 1.4;
     text-align: left;
@@ -758,9 +758,9 @@ onBeforeUnmount(() => {
   width: 28px;
   height: 28px;
   border-radius: 4px;
-  border: 1px solid #d8dce3;
-  background: #fff;
-  color: #7b8088;
+  border: 1px solid var(--web-border-strong);
+  background: var(--web-surface);
+  color: var(--web-text-soft);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -769,7 +769,7 @@ onBeforeUnmount(() => {
 
 .qty_value {
   min-width: 24px;
-  color: #444;
+  color: var(--web-text);
   font-size: 15px;
   text-align: center;
 }
@@ -808,7 +808,7 @@ onBeforeUnmount(() => {
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
-  color: #6b7280;
+  color: var(--web-text-soft);
   font-size: 12px;
 
   span {
@@ -828,7 +828,7 @@ onBeforeUnmount(() => {
 }
 
 .section_title {
-  color: #303133;
+  color: var(--web-text);
   font-size: 24px;
   font-weight: 700;
   line-height: 1.1;
@@ -838,7 +838,8 @@ onBeforeUnmount(() => {
   margin-bottom: 18px;
   padding: 18px 22px;
   border-radius: 8px;
-  background: #fafafa;
+  background: var(--web-surface);
+  border: 1px solid var(--web-border);
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -850,7 +851,7 @@ onBeforeUnmount(() => {
   border: 0;
   background: transparent;
   cursor: pointer;
-  color: #606266;
+  color: var(--web-text-soft);
   font-size: 15px;
   line-height: 1.5;
   display: inline-flex;
@@ -858,7 +859,7 @@ onBeforeUnmount(() => {
   gap: 4px;
 
   &.active {
-    color: #303133;
+    color: var(--web-text);
     font-weight: 700;
   }
 }
@@ -871,7 +872,7 @@ onBeforeUnmount(() => {
   margin-left: auto;
   border: 0;
   background: transparent;
-  color: #606266;
+  color: var(--web-text-soft);
   font-size: 15px;
   display: inline-flex;
   align-items: center;
@@ -889,7 +890,7 @@ onBeforeUnmount(() => {
   grid-template-columns: auto 1fr;
   gap: 14px;
   padding: 22px 18px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--web-border);
 }
 
 .comment_body {
@@ -903,7 +904,7 @@ onBeforeUnmount(() => {
   flex-wrap: wrap;
 
   strong {
-    color: #303133;
+    color: var(--web-text);
     font-size: 15px;
     font-weight: 600;
   }
@@ -921,13 +922,13 @@ onBeforeUnmount(() => {
 
 .comment_time {
   margin-top: 6px;
-  color: #909399;
+  color: var(--web-text-muted);
   font-size: 13px;
 }
 
 .comment_content {
   margin-top: 10px;
-  color: #303133;
+  color: var(--web-text);
   font-size: 14px;
   line-height: 1.8;
 }
@@ -946,16 +947,16 @@ onBeforeUnmount(() => {
 
 .comment_goods_line {
   margin-top: 10px;
-  color: #909399;
+  color: var(--web-text-muted);
   font-size: 13px;
 }
 
 .empty_state,
 .empty_card {
   border-radius: 14px;
-  border: 1px dashed #f0d7dd;
-  background: linear-gradient(180deg, #fffafb, #fff);
-  color: #9ca3af;
+  border: 1px dashed var(--web-border);
+  background: var(--web-soft-grad);
+  color: var(--web-text-muted);
   font-size: 13px;
   line-height: 1.8;
   text-align: center;
@@ -980,7 +981,7 @@ onBeforeUnmount(() => {
 }
 
 .empty_title {
-  color: #111827;
+  color: var(--web-text);
   font-size: 24px;
   font-weight: 700;
 }

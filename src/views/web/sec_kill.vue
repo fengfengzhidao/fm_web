@@ -431,7 +431,7 @@ onMounted(loadDateList)
 .sec_kill_view {
   min-height: 100vh;
   color: var(--color-text-1);
-  background: #fff;
+  background: var(--web-page-bg);
 }
 
 .page_shell {
@@ -450,8 +450,8 @@ onMounted(loadDateList)
 }
 
 .panel_surface {
-  background: #fff;
-  box-shadow: 0 20px 45px rgba(17, 24, 39, .05);
+  background: var(--web-surface);
+  box-shadow: var(--web-shadow-lg);
 }
 
 .hero_section {
@@ -463,13 +463,13 @@ onMounted(loadDateList)
 .hero_copy,
 .hero_summary {
   border-radius: 16px;
-  border: 1px solid #eceef2;
-  background: #fff;
+  border: 1px solid var(--web-border);
+  background: var(--web-surface);
 }
 
 .hero_copy {
   padding: 24px 22px;
-  background: linear-gradient(180deg, #fffafb, #ffffff 62%);
+  background: var(--web-hero-grad);
 }
 
 .eyebrow {
@@ -581,8 +581,8 @@ onMounted(loadDateList)
 .date_tab {
   padding: 16px 14px;
   border-radius: 14px;
-  border: 1px solid #eceef2;
-  background: #fafafb;
+  border: 1px solid var(--web-border);
+  background: var(--web-soft-bg);
   display: grid;
   justify-items: start;
   gap: 6px;
@@ -615,9 +615,9 @@ onMounted(loadDateList)
 
 .goods_card {
   overflow: hidden;
-  border: 1px solid #eceef2;
+  border: 1px solid var(--web-border);
   border-radius: 10px;
-  background: #fff;
+  background: var(--web-surface);
   transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
 
   &:hover {
@@ -630,7 +630,7 @@ onMounted(loadDateList)
 .goods_cover {
   position: relative;
   aspect-ratio: 16 / 9;
-  background: #f7f8fa;
+  background: var(--web-soft-bg);
 
   img {
     width: 100%;

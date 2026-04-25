@@ -3,6 +3,7 @@ import {computed, onMounted, onUnmounted, ref} from "vue";
 import {slogan, enSlogan} from "@/conf/global";
 import {useRoute, useRouter} from "vue-router";
 import {userStorei} from "@/stores/user_store";
+import F_theme from "@/components/common/f_theme.vue";
 
 const route = useRoute()
 const router = useRouter()
@@ -81,6 +82,9 @@ function openNav(name: string) {
       </router-link>
 
       <nav class="nav_links">
+        <span class="theme_toggle">
+          <f_theme/>
+        </span>
         <button
           v-for="item in navItems"
           :key="item.name"
@@ -127,12 +131,12 @@ function openNav(name: string) {
       font-size: 22px;
       line-height: 1;
       font-weight: 700;
-      color: #ff667d;
+      color: var(--web-brand);
       letter-spacing: .02em;
     }
 
     span {
-      color: #ff8b9b;
+      color: var(--web-brand-soft);
       font-size: 12px;
       line-height: 1;
       letter-spacing: .18em;
@@ -147,6 +151,31 @@ function openNav(name: string) {
     min-width: 0;
     justify-content: flex-end;
     margin-left: auto;
+
+    .theme_toggle {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--web-text-soft);
+      background: var(--web-surface);
+      border: 1px solid var(--web-border);
+      margin-right: 2px;
+      flex: 0 0 auto;
+
+      :deep(svg) {
+        font-size: 18px;
+        cursor: pointer;
+      }
+
+      &:hover {
+        color: var(--web-primary);
+        border-color: rgba(255, 111, 142, .24);
+        background: var(--web-soft-bg);
+      }
+    }
 
     .nav_link_btn {
       border: 0;

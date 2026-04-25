@@ -348,7 +348,7 @@ watch(() => store.isLogin, (isLogin) => {
 .cart_view {
   min-height: 100vh;
   color: var(--color-text-1);
-  background: #fff;
+  background: var(--web-page-bg);
 }
 
 .page_shell {
@@ -380,13 +380,13 @@ watch(() => store.isLogin, (isLogin) => {
 .hero_copy,
 .hero_summary {
   border-radius: 16px;
-  border: 1px solid #eceef2;
-  background: #fff;
+  border: 1px solid var(--web-border);
+  background: var(--web-surface);
 }
 
 .hero_copy {
   padding: 24px 22px;
-  background: linear-gradient(180deg, #fffafb, #ffffff 62%);
+  background: var(--web-hero-grad);
 }
 
 .eyebrow {
@@ -468,8 +468,8 @@ watch(() => store.isLogin, (isLogin) => {
 .goods_panel,
 .summary_panel {
   border-radius: 16px;
-  border: 1px solid #eceef2;
-  background: #fff;
+  border: 1px solid var(--web-border);
+  background: var(--web-surface);
   padding: 18px;
 }
 
@@ -508,7 +508,7 @@ watch(() => store.isLogin, (isLogin) => {
   gap: 14px;
   align-items: center;
   padding: 16px 0;
-  border-top: 1px solid #eceef2;
+  border-top: 1px solid var(--web-border);
 }
 
 .item_cover {
@@ -517,7 +517,7 @@ watch(() => store.isLogin, (isLogin) => {
   overflow: hidden;
   border-radius: 12px;
   cursor: pointer;
-  background: #f7f8fa;
+  background: var(--web-soft-bg);
 
   img {
     width: 100%;
@@ -571,8 +571,8 @@ watch(() => store.isLogin, (isLogin) => {
   width: 28px;
   height: 28px;
   border-radius: 4px;
-  border: 1px solid #d8dce3;
-  background: #fff;
+  border: 1px solid var(--web-border-strong);
+  background: var(--web-surface);
   color: #7b8088;
   display: inline-flex;
   align-items: center;
@@ -660,8 +660,8 @@ watch(() => store.isLogin, (isLogin) => {
 .coupon_card {
   padding: 14px 16px;
   border-radius: 14px;
-  background: #fafafb;
-  border: 1px solid #eceef2;
+  background: var(--web-soft-bg);
+  border: 1px solid var(--web-border);
   display: flex;
   gap: 12px;
   align-items: flex-start;
@@ -685,7 +685,7 @@ watch(() => store.isLogin, (isLogin) => {
   margin-top: 12px;
   padding: 16px;
   border-radius: 14px;
-  background: #fafafb;
+  background: var(--web-soft-bg);
   color: #9ca3af;
   font-size: 12px;
   text-align: center;
@@ -701,7 +701,7 @@ watch(() => store.isLogin, (isLogin) => {
   min-height: 360px;
   border-radius: 16px;
   border: 1px dashed #f0d7dd;
-  background: linear-gradient(180deg, #fffafb, #fff);
+  background: var(--web-hero-grad);
   display: grid;
   justify-items: center;
   align-content: center;
@@ -715,7 +715,7 @@ watch(() => store.isLogin, (isLogin) => {
   border-radius: 999px;
   display: grid;
   place-items: center;
-  background: #fff1f4;
+  background: var(--web-soft-bg-2);
   color: #ff647c;
   font-size: 30px;
 }

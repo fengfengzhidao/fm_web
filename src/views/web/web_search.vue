@@ -122,7 +122,7 @@ watch(currentKey, (value) => {
 .web_search_view {
   min-height: 100vh;
   color: var(--color-text-1);
-  background: #fff;
+  background: var(--web-page-bg);
 }
 
 .page_shell {
@@ -141,16 +141,16 @@ watch(currentKey, (value) => {
 }
 
 .result_surface {
-  background: #fff;
-  box-shadow: 0 20px 45px rgba(17, 24, 39, .05);
+  background: var(--web-surface);
+  box-shadow: var(--web-shadow-lg);
 }
 
 .search_panel {
   margin-top: 0;
   padding: 22px;
   border-radius: 16px;
-  border: 1px solid #eceef2;
-  background: linear-gradient(180deg, #fffafb, #ffffff 64%);
+  border: 1px solid var(--web-border);
+  background: var(--web-hero-grad);
 }
 
 .search_intro {
@@ -185,7 +185,7 @@ watch(currentKey, (value) => {
   border-radius: 999px;
   border: 2px solid #ff8fa0;
   overflow: hidden;
-  background: #fff;
+  background: var(--web-surface);
 
   :deep(.arco-input-wrapper) {
     height: 44px;
@@ -255,7 +255,7 @@ watch(currentKey, (value) => {
   height: 30px;
   padding: 0 14px;
   border-radius: 999px;
-  background: #fff4f6;
+  background: var(--web-soft-bg-2);
   color: #ff6178;
   font-size: 12px;
   font-weight: 600;
@@ -269,9 +269,9 @@ watch(currentKey, (value) => {
 
 .goods_card {
   overflow: hidden;
-  border: 1px solid #eceef2;
+  border: 1px solid var(--web-border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--web-surface);
   cursor: pointer;
   transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
 
@@ -284,7 +284,7 @@ watch(currentKey, (value) => {
 
 .goods_cover {
   aspect-ratio: 16 / 9;
-  background: #f7f8fa;
+  background: var(--web-soft-bg);
 
   img {
     width: 100%;

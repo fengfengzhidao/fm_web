@@ -77,7 +77,7 @@ const roleText = computed(() => store.isAdmin ? "管理员" : "普通用户")
 
 .panel_head h2 {
   margin: 10px 0 8px;
-  color: #111827;
+  color: var(--web-text);
   font-size: 32px;
   line-height: 1.1;
 }
@@ -85,7 +85,7 @@ const roleText = computed(() => store.isAdmin ? "管理员" : "普通用户")
 .panel_head p,
 .profile_body span,
 .quick_card span:last-child {
-  color: #6b7280;
+  color: var(--web-text-soft);
 }
 
 .panel_head p {
@@ -100,8 +100,8 @@ const roleText = computed(() => store.isAdmin ? "管理员" : "普通用户")
   align-items: center;
   padding: 22px;
   border-radius: 16px;
-  background: linear-gradient(180deg, #fffafb, #ffffff 62%);
-  border: 1px solid #eceef2;
+  background: var(--web-soft-grad);
+  border: 1px solid var(--web-border);
 }
 
 .profile_body {
@@ -110,7 +110,7 @@ const roleText = computed(() => store.isAdmin ? "管理员" : "普通用户")
 }
 
 .profile_body strong {
-  color: #111827;
+  color: var(--web-text);
   font-size: 24px;
 }
 
@@ -134,8 +134,8 @@ const roleText = computed(() => store.isAdmin ? "管理员" : "普通用户")
   appearance: none;
   padding: 18px;
   border-radius: 14px;
-  border: 1px solid #eceef2;
-  background: #fafafb;
+  border: 1px solid var(--web-border);
+  background: var(--web-soft-bg);
   cursor: pointer;
   transition: .18s ease;
   display: grid;
@@ -147,7 +147,7 @@ const roleText = computed(() => store.isAdmin ? "管理员" : "普通用户")
 
   &:hover {
     border-color: #ffccd5;
-    background: #fff4f6;
+    background: var(--web-brand-soft);
     transform: translateY(-1px);
   }
 }
@@ -161,8 +161,8 @@ const roleText = computed(() => store.isAdmin ? "管理员" : "普通用户")
   justify-content: center;
   align-self: center;
   flex-shrink: 0;
-  background: linear-gradient(180deg, #fff8fa 0%, #fff 100%);
-  border: 1px solid #ffe0e6;
+  background: var(--web-soft-grad);
+  border: 1px solid var(--web-border);
   color: #ff637a;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9);
 
@@ -188,12 +188,12 @@ const roleText = computed(() => store.isAdmin ? "管理员" : "普通用户")
 }
 
 .quick_name {
-  color: #111827;
+  color: var(--web-text);
   font-size: 16px;
 }
 
 .quick_desc {
-  color: #6b7280;
+  color: var(--web-text-soft);
   font-size: 12px;
   line-height: 1.7;
 }

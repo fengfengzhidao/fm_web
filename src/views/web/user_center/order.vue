@@ -345,7 +345,7 @@ onMounted(loadOrders)
 
 .panel_head h2 {
   margin: 10px 0 8px;
-  color: #111827;
+  color: var(--web-text);
   font-size: 32px;
   line-height: 1.1;
 }
@@ -353,7 +353,7 @@ onMounted(loadOrders)
 .panel_head p,
 .order_top span,
 .goods_meta span {
-  color: #6b7280;
+  color: var(--web-text-soft);
 }
 
 .panel_head p {
@@ -368,7 +368,7 @@ onMounted(loadOrders)
   height: 34px;
   padding: 0 14px;
   border-radius: 999px;
-  background: #fff4f6;
+  background: var(--web-brand-soft);
   color: #ff637a;
   font-size: 12px;
   font-weight: 700;
@@ -380,8 +380,8 @@ onMounted(loadOrders)
   gap: 12px;
   padding: 14px;
   border-radius: 16px;
-  background: #fafafb;
-  border: 1px solid #eceef2;
+  background: var(--web-soft-bg);
+  border: 1px solid var(--web-border);
 }
 
 .order_list {
@@ -392,8 +392,8 @@ onMounted(loadOrders)
 .order_card {
   padding: 18px;
   border-radius: 16px;
-  background: #fff;
-  border: 1px solid #eceef2;
+  background: var(--web-surface);
+  border: 1px solid var(--web-border);
 }
 
 .order_top,
@@ -406,7 +406,7 @@ onMounted(loadOrders)
 
 .order_top strong {
   display: block;
-  color: #111827;
+  color: var(--web-text);
   font-size: 18px;
   margin-bottom: 6px;
 }
@@ -423,8 +423,8 @@ onMounted(loadOrders)
   gap: 14px;
   padding: 12px;
   border-radius: 14px;
-  background: #fafafb;
-  border: 1px solid #eceef2;
+  background: var(--web-soft-bg);
+  border: 1px solid var(--web-border);
 }
 
 .goods_item img {
@@ -440,7 +440,7 @@ onMounted(loadOrders)
 }
 
 .goods_meta strong {
-  color: #111827;
+  color: var(--web-text);
   font-size: 16px;
 }
 
@@ -448,8 +448,8 @@ onMounted(loadOrders)
   margin-top: 8px;
   padding: 14px;
   border-radius: 14px;
-  background: #fff;
-  border: 1px solid #f3d6dd;
+  background: var(--web-surface);
+  border: 1px solid var(--web-border);
   display: grid;
   gap: 12px;
 }
@@ -486,7 +486,7 @@ onMounted(loadOrders)
 
 .comment_editor :deep(.arco-textarea-wrapper) {
   border-radius: 12px;
-  background: #fffafb;
+  background: var(--web-soft-bg);
 }
 
 .comment_upload_block {
@@ -512,12 +512,12 @@ onMounted(loadOrders)
 }
 
 .upload_label {
-  color: #111827;
+  color: var(--web-text);
   font-weight: 700;
 }
 
 .upload_tip {
-  color: #9ca3af;
+  color: var(--web-text-muted);
 }
 
 .comment_image_list {
@@ -549,7 +549,7 @@ onMounted(loadOrders)
 }
 
 .price_line {
-  color: #6b7280;
+  color: var(--web-text-soft);
   font-size: 13px;
 }
 
@@ -560,9 +560,9 @@ onMounted(loadOrders)
 .empty_card {
   padding: 20px;
   border-radius: 16px;
-  border: 1px dashed #f0d7dd;
-  background: linear-gradient(180deg, #fffafb, #fff);
-  color: #9ca3af;
+  border: 1px dashed var(--web-border);
+  background: var(--web-soft-grad);
+  color: var(--web-text-muted);
   font-size: 13px;
   text-align: center;
 }

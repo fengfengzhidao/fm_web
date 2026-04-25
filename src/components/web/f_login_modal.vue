@@ -136,8 +136,8 @@ async function emailLogin() {
   width: min(440px, 100%);
   overflow: hidden;
   border-radius: 18px;
-  background: #fff;
-  border: 1px solid rgba(255, 255, 255, .7);
+  background: var(--web-surface);
+  border: 1px solid var(--web-border);
   box-shadow: 0 26px 80px rgba(15, 23, 42, .28);
 }
 
@@ -159,7 +159,7 @@ async function emailLogin() {
 
 .modal_form {
   padding: 34px 32px 28px;
-  background: rgba(255, 255, 255, .98);
+  background: var(--web-surface);
 
   .arco-form {
     width: 100%;
@@ -170,7 +170,7 @@ async function emailLogin() {
   .brand_title {
     font-size: 22px;
     font-weight: 800;
-    color: #ff5d72;
+    color: var(--web-brand);
     text-align: center;
     margin-bottom: 8px;
   }
@@ -178,7 +178,7 @@ async function emailLogin() {
   .title {
     font-size: 28px;
     font-weight: 800;
-    color: #ff5d72;
+    color: var(--web-brand);
     text-align: center;
     margin-bottom: 20px;
   }
@@ -222,8 +222,7 @@ async function emailLogin() {
     margin-left: 10px;
     flex: 0 0 200px;
     border: 1px solid rgba(255, 93, 114, .42);
-    background:
-      linear-gradient(135deg, rgba(255, 93, 114, .08), rgba(255, 255, 255, 1));
+    background: var(--web-soft-grad);
     border-radius: 4px;
     cursor: pointer;
     display: grid;

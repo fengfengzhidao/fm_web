@@ -117,7 +117,7 @@ watch(orderNo, loadPayInfo, {immediate: true})
 <style scoped lang="less">
 .order_pay_view {
   min-height: 100vh;
-  background: #fff;
+  background: var(--web-page-bg);
 }
 
 .page_shell {
@@ -144,13 +144,13 @@ watch(orderNo, loadPayInfo, {immediate: true})
 .pay_main,
 .pay_summary {
   border-radius: 16px;
-  border: 1px solid #eceef2;
-  background: #fff;
+  border: 1px solid var(--web-border);
+  background: var(--web-surface);
 }
 
 .pay_main {
   padding: 28px 28px 32px;
-  background: linear-gradient(180deg, #fffafb, #ffffff 62%);
+  background: var(--web-hero-grad);
 }
 
 .eyebrow {
@@ -197,8 +197,8 @@ watch(orderNo, loadPayInfo, {immediate: true})
   margin-top: 22px;
   padding: 24px;
   border-radius: 18px;
-  border: 1px solid #f3dce2;
-  background: #fff;
+  border: 1px solid var(--web-border);
+  background: var(--web-surface);
 }
 
 .pay_label {
@@ -249,7 +249,7 @@ watch(orderNo, loadPayInfo, {immediate: true})
 .summary_item {
   padding: 14px 14px;
   border-radius: 12px;
-  background: #fafafb;
+  background: var(--web-soft-bg);
   color: #4b5563;
   font-size: 13px;
   line-height: 1.7;

@@ -98,7 +98,7 @@ function go(name: string) {
 .user_center_view {
   min-height: 100vh;
   color: var(--color-text-1);
-  background: #fff;
+  background: var(--web-page-bg);
 }
 
 .page_shell {
@@ -117,8 +117,8 @@ function go(name: string) {
 }
 
 .center_surface {
-  background: #fff;
-  box-shadow: 0 20px 45px rgba(17, 24, 39, .05);
+  background: var(--web-surface);
+  box-shadow: var(--web-shadow-lg);
 }
 
 .hero_section {
@@ -130,13 +130,13 @@ function go(name: string) {
 .hero_meta,
 .hero_card {
   border-radius: 16px;
-  border: 1px solid #eceef2;
-  background: #fff;
+  border: 1px solid var(--web-border);
+  background: var(--web-surface);
 }
 
 .hero_meta {
   padding: 24px 22px;
-  background: linear-gradient(180deg, #fffafb, #ffffff 62%);
+  background: var(--web-hero-grad);
 }
 
 .eyebrow {
@@ -150,12 +150,12 @@ function go(name: string) {
   margin: 10px 0;
   font-size: 36px;
   line-height: 1.05;
-  color: #111827;
+  color: var(--web-text);
 }
 
 .hero_meta p {
   margin: 0;
-  color: #6b7280;
+  color: var(--web-text-soft);
   font-size: 14px;
   line-height: 1.8;
 }
@@ -173,11 +173,11 @@ function go(name: string) {
 
   strong {
     font-size: 18px;
-    color: #111827;
+    color: var(--web-text);
   }
 
   span {
-    color: #6b7280;
+    color: var(--web-text-soft);
     font-size: 12px;
   }
 }
@@ -193,8 +193,8 @@ function go(name: string) {
 .side_panel,
 .content_panel {
   border-radius: 16px;
-  border: 1px solid #eceef2;
-  background: #fff;
+  border: 1px solid var(--web-border);
+  background: var(--web-surface);
   padding: 18px;
 }
 
@@ -203,7 +203,7 @@ function go(name: string) {
 }
 
 .side_title {
-  color: #111827;
+  color: var(--web-text);
   font-size: 24px;
   font-weight: 700;
   line-height: 1.1;
@@ -219,8 +219,8 @@ function go(name: string) {
   width: 100%;
   text-align: left;
   appearance: none;
-  border: 1px solid #eceef2;
-  background: #fafafb;
+  border: 1px solid var(--web-border);
+  background: var(--web-soft-bg);
   border-radius: 14px;
   padding: 13px 14px;
   cursor: pointer;
@@ -233,13 +233,13 @@ function go(name: string) {
 
   &.active {
     border-color: #ffccd5;
-    background: #fff4f6;
+    background: var(--web-brand-soft);
     box-shadow: 0 8px 20px rgba(255, 93, 114, .06);
   }
 
   &:hover {
     border-color: #ffd5dd;
-    background: #fff7f8;
+    background: var(--web-soft-bg-2);
     transform: translateY(-1px);
   }
 }
@@ -253,8 +253,8 @@ function go(name: string) {
   justify-content: center;
   align-self: center;
   flex-shrink: 0;
-  background: linear-gradient(180deg, #fff8fa 0%, #fff 100%);
-  border: 1px solid #ffe0e6;
+  background: var(--web-soft-grad);
+  border: 1px solid var(--web-border);
   color: #ff637a;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9);
 
@@ -281,12 +281,12 @@ function go(name: string) {
 }
 
 .menu_name {
-  color: #111827;
+  color: var(--web-text);
   font-size: 15px;
 }
 
 .menu_desc {
-  color: #6b7280;
+  color: var(--web-text-soft);
   font-size: 12px;
   line-height: 1.6;
 }

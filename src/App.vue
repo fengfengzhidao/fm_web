@@ -53,6 +53,45 @@ if (ico) {
   --web-primary-active: #ef4f75;
   --web-primary-glow: rgba(255, 111, 142, .28);
   --web-primary-glow-strong: rgba(255, 111, 142, .36);
+  --web-page-bg: #ffffff;
+  --web-surface: #ffffff;
+  --web-surface-alt: #fffafb;
+  --web-soft-bg: #fafafb;
+  --web-soft-bg-2: #fff4f6;
+  --web-border: #eceef2;
+  --web-border-strong: #e3e7ee;
+  --web-text: #111827;
+  --web-text-soft: #6b7280;
+  --web-text-muted: #9ca3af;
+  --web-brand: #ff667d;
+  --web-brand-soft: #ff8b9b;
+  --web-hero-grad: linear-gradient(180deg, #fffafb, #ffffff 62%);
+  --web-soft-grad: linear-gradient(180deg, #fff7f8 0%, #fff 100%);
+  --web-footer-grad: linear-gradient(180deg, rgba(255, 249, 250, .96), rgba(255, 255, 255, .98));
+  --web-shadow-lg: 0 20px 45px rgba(17, 24, 39, .05);
+  --web-shadow-soft: 0 14px 34px rgba(255, 107, 127, .05);
+  background: var(--web-page-bg);
+
+  &[arco-theme="dark"],
+  body[arco-theme="dark"] & {
+    --web-page-bg: #0f1115;
+    --web-surface: #171a21;
+    --web-surface-alt: #1b2029;
+    --web-soft-bg: #20252f;
+    --web-soft-bg-2: #241e26;
+    --web-border: rgba(255, 255, 255, .08);
+    --web-border-strong: rgba(255, 255, 255, .14);
+    --web-text: #f4f6fb;
+    --web-text-soft: #aab2c5;
+    --web-text-muted: #7f8799;
+    --web-brand: #ff8ea5;
+    --web-brand-soft: #ffb3c1;
+    --web-hero-grad: linear-gradient(180deg, #1b2029, #151821 62%);
+    --web-soft-grad: linear-gradient(180deg, #20252f 0%, #171a21 100%);
+    --web-footer-grad: linear-gradient(180deg, rgba(19, 22, 29, .96), rgba(15, 17, 21, .98));
+    --web-shadow-lg: 0 24px 50px rgba(0, 0, 0, .28);
+    --web-shadow-soft: 0 18px 40px rgba(0, 0, 0, .24);
+  }
 
   .arco-btn-primary {
     color: #fff;

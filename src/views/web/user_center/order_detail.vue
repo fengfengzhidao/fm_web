@@ -314,12 +314,12 @@ onMounted(loadDetail)
 .content_card {
   padding: 20px;
   border-radius: 16px;
-  background: #fff;
-  border: 1px solid #eceef2;
+  background: var(--web-surface);
+  border: 1px solid var(--web-border);
 }
 
 .status_card {
-  background: linear-gradient(180deg, #fffafb, #ffffff 62%);
+  background: var(--web-hero-grad);
 }
 
 .status_main {
@@ -492,7 +492,7 @@ onMounted(loadDetail)
   gap: 14px;
   padding: 14px;
   border-radius: 14px;
-  background: #fafafb;
+  background: var(--web-soft-bg);
 }
 
 .goods_row img {
@@ -530,7 +530,7 @@ onMounted(loadDetail)
 .coupon_item {
   padding: 12px 14px;
   border-radius: 14px;
-  background: #fafafb;
+  background: var(--web-soft-bg);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -541,7 +541,7 @@ onMounted(loadDetail)
   padding: 20px;
   border-radius: 16px;
   border: 1px dashed #f0d7dd;
-  background: linear-gradient(180deg, #fffafb, #fff);
+  background: var(--web-hero-grad);
   color: #9ca3af;
   font-size: 13px;
   text-align: center;

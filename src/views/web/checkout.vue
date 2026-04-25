@@ -287,7 +287,7 @@ onMounted(loadData)
 .checkout_view {
   min-height: 100vh;
   color: var(--color-text-1);
-  background: #fff;
+  background: var(--web-page-bg);
 }
 
 .page_shell {
@@ -306,8 +306,8 @@ onMounted(loadData)
 }
 
 .checkout_surface {
-  background: #fff;
-  box-shadow: 0 20px 45px rgba(17, 24, 39, .05);
+  background: var(--web-surface);
+  box-shadow: var(--web-shadow-lg);
 }
 
 .checkout_surface :deep(.arco-spin) {
@@ -323,13 +323,13 @@ onMounted(loadData)
 .hero_copy,
 .hero_summary {
   border-radius: 16px;
-  border: 1px solid #eceef2;
-  background: #fff;
+  border: 1px solid var(--web-border);
+  background: var(--web-surface);
 }
 
 .hero_copy {
   padding: 24px 22px;
-  background: linear-gradient(180deg, #fffafb, #ffffff 62%);
+  background: var(--web-hero-grad);
 }
 
 .eyebrow {
@@ -411,8 +411,8 @@ onMounted(loadData)
 .panel {
   padding: 18px;
   border-radius: 16px;
-  border: 1px solid #eceef2;
-  background: #fff;
+  border: 1px solid var(--web-border);
+  background: var(--web-surface);
 }
 
 .panel_title {
@@ -433,7 +433,7 @@ onMounted(loadData)
   grid-template-columns: 92px minmax(0, 1fr);
   gap: 14px;
   padding: 14px 0;
-  border-top: 1px solid #eceef2;
+  border-top: 1px solid var(--web-border);
 
   &:first-of-type {
     border-top: 0;
@@ -478,8 +478,8 @@ onMounted(loadData)
   align-items: flex-start;
   padding: 12px 14px;
   border-radius: 14px;
-  background: #fafafb;
-  border: 1px solid #eceef2;
+  background: var(--web-soft-bg);
+  border: 1px solid var(--web-border);
   cursor: pointer;
 }
 
@@ -514,7 +514,7 @@ onMounted(loadData)
   gap: 12px;
   padding: 18px;
   border-radius: 14px;
-  background: linear-gradient(135deg, rgba(255, 93, 114, .1), rgba(255, 93, 114, .04));
+  background: var(--web-soft-grad);
 }
 
 .summary_box > div {
@@ -555,7 +555,7 @@ onMounted(loadData)
 .empty_state {
   border-radius: 14px;
   border: 1px dashed #f0d7dd;
-  background: linear-gradient(180deg, #fffafb, #fff);
+  background: var(--web-hero-grad);
   color: #9ca3af;
   font-size: 13px;
   line-height: 1.8;

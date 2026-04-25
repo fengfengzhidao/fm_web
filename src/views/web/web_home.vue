@@ -592,7 +592,7 @@ onMounted(() => {
 <style scoped lang="less">
 .web_home_view {
   color: var(--color-text-1);
-  background: #fff;
+  background: var(--web-page-bg);
 }
 
 .page_shell {
@@ -622,14 +622,14 @@ onMounted(() => {
 .brand_title {
   font-size: 28px;
   line-height: 1.05;
-  color: #ff667d;
+  color: var(--web-brand);
   font-weight: 700;
   letter-spacing: .02em;
 }
 
 .brand_subtitle {
   margin-top: 6px;
-  color: #ff8b9b;
+  color: var(--web-brand-soft);
   font-size: 12px;
   letter-spacing: .18em;
 }
@@ -642,7 +642,7 @@ onMounted(() => {
   border-radius: 999px;
   border: 2px solid #ff8fa0;
   overflow: hidden;
-  background: #fff;
+  background: var(--web-surface);
 
   :deep(.arco-input-wrapper) {
     height: 42px;
@@ -686,16 +686,16 @@ onMounted(() => {
 .hero_banner_surface,
 .hero_coupon,
 .hero_user {
-  border: 1px solid #eceef2;
+  border: 1px solid var(--web-border);
   border-radius: 12px;
-  background: #fff;
+  background: var(--web-surface);
 }
 
 .hero_banner_surface {
   width: 520px;
   aspect-ratio: 16 / 9;
   padding: 14px;
-  background: linear-gradient(180deg, #fff8fa, #ffffff 62%);
+  background: var(--web-hero-grad);
   overflow: hidden;
 
   :deep(.arco-spin),
@@ -852,7 +852,7 @@ onMounted(() => {
   margin-bottom: 16px;
   padding: 10px 0;
   border-radius: 0;
-  background: #fff;
+  background: var(--web-page-bg);
   display: inline-flex;
   max-width: 100%;
 }
@@ -1043,11 +1043,11 @@ onMounted(() => {
   text-align: center;
   padding: 10px 0;
   border-radius: 10px;
-  background: #fafafb;
+  background: var(--web-soft-bg);
 
   span {
     display: block;
-    color: #6b7280;
+    color: var(--web-text-soft);
     font-size: 11px;
   }
 
@@ -1068,9 +1068,9 @@ onMounted(() => {
 
   button {
     min-height: 78px;
-    border: 1px solid #eceef2;
+    border: 1px solid var(--web-border);
     border-radius: 10px;
-    background: #fff;
+    background: var(--web-surface);
     display: grid;
     justify-items: center;
     align-content: center;
@@ -1092,8 +1092,8 @@ onMounted(() => {
   margin-top: 18px;
   padding: 18px 18px 10px;
   border-radius: 18px;
-  background: #fff;
-  box-shadow: 0 20px 45px rgba(17, 24, 39, .05);
+  background: var(--web-surface);
+  box-shadow: var(--web-shadow-lg);
 }
 
 .goods_head {
@@ -1108,9 +1108,9 @@ onMounted(() => {
 
 .goods_card {
   overflow: hidden;
-  border: 1px solid #eceef2;
+  border: 1px solid var(--web-border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--web-surface);
   cursor: pointer;
   transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
 
@@ -1123,7 +1123,7 @@ onMounted(() => {
 
 .goods_cover {
   aspect-ratio: 16 / 9;
-  background: #f7f8fa;
+  background: var(--web-soft-bg);
 
   img {
     width: 100%;
