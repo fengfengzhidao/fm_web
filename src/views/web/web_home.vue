@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, onMounted, ref} from "vue";
+import {computed, onBeforeUnmount, onMounted, ref, watch} from "vue";
 import dayjs from "dayjs";
 import {Message} from "@arco-design/web-vue";
 import {
@@ -38,11 +38,15 @@ const router = useRouter()
 const store = userStorei()
 const searchKeyword = ref("")
 const goodsList = ref<goodsIndexType[]>([])
+const bannerGoods = ref<goodsIndexType[]>([])
 const couponList = ref<acceptableCouponType[]>([])
 const loading = ref(false)
+const bannerLoading = ref(false)
 const couponLoading = ref(false)
 const categoryTabs = ref<FeatureTab[]>([])
 const activeFeatureKey = ref("recommend")
+const activeBannerIndex = ref(0)
+let bannerTimer: number | undefined
 
 const featureTabs = computed<FeatureTab[]>(() => [
   {title: "猜你喜欢", key: "recommend", icon: "heart", type: "recommend"},
@@ -64,6 +68,7 @@ const goodsSectionTitle = computed(() => {
 })
 
 const goodsEmptyText = computed(() => `暂无${goodsSectionTitle.value}商品`)
+const bannerList = computed(() => bannerGoods.value.filter((item) => Boolean(item.cover)).slice(0, 5))
 
 const categoryIcons: Array<FeatureTab["icon"]> = [
   "apps",
@@ -105,12 +110,56 @@ function couponExpireText(item: acceptableCouponType): string {
 }
 
 const couponSlots = computed(() => Array.from({length: 4}, (_, index) => couponList.value[index] || null))
-const heroGoods = computed(() => goodsList.value.slice(0, 4))
 const featuredGoods = computed(() => goodsList.value.slice(0, 10))
 const userDisplayName = computed(() => store.userInfo.nickName || store.userInfo.userName || "佩奇")
+const activeBanner = computed(() => bannerList.value[activeBannerIndex.value] || null)
 
 function openGoodsLink(item: goodsIndexType) {
   goGoodsDetail(item.id)
+}
+
+async function loadBannerGoods() {
+  bannerLoading.value = true
+  try {
+    const res = await goodsIndexListApi({
+      page: 1,
+      limit: 5,
+    })
+    if (res.code) {
+      Message.error(res.msg)
+      return
+    }
+    bannerGoods.value = res.data.list || []
+  } catch (error) {
+    console.error(error)
+    Message.error("轮播商品加载失败")
+  } finally {
+    bannerLoading.value = false
+  }
+}
+
+function stopBannerTimer() {
+  if (bannerTimer) {
+    window.clearInterval(bannerTimer)
+    bannerTimer = undefined
+  }
+}
+
+function startBannerTimer() {
+  stopBannerTimer()
+  if (bannerList.value.length <= 1) {
+    return
+  }
+  bannerTimer = window.setInterval(() => {
+    activeBannerIndex.value = (activeBannerIndex.value + 1) % bannerList.value.length
+  }, 3500)
+}
+
+function switchBanner(index: number) {
+  if (!bannerList.value.length) {
+    return
+  }
+  activeBannerIndex.value = index % bannerList.value.length
 }
 
 async function loadGoods(category?: string) {
@@ -245,8 +294,18 @@ function openLoginModal() {
   store.openLoginModal("/")
 }
 
+watch(bannerList, () => {
+  activeBannerIndex.value = 0
+  startBannerTimer()
+}, {immediate: true})
+
+onBeforeUnmount(() => {
+  stopBannerTimer()
+})
+
 onMounted(() => {
   loadCategories()
+  loadBannerGoods()
   loadGoods()
   loadCoupons()
 })
@@ -290,31 +349,52 @@ onMounted(() => {
 
         <section class="hero_section">
           <div class="hero_main">
-            <div class="hero_showcase">
-              <div class="hero_primary">
-                <img
-                  :src="heroGoods[0]?.cover || homeBg"
-                  :alt="heroGoods[0]?.title || '枫枫商城推荐'"
-                >
-                <div class="hero_primary_glow"></div>
+            <div class="hero_banner_surface">
+              <div class="panel_head compact banner_head">
+                <h2>猜你喜欢</h2>
+                <span>点击海报即可进入商品详情</span>
               </div>
-              <div class="hero_secondary">
-                <article
-                  v-for="(item, index) in heroGoods.slice(1)"
-                  :key="item.id"
-                  class="hero_side_card"
-                  :class="`card-${index + 1}`"
-                  @click="openGoodsLink(item)"
-                >
-                  <img :src="item.cover" :alt="item.title">
-                </article>
-                <article
-                  v-if="heroGoods.length < 4"
-                  class="hero_side_card placeholder"
-                >
-                  <img :src="homeBg" alt="更多推荐">
-                </article>
-              </div>
+
+              <a-spin :loading="bannerLoading" tip="加载中...">
+                <div v-if="activeBanner" class="hero_banner_stage">
+                  <transition name="banner_fade" mode="out-in">
+                    <article
+                      :key="activeBanner.id"
+                      class="hero_banner_card"
+                      role="button"
+                      tabindex="0"
+                      @click="goGoodsDetail(activeBanner.id)"
+                      @keydown.enter.prevent="goGoodsDetail(activeBanner.id)"
+                      @keydown.space.prevent="goGoodsDetail(activeBanner.id)"
+                    >
+                      <img :src="activeBanner.cover || homeBg" :alt="activeBanner.title">
+                      <div class="hero_banner_overlay">
+                        <div class="hero_banner_tag">猜你喜欢</div>
+                        <h3>{{ activeBanner.title }}</h3>
+                        <p>￥ {{ formatPrice(activeBanner.price) }} · {{ activeBanner.salesNum }} 人购买</p>
+                        <span class="hero_banner_action">查看详情</span>
+                      </div>
+                    </article>
+                  </transition>
+
+                  <div v-if="bannerList.length > 1" class="hero_banner_dots" aria-label="轮播切换">
+                    <button
+                      v-for="(item, index) in bannerList"
+                      :key="item.id"
+                      type="button"
+                      class="hero_banner_dot"
+                      :class="{active: index === activeBannerIndex}"
+                      :aria-label="`切换到 ${item.title}`"
+                      @click="switchBanner(index)"
+                    ></button>
+                  </div>
+                </div>
+
+                <div v-else class="hero_banner_empty">
+                  <img :src="homeBg" alt="猜你喜欢">
+                  <div class="hero_banner_empty_text">猜你喜欢商品加载中</div>
+                </div>
+              </a-spin>
             </div>
           </div>
 
@@ -608,7 +688,7 @@ onMounted(() => {
   min-width: 0;
 }
 
-.hero_showcase,
+.hero_banner_surface,
 .hero_coupon,
 .hero_user {
   border: 1px solid #eceef2;
@@ -616,22 +696,34 @@ onMounted(() => {
   background: #fff;
 }
 
-.hero_showcase {
+.hero_banner_surface {
   height: 300px;
   padding: 14px;
-  display: grid;
-  grid-template-columns: minmax(0, 1.6fr) 170px;
-  gap: 12px;
   background: linear-gradient(180deg, #fff8fa, #ffffff 62%);
   overflow: hidden;
 }
 
-.hero_primary,
-.hero_side_card {
+.banner_head {
+  align-items: flex-end;
+  margin-bottom: 10px;
+
+  span {
+    color: #9ca3af;
+    font-size: 12px;
+  }
+}
+
+.hero_banner_stage {
+  height: calc(100% - 42px);
+  position: relative;
+}
+
+.hero_banner_card {
   position: relative;
   height: 100%;
   overflow: hidden;
   border-radius: 12px;
+  cursor: pointer;
 
   img {
     width: 100%;
@@ -641,33 +733,116 @@ onMounted(() => {
   }
 }
 
-.hero_primary {
-  min-height: 0;
-  background: linear-gradient(135deg, #ffe7eb, #fff6f7);
+.banner_fade-enter-active,
+.banner_fade-leave-active {
+  transition: opacity .35s ease, transform .35s ease;
 }
 
-.hero_primary_glow {
+.banner_fade-enter-from,
+.banner_fade-leave-to {
+  opacity: 0;
+  transform: scale(.985);
+}
+
+.hero_banner_overlay {
   position: absolute;
-  inset: auto -40px -55px auto;
-  width: 180px;
-  height: 180px;
-  border-radius: 999px;
-  background: radial-gradient(circle, rgba(255, 107, 127, .16), rgba(255, 107, 127, 0));
-}
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.02), rgba(15, 23, 42, 0.58));
+  color: #fff;
 
-.hero_secondary {
-  display: grid;
-  grid-template-rows: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.hero_side_card {
-  cursor: pointer;
-  background: #f7f8fa;
-
-  &.placeholder {
-    cursor: default;
+  h3 {
+    margin: 8px 0 0;
+    font-size: 22px;
+    line-height: 1.2;
+    font-weight: 700;
+    max-width: 80%;
   }
+
+  p {
+    margin: 10px 0 0;
+    font-size: 14px;
+    line-height: 1.5;
+    opacity: .95;
+  }
+}
+
+.hero_banner_tag {
+  align-self: flex-start;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 103, 125, .92);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.hero_banner_action {
+  margin-top: 14px;
+  align-self: flex-start;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .92);
+  color: #ff5f74;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.hero_banner_dots {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.hero_banner_dot {
+  width: 8px;
+  height: 8px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .55);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: width .2s ease, background-color .2s ease;
+
+  &.active {
+    width: 22px;
+    background: #ff5f74;
+  }
+}
+
+.hero_banner_empty {
+  height: calc(100% - 42px);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  background: linear-gradient(135deg, #ffe7eb, #fff6f7);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+.hero_banner_empty_text {
+  position: absolute;
+  left: 18px;
+  bottom: 18px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .9);
+  color: #ff5f74;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .feature_tabs {
@@ -1012,10 +1187,6 @@ onMounted(() => {
     grid-template-columns: 1fr;
   }
 
-  .hero_showcase {
-    grid-template-columns: minmax(0, 1.5fr) 180px;
-  }
-
   .goods_grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
@@ -1041,18 +1212,22 @@ onMounted(() => {
     gap: 12px 16px;
   }
 
-  .hero_showcase {
+  .hero_banner_surface {
     height: auto;
-    grid-template-columns: 1fr;
   }
 
-  .hero_primary {
-    min-height: 220px;
+  .hero_banner_stage,
+  .hero_banner_empty {
+    height: 220px;
   }
 
-  .hero_secondary {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    grid-template-rows: none;
+  .hero_banner_overlay {
+    padding: 18px;
+
+    h3 {
+      max-width: 100%;
+      font-size: 18px;
+    }
   }
 
   .goods_grid {
@@ -1082,14 +1257,21 @@ onMounted(() => {
     overflow-x: auto;
   }
 
+  .banner_head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .hero_banner_dots {
+    left: 14px;
+    right: 14px;
+    bottom: 12px;
+  }
+
   .coupon_compact_grid,
   .user_stats,
   .user_links,
   .goods_grid {
-    grid-template-columns: 1fr;
-  }
-
-  .hero_secondary {
     grid-template-columns: 1fr;
   }
 }
