@@ -1,8 +1,15 @@
 <script setup lang="ts">
 import {computed, onMounted, ref, watch} from "vue";
+import dayjs from "dayjs";
 import {Message} from "@arco-design/web-vue";
-import F_nav from "@/components/web/f_nav.vue";
-import F_main from "@/components/web/f_main.vue";
+import {
+  IconCalendar,
+  IconClockCircle,
+  IconFire,
+  IconGift,
+  IconNotification,
+  IconThunderbolt
+} from "@arco-design/web-vue/es/icon";
 import F_footer from "@/components/web/f_footer.vue";
 import {
   secKillApi,
@@ -38,6 +45,8 @@ const payType = ref(1)
 const note = ref("")
 
 const selectedDateLabel = computed(() => selectedDateText.value || "未选择")
+const summaryText = computed(() => `${goodsList.value.length} 个秒杀商品`)
+const dateTabList = computed(() => dateList.value.slice(0, 8))
 
 function dateTextToKey(value: string): string {
   const parts = value.trim().split(/\s+/)
@@ -50,7 +59,23 @@ function dateTextToKey(value: string): string {
 
 function formatTime(value?: string | null): string {
   if (!value) return "--"
-  return value.replace("T", " ").replace(/\.\d+Z?$/, "")
+  return dayjs(value).format("MM-DD HH:mm")
+}
+
+function stageCountdown(item: secKillInfoType): string {
+  const now = Date.now()
+  const start = new Date(item.startTime).getTime()
+  const end = new Date(item.endTime).getTime()
+  if (Number.isNaN(start) || Number.isNaN(end)) {
+    return "火热进行中"
+  }
+  if (now < start) {
+    return `距开始 ${dayjs(start).format("MM-DD HH:mm")}`
+  }
+  if (now > end) {
+    return `已于 ${dayjs(end).format("MM-DD HH:mm")} 结束`
+  }
+  return `距结束 ${dayjs(end).format("MM-DD HH:mm")}`
 }
 
 function getStage(item: secKillInfoType): SecKillStage {
@@ -66,15 +91,15 @@ function getStage(item: secKillInfoType): SecKillStage {
 }
 
 function stageText(stage: SecKillStage): string {
-  if (stage === "not_started") return "未开始"
+  if (stage === "not_started") return "即将开始"
   if (stage === "ended") return "已结束"
   return "抢购中"
 }
 
-function stageTagType(stage: SecKillStage): "arcoblue" | "orange" | "red" {
-  if (stage === "not_started") return "arcoblue"
-  if (stage === "ended") return "orange"
-  return "red"
+function stageTagClass(stage: SecKillStage): string {
+  if (stage === "not_started") return "pending"
+  if (stage === "ended") return "ended"
+  return "running"
 }
 
 async function loadDateList() {
@@ -236,59 +261,82 @@ onMounted(loadDateList)
 
 <template>
   <div class="sec_kill_view">
-    <f_nav no-scroll/>
-    <f_main>
-      <section class="hero">
-        <div class="hero_copy">
-          <div class="eyebrow">FLASH SALE</div>
-          <h1>秒杀专区</h1>
-          <p>
-            先选择一个秒杀码段，再查看对应商品列表。点击“立即抢购”会先拿到购买凭证，再进入下单确认。
-          </p>
-        </div>
+    <div class="page_shell">
+      <section class="hero_surface">
+        <header class="hero_header">
+          <router-link class="brand_block" to="/">
+            <div class="brand_title">枫枫商城</div>
+            <div class="brand_subtitle">享受快人一步</div>
+          </router-link>
 
-        <div class="hero_card">
-          <div class="hero_card_title">当前秒杀码段</div>
-          <strong>{{ selectedDateLabel }}</strong>
-          <span>共 {{ goodsList.length }} 个商品</span>
-          <a-button long type="primary" @click="router.push({name: 'web_home'})">返回首页</a-button>
-        </div>
+          <div class="header_actions">
+            <button type="button" @click="router.push({name: 'web_home'})">商城首页</button>
+            <button type="button" @click="router.push({name: 'web_search'})">搜索商品</button>
+            <button type="button" @click="router.push({name: 'web_cart'})">购物车</button>
+          </div>
+        </header>
+
+        <section class="hero_section">
+          <div class="hero_copy">
+            <div class="eyebrow">FLASH SALE</div>
+            <h1>秒杀专区</h1>
+            <p>先选时间段，再看场次商品。页面结构沿用首页和搜索页的前台白底卡片风格，把秒杀信息压成更直接的抢购视图。</p>
+
+            <div class="hero_tags">
+              <span><IconThunderbolt/> 限时抢购</span>
+              <span><IconCalendar/> 按场次切换</span>
+              <span><IconGift/> 直达下单</span>
+            </div>
+          </div>
+
+          <aside class="hero_summary">
+            <div class="summary_title">当前秒杀码段</div>
+            <div class="summary_value">{{ selectedDateLabel }}</div>
+            <div class="summary_meta">{{ summaryText }}</div>
+            <div class="summary_hint">
+              <IconNotification/>
+              <span>无场次数据时先到后台活动管理创建秒杀</span>
+            </div>
+            <a-button long type="primary" @click="router.push({name: 'web_home'})">返回首页</a-button>
+          </aside>
+        </section>
       </section>
 
-      <section class="panel">
-        <div class="section_head">
+      <section class="panel_surface">
+        <div class="panel_head">
           <div>
-            <h2>秒杀码段</h2>
-            <span>接口来自 <code>/api/sec_kill/date</code>，没有数据时先回到后台创建秒杀</span>
+            <div class="panel_title">秒杀码段</div>
+            <div class="panel_desc">选择一个时间场次后，再查看对应的秒杀商品和抢购状态</div>
           </div>
           <a-button size="small" @click="loadDateList">刷新日期</a-button>
         </div>
 
         <a-spin :loading="dateLoading" tip="加载日期中...">
-          <div v-if="dateList.length" class="date_tabs">
+          <div v-if="dateTabList.length" class="date_tabs">
             <button
-              v-for="item in dateList"
+              v-for="item in dateTabList"
               :key="item.date"
               class="date_tab"
               :class="{active: selectedDateText === item.date}"
               @click="selectedDateText = item.date"
             >
-              {{ item.date }}
+              <span class="date_day">{{ item.date.split(' ')[0] }}</span>
+              <strong class="date_hour">{{ item.date.split(' ')[1] || item.date }}</strong>
             </button>
           </div>
-          <a-empty v-else description="暂无秒杀码段">
-            <template #image>
-              <a-result status="info" title="暂无秒杀码段" subtitle="可以先到后台活动管理创建秒杀活动。"/>
-            </template>
-          </a-empty>
+          <div v-else class="empty_card">
+            <div class="empty_icon"><IconClockCircle/></div>
+            <div class="empty_title">暂无秒杀码段</div>
+            <div class="empty_desc">可以先到后台活动管理创建秒杀活动，页面会自动按场次展示。</div>
+          </div>
         </a-spin>
       </section>
 
-      <section class="panel">
-        <div class="section_head">
+      <section class="panel_surface">
+        <div class="panel_head">
           <div>
-            <h2>秒杀商品</h2>
-            <span>按选中的时间段展示商品和库存状态</span>
+            <div class="panel_title">秒杀商品</div>
+            <div class="panel_desc">按当前场次展示库存、进度和开抢时间，卡片信息和首页商品区保持统一</div>
           </div>
           <a-button size="small" @click="loadGoods">刷新商品</a-button>
         </div>
@@ -298,23 +346,22 @@ onMounted(loadDateList)
             <article v-for="item in goodsList" :key="item.goodsID" class="goods_card">
               <div class="goods_cover">
                 <img :src="item.cover" :alt="item.title">
-                <a-tag class="stage_tag" :color="stageTagType(getStage(item))">
+                <span class="stage_badge" :class="stageTagClass(getStage(item))">
                   {{ stageText(getStage(item)) }}
-                </a-tag>
+                </span>
               </div>
               <div class="goods_body">
                 <h3>{{ item.title }}</h3>
                 <div class="price_row">
-                  <strong>￥{{ formatPrice(item.killPrice) }}</strong>
-                  <span>原价 ￥{{ formatPrice(item.price) }}</span>
+                  <strong>￥ {{ formatPrice(item.killPrice) }}</strong>
+                  <span>原价 ￥ {{ formatPrice(item.price) }}</span>
                 </div>
                 <div class="meta_row">
                   <span>库存 {{ item.killInventory }}</span>
                   <span>已购 {{ item.buyNum }}</span>
                 </div>
                 <div class="time_row">
-                  <span>开始 {{ formatTime(item.startTime) }}</span>
-                  <span>结束 {{ formatTime(item.endTime) }}</span>
+                  <span>{{ stageCountdown(item) }}</span>
                 </div>
                 <a-button
                   type="primary"
@@ -328,10 +375,14 @@ onMounted(loadDateList)
               </div>
             </article>
           </div>
-          <a-empty v-else description="当前秒杀码段暂无商品"/>
+          <div v-else class="empty_card large">
+            <div class="empty_icon"><IconFire/></div>
+            <div class="empty_title">当前场次暂无商品</div>
+            <div class="empty_desc">先切换其它秒杀码段，或者回到后台补齐秒杀活动和商品配置。</div>
+          </div>
         </a-spin>
       </section>
-    </f_main>
+    </div>
 
     <a-modal
       v-model:visible="detailVisible"
@@ -343,7 +394,7 @@ onMounted(loadDateList)
       <a-spin :loading="detailLoading" tip="加载秒杀详情中...">
         <div v-if="detailInfo" class="detail_grid">
           <section class="detail_panel">
-            <div class="panel_title">商品信息</div>
+            <div class="detail_title">商品信息</div>
             <div class="detail_goods">
               <img :src="detailInfo.cover" :alt="detailInfo.title">
               <div>
@@ -351,12 +402,13 @@ onMounted(loadDateList)
                 <p>秒杀码段：{{ selectedDateLabel }}</p>
                 <p>原价 ￥{{ formatPrice(detailInfo.price) }}，秒杀价 ￥{{ formatPrice(detailInfo.killPrice) }}</p>
                 <p>库存 {{ detailInfo.killInventory }}，已购 {{ detailInfo.buyNum }}</p>
+                <p>开始 {{ formatTime(detailInfo.startTime) }}，结束 {{ formatTime(detailInfo.endTime) }}</p>
               </div>
             </div>
           </section>
 
           <section class="detail_panel">
-            <div class="panel_title">收货地址</div>
+            <div class="detail_title">收货地址</div>
             <div v-if="addrList.length" class="addr_list">
               <label
                 v-for="item in addrList"
@@ -375,7 +427,7 @@ onMounted(loadDateList)
           </section>
 
           <section class="detail_panel">
-            <div class="panel_title">支付信息</div>
+            <div class="detail_title">支付信息</div>
             <a-radio-group v-model="payType" class="pay_group">
               <a-radio :value="1">默认支付</a-radio>
               <a-radio :value="2">快捷支付</a-radio>
@@ -395,188 +447,374 @@ onMounted(loadDateList)
 
 <style scoped lang="less">
 .sec_kill_view {
+  min-height: 100vh;
   color: var(--color-text-1);
+  background:
+    linear-gradient(180deg, #f5f5f6 0, #f5f5f6 460px, #f2f3f5 460px, #f2f3f5 100%);
 }
 
-.hero {
-  margin: 20px max(16px, calc((100% - 1240px) / 2)) 20px;
-  display: grid;
-  grid-template-columns: minmax(0, 1.2fr) 360px;
+.page_shell {
+  width: min(1180px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 26px 0 36px;
+}
+
+.hero_surface,
+.panel_surface {
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 20px 45px rgba(17, 24, 39, .05);
+}
+
+.hero_surface {
+  padding: 24px 22px 22px;
+}
+
+.hero_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 16px;
 }
 
+.brand_block {
+  text-decoration: none;
+  color: inherit;
+}
+
+.brand_title {
+  font-size: 28px;
+  line-height: 1.05;
+  color: #ff667d;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+
+.brand_subtitle {
+  margin-top: 6px;
+  color: #ff8b9b;
+  font-size: 12px;
+  letter-spacing: .18em;
+}
+
+.header_actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+
+  button {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    color: #4b5563;
+    font-size: 12px;
+    cursor: pointer;
+  }
+}
+
+.hero_section {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) 320px;
+  gap: 14px;
+}
+
 .hero_copy,
-.hero_card,
-.panel,
-.detail_panel {
-  border-radius: 8px;
-  border: 1px solid var(--color-border-2);
-  background: var(--color-bg-1);
-  box-shadow: 0 6px 18px rgba(15, 23, 42, .03);
+.hero_summary {
+  border-radius: 16px;
+  border: 1px solid #eceef2;
+  background: #fff;
 }
 
 .hero_copy {
-  padding: 20px 22px;
+  padding: 24px 22px;
+  background: linear-gradient(180deg, #fffafb, #ffffff 62%);
 }
 
 .eyebrow {
-  color: #ff5d72;
+  color: #ff647c;
   font-size: 14px;
   font-weight: 700;
-  letter-spacing: .08em;
+  letter-spacing: .12em;
 }
 
 .hero_copy h1 {
   margin: 8px 0 10px;
-  font-size: 28px;
-  line-height: 1.1;
+  font-size: 36px;
+  line-height: 1.05;
+  color: #111827;
 }
 
 .hero_copy p {
   margin: 0;
-  color: var(--color-text-2);
-  line-height: 1.85;
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.8;
 }
 
-.hero_card {
-  padding: 20px 22px;
+.hero_tags {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: #fff4f6;
+    color: #ff6178;
+    font-size: 12px;
+    font-weight: 600;
+  }
+}
+
+.hero_summary {
+  padding: 22px 20px;
   display: grid;
   gap: 12px;
   align-content: start;
-  background: #fff;
 }
 
-.hero_card_title {
-  color: var(--color-text-2);
-  font-size: 14px;
+.summary_title {
+  color: #9ca3af;
+  font-size: 13px;
 }
 
-.hero_card strong {
-  font-size: 18px;
+.summary_value {
+  color: #111827;
+  font-size: 28px;
+  line-height: 1.15;
+  font-weight: 700;
   word-break: break-all;
 }
 
-.hero_card span {
-  color: var(--color-text-2);
+.summary_meta {
+  color: #4b5563;
   font-size: 14px;
 }
 
-.panel {
-  margin: 0 max(16px, calc((100% - 1240px) / 2)) 20px;
-  padding: 18px 18px 20px;
+.summary_hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: #9ca3af;
+  font-size: 12px;
+  line-height: 1.6;
 }
 
-.section_head {
+.panel_surface {
+  margin-top: 18px;
+  padding: 18px;
+}
+
+.panel_head {
   display: flex;
+  align-items: flex-end;
   justify-content: space-between;
   gap: 16px;
-  align-items: flex-end;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
-.section_head h2 {
-  margin: 0;
-  font-size: 20px;
+.panel_title {
+  color: #111827;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
 }
 
-.section_head span {
-  display: block;
+.panel_desc {
   margin-top: 8px;
-  color: var(--color-text-2);
+  color: #9ca3af;
+  font-size: 13px;
 }
 
 .date_tabs {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
-  padding-top: 4px;
 }
 
 .date_tab {
-  padding: 10px 14px;
-  border-radius: 999px;
-  border: 1px solid var(--color-border-2);
-  background: var(--color-fill-1);
-  color: var(--color-text-2);
+  padding: 16px 14px;
+  border-radius: 14px;
+  border: 1px solid #eceef2;
+  background: #fafafb;
+  display: grid;
+  justify-items: start;
+  gap: 6px;
   cursor: pointer;
-  transition: all .18s ease;
+  transition: .18s ease;
 
   &.active {
-    background: rgba(255, 93, 114, .12);
-    border-color: rgba(255, 93, 114, .26);
-    color: #ff5d72;
-    font-weight: 700;
+    border-color: #ffccd5;
+    background: linear-gradient(180deg, #fff4f6, #fff);
+    box-shadow: 0 12px 24px rgba(255, 99, 122, .08);
   }
+}
+
+.date_day {
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+.date_hour {
+  color: #111827;
+  font-size: 22px;
+  line-height: 1;
 }
 
 .goods_grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
 }
 
 .goods_card {
   overflow: hidden;
-  border-radius: 8px;
-  border: 1px solid var(--color-border-2);
-  background: var(--color-fill-1);
+  border: 1px solid #eceef2;
+  border-radius: 10px;
+  background: #fff;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: #ffd2da;
+    box-shadow: 0 14px 28px rgba(17, 24, 39, .08);
+  }
 }
 
 .goods_cover {
   position: relative;
   aspect-ratio: 1;
-  background: #fff;
+  background: #f7f8fa;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
 }
 
-.goods_cover img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.stage_tag {
+.stage_badge {
   position: absolute;
-  left: 12px;
-  top: 12px;
+  left: 10px;
+  top: 10px;
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+
+  &.running {
+    background: linear-gradient(135deg, #ff6f86, #ff556f);
+  }
+
+  &.pending {
+    background: linear-gradient(135deg, #6aa9ff, #3f84ff);
+  }
+
+  &.ended {
+    background: linear-gradient(135deg, #9ca3af, #6b7280);
+  }
 }
 
 .goods_body {
   padding: 12px;
-}
 
-.goods_body h3 {
-  margin: 0;
-  font-size: 13px;
-  line-height: 1.6;
-  min-height: 42px;
+  h3 {
+    margin: 0;
+    min-height: 38px;
+    color: #374151;
+    font-size: 13px;
+    line-height: 1.5;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
 }
 
 .price_row,
 .meta_row,
 .time_row {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   justify-content: space-between;
   gap: 8px;
   margin-top: 10px;
 }
 
 .price_row strong {
-  color: #e11d48;
+  color: #ff637a;
   font-size: 16px;
+  font-weight: 700;
 }
 
 .price_row span,
 .meta_row,
 .time_row {
-  color: var(--color-text-2);
+  color: #9ca3af;
+  font-size: 11px;
 }
 
 .meta_row,
 .time_row {
+  line-height: 1.5;
+}
+
+.time_row span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.empty_card {
+  min-height: 180px;
+  border-radius: 16px;
+  border: 1px dashed #f0d7dd;
+  background: linear-gradient(180deg, #fffafb, #fff);
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  text-align: center;
+  padding: 24px;
+
+  &.large {
+    min-height: 260px;
+  }
+}
+
+.empty_icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #fff1f4;
+  color: #ff647c;
+  font-size: 28px;
+}
+
+.empty_title {
+  margin-top: 12px;
+  color: #111827;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.empty_desc {
+  margin-top: 8px;
+  max-width: 420px;
+  color: #9ca3af;
   font-size: 13px;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 .detail_grid {
@@ -586,35 +824,37 @@ onMounted(loadDateList)
 
 .detail_panel {
   padding: 16px;
+  border-radius: 14px;
+  border: 1px solid #eceef2;
   background: #fff;
 }
 
-.panel_title {
+.detail_title {
   margin-bottom: 12px;
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .detail_goods {
   display: grid;
   grid-template-columns: 110px minmax(0, 1fr);
   gap: 14px;
-}
 
-.detail_goods img {
-  width: 110px;
-  height: 110px;
-  border-radius: 8px;
-  object-fit: cover;
-}
+  img {
+    width: 110px;
+    height: 110px;
+    border-radius: 10px;
+    object-fit: cover;
+  }
 
-.detail_goods h3 {
-  margin: 0 0 8px;
-}
+  h3 {
+    margin: 0 0 8px;
+  }
 
-.detail_goods p {
-  margin: 6px 0 0;
-  color: var(--color-text-2);
+  p {
+    margin: 6px 0 0;
+    color: #6b7280;
+  }
 }
 
 .addr_list {
@@ -627,19 +867,21 @@ onMounted(loadDateList)
   gap: 10px;
   align-items: flex-start;
   padding: 12px 14px;
-  border-radius: 16px;
-  background: var(--color-fill-1);
-  border: 1px solid var(--color-border-2);
+  border-radius: 14px;
+  background: #fafafb;
+  border: 1px solid #eceef2;
   cursor: pointer;
-}
 
-.addr_item.active {
-  border-color: rgba(255, 93, 114, .35);
-  background: rgba(255, 93, 114, .08);
-}
+  &.active {
+    border-color: #ffccd5;
+    background: #fff4f6;
+  }
 
-.addr_item span {
-  color: var(--color-text-2);
+  span {
+    display: block;
+    margin-top: 6px;
+    color: #6b7280;
+  }
 }
 
 .pay_group {
@@ -654,36 +896,63 @@ onMounted(loadDateList)
 }
 
 @media (max-width: 1100px) {
-  .hero,
-  .goods_grid {
+  .hero_section,
+  .goods_grid,
+  .date_tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hero_section {
     grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 768px) {
-  .hero,
-  .panel {
-    margin-left: 16px;
-    margin-right: 16px;
+@media (max-width: 900px) {
+  .page_shell {
+    width: calc(100% - 24px);
+    padding-top: 12px;
   }
 
-  .hero {
-    grid-template-columns: 1fr;
+  .hero_surface,
+  .panel_surface {
+    border-radius: 14px;
   }
 
-  .hero_copy {
-    padding: 22px;
-  }
-
-  .hero_copy h1 {
-    font-size: 34px;
-  }
-
-  .section_head {
+  .hero_header,
+  .panel_head {
     align-items: flex-start;
     flex-direction: column;
   }
+}
 
+@media (max-width: 640px) {
+  .page_shell {
+    width: calc(100% - 16px);
+  }
+
+  .hero_surface {
+    padding: 16px 12px 14px;
+  }
+
+  .panel_surface {
+    padding: 14px 12px;
+  }
+
+  .brand_title,
+  .panel_title,
+  .hero_copy h1,
+  .summary_value {
+    font-size: 24px;
+  }
+
+  .header_actions,
+  .hero_tags {
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .date_tabs,
+  .goods_grid,
   .detail_goods {
     grid-template-columns: 1fr;
   }
