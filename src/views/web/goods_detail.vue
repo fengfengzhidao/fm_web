@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, onMounted, ref, watch} from "vue";
+import {computed, onBeforeUnmount, onMounted, ref, watch} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {Message} from "@arco-design/web-vue";
 import {
@@ -12,6 +12,7 @@ import F_footer from "@/components/web/f_footer.vue";
 import {goodsDetailApi, type goodsDetailType} from "@/api/goods_api";
 import {commentLevelApi, goodsCommentListApi, type commentLevelType, type goodsCommentListParams, type goodsCommentType} from "@/api/comment_api";
 import {carCreateApi} from "@/api/car_api";
+import {collectGoodsApi, lookGoodsApi} from "@/api/user_center_api";
 import {userStorei} from "@/stores/user_store";
 import {dateTimeFormat} from "@/utils/date";
 import homeBg from "@/assets/img/home_bg.png";
@@ -29,6 +30,8 @@ const level = ref<commentLevelType | null>(null)
 const buyNum = ref(1)
 const currentImage = ref("")
 const commentFilter = ref("all")
+const collecting = ref(false)
+let lookTimer: number | undefined
 
 const commentFilters = [
   {key: "all", label: "全部评论"},
@@ -53,6 +56,7 @@ function formatPrice(price?: number | null): string {
 
 async function loadDetail() {
   const id = goodsID.value
+  clearLookTimer()
   if (!id) {
     Message.error("商品不存在")
     router.replace({name: "web_home"})
@@ -79,6 +83,7 @@ async function loadDetail() {
     level.value = levelRes.code ? null : levelRes.data
     currentImage.value = detailRes.data.images?.find((item) => Boolean(item)) || detailRes.data.goodsConfigList?.[0]?.subList?.[0]?.image || homeBg
     buyNum.value = 1
+    scheduleLookTracking(id)
     await loadComments(commentFilter.value)
   } catch (error) {
     console.error(error)
@@ -95,6 +100,64 @@ function handleImageError(event: Event) {
   }
   target.dataset.fallbackApplied = "1"
   target.src = homeBg
+}
+
+function clearLookTimer() {
+  if (lookTimer) {
+    window.clearTimeout(lookTimer)
+    lookTimer = undefined
+  }
+}
+
+function scheduleLookTracking(id: number) {
+  clearLookTimer()
+  if (!store.isLogin || !id) {
+    return
+  }
+
+  lookTimer = window.setTimeout(async () => {
+    try {
+      const res = await lookGoodsApi({goodsID: id})
+      if (res.code) {
+        Message.warning(res.msg)
+        return
+      }
+      if (detail.value?.id === id) {
+        detail.value.lookCount += 1
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }, 5000)
+}
+
+async function collectGoods() {
+  if (!detail.value) return
+  if (!store.isLogin) {
+    Message.warning("请先登录后再收藏商品")
+    store.openLoginModal(`/goods/${detail.value.id}`)
+    return
+  }
+  if (detail.value.isCollect) {
+    Message.info("当前商品已收藏")
+    return
+  }
+
+  collecting.value = true
+  try {
+    const res = await collectGoodsApi({goodsID: detail.value.id})
+    if (res.code) {
+      Message.error(res.msg)
+      return
+    }
+    Message.success("已收藏商品")
+    detail.value.isCollect = true
+  } catch (error) {
+    console.error(error)
+    Message.error("收藏失败")
+  } finally {
+    collecting.value = false
+  }
 }
 
 function buildCommentParams(filter: string): goodsCommentListParams {
@@ -171,6 +234,20 @@ onMounted(() => {
   if (detail.value?.images?.length && !currentImage.value) {
     currentImage.value = detail.value.images.find((item) => Boolean(item)) || homeBg
   }
+})
+
+watch(() => store.isLogin, () => {
+  if (detail.value?.id) {
+    scheduleLookTracking(detail.value.id)
+  }
+})
+
+watch(() => goodsID.value, () => {
+  clearLookTimer()
+})
+
+onBeforeUnmount(() => {
+  clearLookTimer()
 })
 </script>
 
@@ -266,6 +343,16 @@ onMounted(() => {
               <div class="buy_box">
                 <a-input-number v-model="buyNum" :min="1" :max="detail.inventory || 99" />
                 <a-button type="primary" size="large" :loading="adding" @click="addToCart">加入购物车</a-button>
+                <a-button
+                  size="large"
+                  class="collect_action_btn"
+                  :loading="collecting"
+                  :disabled="detail.isCollect"
+                  @click="collectGoods"
+                >
+                  <IconHeart/>
+                  <span>{{ detail.isCollect ? "已收藏" : "收藏商品" }}</span>
+                </a-button>
                 <a-button size="large" @click="goCart">去购物车</a-button>
               </div>
 
@@ -616,6 +703,21 @@ onMounted(() => {
   flex-wrap: wrap;
   gap: 12px;
   align-items: center;
+}
+
+.collect_action_btn {
+  border-color: #ffd0d9;
+  color: #ff647c;
+  background: #fff7f9;
+
+  &:hover {
+    border-color: #ffb7c4;
+    background: #fff0f4;
+  }
+
+  :deep(.arco-icon) {
+    margin-right: 6px;
+  }
 }
 
 .buy_hint {
