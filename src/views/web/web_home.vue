@@ -986,18 +986,15 @@ onMounted(() => {
 }
 
 .coupon_compact_card {
-  min-height: 84px;
-  padding: 10px 10px 10px 12px;
+  min-height: 82px;
+  padding: 12px;
   border-radius: 10px;
   background: linear-gradient(180deg, #fffafb, #fff);
   border: 1px solid #ffd8de;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-areas:
-    "value button"
-    "meta button";
-  gap: 8px;
-  align-items: start;
+  grid-template-columns: 58px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
 
   &.placeholder {
     border-style: dashed;
@@ -1005,53 +1002,60 @@ onMounted(() => {
 }
 
 .coupon_value_wrap {
-  grid-area: value;
+  min-width: 0;
   display: flex;
-  align-items: flex-start;
-  gap: 1px;
+  align-items: baseline;
+  justify-content: center;
+  gap: 2px;
   color: #ff5f74;
+  line-height: 1;
 }
 
 .coupon_symbol {
-  padding-top: 5px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
 }
 
 .coupon_value {
-  font-size: 28px;
+  font-size: 31px;
   line-height: 1;
   font-weight: 700;
 }
 
 .coupon_meta {
-  grid-area: meta;
   min-width: 0;
+  display: grid;
+  gap: 4px;
 }
 
 .coupon_name {
   color: #374151;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
-  line-height: 1.4;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .coupon_deadline,
 .coupon_tip {
-  margin-top: 2px;
   font-size: 11px;
   line-height: 1.35;
   color: #9ca3af;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .coupon_btn {
-  grid-area: button;
-  align-self: center;
-  min-width: 46px;
-  height: 24px;
-  padding: 0 8px;
+  flex-shrink: 0;
+  min-width: 52px;
+  height: 28px;
+  padding: 0 10px;
   border-radius: 999px;
   font-size: 11px;
+  font-weight: 600;
 }
 
 .hero_user {
