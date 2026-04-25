@@ -433,7 +433,10 @@ onMounted(() => {
           </aside>
         </section>
 
-        <section class="feature_filter_surface">
+      </section>
+
+      <section class="goods_section">
+        <div class="feature_filter_surface">
           <div class="feature_tabs">
             <button
               v-for="item in featureTabs"
@@ -450,10 +453,8 @@ onMounted(() => {
               <span>{{ item.title }}</span>
             </button>
           </div>
-        </section>
-      </section>
+        </div>
 
-      <section class="goods_section">
         <div class="panel_head goods_head">
           <div>
             <h2>{{ goodsSectionTitle }}</h2>
@@ -700,7 +701,7 @@ onMounted(() => {
 }
 
 .feature_filter_surface {
-  margin-top: 14px;
+  margin-bottom: 16px;
   padding: 10px 16px;
   border-radius: 0;
   border: 1px solid #ff7f93;
