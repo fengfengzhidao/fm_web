@@ -5,6 +5,8 @@ import {Message} from "@arco-design/web-vue";
 import type {RequestOption, UploadRequest} from "@arco-design/web-vue";
 import {MdEditor} from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
+import {Cropper} from "vue-advanced-cropper";
+import "vue-advanced-cropper/dist/style.css";
 import {imageUploadApi} from "@/api/image_api";
 import {theme as appTheme} from "@/components/common/f_theme";
 import {
@@ -33,13 +35,26 @@ const router = useRouter()
 const formRef = ref()
 const goodsFormLeftRef = ref<HTMLElement | null>(null)
 const editorCardRef = ref<HTMLElement | null>(null)
+const cropperRef = ref<InstanceType<typeof Cropper> | null>(null)
 const loading = ref(false)
 const saving = ref(false)
+const cropperVisible = ref(false)
+const cropperLoading = ref(false)
+const cropperImageSrc = ref("")
 const editorCardHeight = ref("auto")
 const isEdit = computed(() => route.name === "goodsEdit")
 const editorTheme = computed(() => appTheme.value === "dark" ? "dark" : "light")
 const pageTitle = computed(() => isEdit.value ? "编辑商品" : "发布商品")
 const pageDesc = computed(() => isEdit.value ? "修改商品基础信息、Markdown 简介和高级配置。" : "填写商品基础信息、Markdown 简介和高级配置。")
+
+let pendingMainUpload:
+  | {
+    file: File
+    target: {type: "main"; index: number}
+    option: RequestOption
+    aborted: boolean
+  }
+  | null = null
 
 function createEmptySub(): goodsSubConfigType {
   return {
@@ -124,6 +139,122 @@ function applyImagePath(target: {type: "main"; index: number} | {type: "sub"; gr
   form.goodsConfigList[target.groupIndex].subList[target.subIndex].image = path
 }
 
+function uploadImageFile(
+  file: File,
+  target: {type: "main"; index: number} | {type: "sub"; groupIndex: number; subIndex: number},
+  option: RequestOption,
+  isAborted: () => boolean
+) {
+  imageUploadApi(file).then((res) => {
+    if (isAborted()) {
+      return
+    }
+    if (res.code) {
+      Message.error(res.msg)
+      option.onError(res.msg)
+      return
+    }
+
+    applyImagePath(target, res.data)
+    Message.success(res.msg)
+    option.onSuccess(res)
+  }).catch((error) => {
+    if (isAborted()) {
+      return
+    }
+    console.error(error)
+    Message.error("图片上传失败")
+    option.onError(error)
+  })
+}
+
+function openMainImageCropper(file: File, target: {type: "main"; index: number}, option: RequestOption) {
+  const reader = new FileReader()
+  reader.onload = () => {
+    cropperImageSrc.value = typeof reader.result === "string" ? reader.result : ""
+    pendingMainUpload = {
+      file,
+      target,
+      option,
+      aborted: false,
+    }
+    cropperVisible.value = true
+  }
+  reader.onerror = () => {
+    Message.error("读取图片失败")
+    option.onError("读取图片失败")
+  }
+  reader.readAsDataURL(file)
+}
+
+function createMainImageUploadRequest(target: {type: "main"; index: number}) {
+  return (option: RequestOption): UploadRequest => {
+    const file = option.fileItem.file
+    if (!file) {
+      const msg = "请选择图片文件"
+      Message.error(msg)
+      option.onError(msg)
+      return {}
+    }
+
+    openMainImageCropper(file, target, option)
+
+    return {
+      abort() {
+        if (pendingMainUpload?.target.index === target.index) {
+          pendingMainUpload.aborted = true
+        }
+      },
+    }
+  }
+}
+
+async function confirmMainImageCrop() {
+  if (!pendingMainUpload || pendingMainUpload.aborted) {
+    cropperVisible.value = false
+    return true
+  }
+
+  const result = cropperRef.value?.getResult()
+  const canvas = result?.canvas
+  if (!canvas) {
+    Message.error("请先调整裁剪区域")
+    return false
+  }
+
+  cropperLoading.value = true
+  try {
+    const blob = await new Promise<Blob | null>((resolve) => {
+      canvas.toBlob(resolve, pendingMainUpload?.file.type || "image/jpeg", 0.92)
+    })
+
+    if (!blob) {
+      Message.error("裁剪图片失败")
+      return false
+    }
+
+    const croppedFile = new File([blob], pendingMainUpload.file.name, {
+      type: blob.type || pendingMainUpload.file.type || "image/jpeg",
+    })
+
+    const currentUpload = pendingMainUpload
+    uploadImageFile(croppedFile, currentUpload.target, currentUpload.option, () => currentUpload.aborted)
+    cropperVisible.value = false
+    cropperImageSrc.value = ""
+    pendingMainUpload = null
+    return true
+  } finally {
+    cropperLoading.value = false
+  }
+}
+
+function cancelMainImageCrop() {
+  cropperVisible.value = false
+  cropperLoading.value = false
+  cropperImageSrc.value = ""
+  pendingMainUpload = null
+}
+
 function createImageUploadRequest(target: {type: "main"; index: number} | {type: "sub"; groupIndex: number; subIndex: number}) {
   return (option: RequestOption): UploadRequest => {
     const file = option.fileItem.file
@@ -135,27 +266,7 @@ function createImageUploadRequest(target: {type: "main"; index: number} | {type:
     }
 
     let aborted = false
-    imageUploadApi(file).then((res) => {
-      if (aborted) {
-        return
-      }
-      if (res.code) {
-        Message.error(res.msg)
-        option.onError(res.msg)
-        return
-      }
-
-      applyImagePath(target, res.data)
-      Message.success(res.msg)
-      option.onSuccess(res)
-    }).catch((error) => {
-      if (aborted) {
-        return
-      }
-      console.error(error)
-      Message.error("图片上传失败")
-      option.onError(error)
-    })
+    uploadImageFile(file, target, option, () => aborted)
 
     return {
       abort() {
@@ -202,6 +313,7 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   resizeObserver?.disconnect()
   window.removeEventListener("resize", syncEditorHeight)
+  pendingMainUpload = null
 })
 
 function normalizeImages() {
@@ -416,7 +528,7 @@ function backToList() {
                       class="image_upload"
                       :show-file-list="false"
                       accept="image/png,image/jpeg,image/webp"
-                      :custom-request="createImageUploadRequest({type: 'main', index})"
+                      :custom-request="createMainImageUploadRequest({type: 'main', index})"
                     >
                       <template #upload-button>
                         <div class="image_preview upload_trigger">
@@ -424,8 +536,8 @@ function backToList() {
                               v-if="image"
                               :src="image"
                               :preview="false"
-                              :width="72"
-                              :height="72"
+                              :width="112"
+                              :height="63"
                               fit="cover"></a-image>
                           <div v-else class="image_placeholder">点击上传</div>
                         </div>
@@ -439,7 +551,7 @@ function backToList() {
                       </div>
                     </div>
                   </div>
-                  <div class="tip_line">至少填写 1 张主图，最多可继续追加。</div>
+                  <div class="tip_line">至少填写 1 张主图，上传时会先按 16:9 裁剪后再保存。</div>
                 </div>
               </a-form-item>
               <a-form-item field="videoPath" label="商品视频">
@@ -511,6 +623,27 @@ function backToList() {
         </div>
       </div>
     </a-spin>
+
+    <a-modal
+      v-model:visible="cropperVisible"
+      title="裁剪商品主图"
+      :width="920"
+      :mask-closable="false"
+      :on-before-ok="confirmMainImageCrop"
+      @cancel="cancelMainImageCrop"
+    >
+      <div class="cropper_modal">
+        <div class="cropper_tip">请按 16:9 裁剪主图，前后台所有商品封面都会按这个比例展示。</div>
+        <Cropper
+          v-if="cropperImageSrc"
+          ref="cropperRef"
+          class="main_image_cropper"
+          :src="cropperImageSrc"
+          image-restriction="stencil"
+          :stencil-props="{aspectRatio: 16 / 9}"
+        />
+      </div>
+    </a-modal>
   </div>
 </template>
 
@@ -603,9 +736,9 @@ function backToList() {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    flex: 0 1 auto;
+    flex: 1;
     min-width: 0;
-    width: calc(100% - 88px);
+    width: auto;
   }
 
   .config_sub_row_bottom {
@@ -616,8 +749,8 @@ function backToList() {
   }
 
   .image_preview {
-    width: 72px;
-    height: 72px;
+    width: 112px;
+    height: 63px;
     flex-shrink: 0;
     border: 1px solid var(--color-border-2);
     border-radius: 6px;
@@ -648,6 +781,24 @@ function backToList() {
   .sub_preview {
     width: 64px;
     height: 64px;
+  }
+
+  .cropper_modal {
+    display: grid;
+    gap: 12px;
+  }
+
+  .cropper_tip {
+    color: @color-text-2;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .main_image_cropper {
+    height: 480px;
+    background: #0f172a;
+    border-radius: 10px;
+    overflow: hidden;
   }
 
   .image_placeholder {

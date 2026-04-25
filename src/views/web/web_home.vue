@@ -760,7 +760,7 @@ onMounted(() => {
 
 .hero_banner_surface {
   width: 520px;
-  height: 300px;
+  aspect-ratio: 16 / 9;
   padding: 14px;
   background: linear-gradient(180deg, #fff8fa, #ffffff 62%);
   overflow: hidden;
@@ -1164,7 +1164,7 @@ onMounted(() => {
 }
 
 .goods_cover {
-  aspect-ratio: 1;
+  aspect-ratio: 16 / 9;
   background: #f7f8fa;
 
   img {
@@ -1244,7 +1244,8 @@ onMounted(() => {
 
   .hero_banner_stage,
   .hero_banner_empty {
-    height: 220px;
+    height: 100%;
+    aspect-ratio: 16 / 9;
   }
 
   .goods_grid {

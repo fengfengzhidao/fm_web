@@ -525,7 +525,7 @@ onBeforeUnmount(() => {
 }
 
 .main_cover {
-  aspect-ratio: 1;
+  aspect-ratio: 16 / 9;
   border-radius: 14px;
   overflow: hidden;
   background: #f7f8fa;
@@ -561,7 +561,7 @@ onBeforeUnmount(() => {
 
   img {
     width: 100%;
-    aspect-ratio: 1;
+    aspect-ratio: 16 / 9;
     object-fit: cover;
     display: block;
   }

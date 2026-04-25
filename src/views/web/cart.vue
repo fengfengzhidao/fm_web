@@ -515,6 +515,7 @@ onMounted(() => {
 
 .item_cover {
   width: 112px;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
   border-radius: 12px;
   cursor: pointer;
@@ -522,7 +523,7 @@ onMounted(() => {
 
   img {
     width: 100%;
-    aspect-ratio: 1;
+    height: 100%;
     object-fit: cover;
     display: block;
   }

@@ -447,7 +447,7 @@ onMounted(() => {
 }
 
 .goods_cover {
-  aspect-ratio: 1;
+  aspect-ratio: 16 / 9;
   background: #f7f8fa;
 
   img {

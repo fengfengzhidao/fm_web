@@ -405,7 +405,7 @@ onMounted(loadDetail)
 
 .goods_row img {
   width: 96px;
-  height: 96px;
+  height: 54px;
   border-radius: 12px;
   object-fit: cover;
 }
@@ -466,7 +466,7 @@ onMounted(loadDetail)
   .goods_row img {
     width: 100%;
     height: auto;
-    aspect-ratio: 1;
+    aspect-ratio: 16 / 9;
   }
 }
 </style>

@@ -95,10 +95,10 @@ onMounted(() => {
         <a-image
             v-if="record.images?.length"
             :src="record.images[0]"
-            :width="56"
-            :height="56"
+            :width="72"
+            :height="41"
             fit="cover"></a-image>
-        <a-avatar v-else shape="square">无图</a-avatar>
+        <a-avatar v-else shape="square" :size="41">无图</a-avatar>
       </template>
       <template #info="{record}:{record: goodsType}">
         <div class="goods_info">

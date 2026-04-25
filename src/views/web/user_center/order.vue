@@ -274,7 +274,7 @@ onMounted(loadOrders)
 
 .goods_item img {
   width: 96px;
-  height: 96px;
+  height: 54px;
   border-radius: 12px;
   object-fit: cover;
 }
@@ -339,7 +339,7 @@ onMounted(loadOrders)
   .goods_item img {
     width: 100%;
     height: auto;
-    aspect-ratio: 1;
+    aspect-ratio: 16 / 9;
   }
 
   .filter_bar {

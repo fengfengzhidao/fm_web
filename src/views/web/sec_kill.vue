@@ -688,7 +688,7 @@ onMounted(loadDateList)
 
 .goods_cover {
   position: relative;
-  aspect-ratio: 1;
+  aspect-ratio: 16 / 9;
   background: #f7f8fa;
 
   img {
@@ -960,7 +960,7 @@ onMounted(loadDateList)
   .detail_goods img {
     width: 100%;
     height: auto;
-    aspect-ratio: 1;
+    aspect-ratio: 16 / 9;
   }
 }
 </style>

@@ -486,7 +486,7 @@ onMounted(loadData)
 
   img {
     width: 92px;
-    height: 92px;
+    height: 52px;
     border-radius: 12px;
     object-fit: cover;
   }
@@ -691,7 +691,7 @@ onMounted(loadData)
   .goods_item img {
     width: 100%;
     height: auto;
-    aspect-ratio: 1;
+    aspect-ratio: 16 / 9;
   }
 }
 </style>

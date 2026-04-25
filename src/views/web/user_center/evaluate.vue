@@ -234,7 +234,7 @@ onMounted(loadList)
 
 .goods_card img {
   width: 96px;
-  height: 96px;
+  height: 54px;
   border-radius: 14px;
   object-fit: cover;
 }
@@ -309,7 +309,7 @@ onMounted(loadList)
   .goods_card img {
     width: 100%;
     height: auto;
-    aspect-ratio: 1;
+    aspect-ratio: 16 / 9;
   }
 }
 </style>
