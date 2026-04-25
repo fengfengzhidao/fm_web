@@ -102,9 +102,9 @@ onMounted(loadOrders)
       <div>
         <div class="eyebrow">ORDERS</div>
         <h2>我的订单</h2>
-        <p>查看订单列表、金额与详情。</p>
+        <p>查看订单列表、下单时间、金额和状态，并快速进入详情、确认收货或评价。</p>
       </div>
-      <a-tag color="blue">共 {{ count }} 单</a-tag>
+      <div class="head_tag">共 {{ count }} 单</div>
     </div>
 
     <div class="filter_bar">
@@ -130,7 +130,7 @@ onMounted(loadOrders)
               <img :src="goods.goodsCover" :alt="goods.goodsTitle">
               <div class="goods_meta">
                 <strong>{{ goods.goodsTitle }}</strong>
-                <span>单价 ￥{{ formatPrice(goods.goodsPrice) }}</span>
+                <span>单价 ￥ {{ formatPrice(goods.goodsPrice) }}</span>
                 <span>数量 x{{ goods.num }}</span>
                 <span>备注：{{ goods.note || "无" }}</span>
               </div>
@@ -139,8 +139,8 @@ onMounted(loadOrders)
 
           <div class="order_bottom">
             <div class="price_line">
-              <span>订单金额 ￥{{ formatPrice(item.price) }}</span>
-              <span>优惠金额 ￥{{ formatPrice(item.couponPrice) }}</span>
+              <span>订单金额 ￥ {{ formatPrice(item.price) }}</span>
+              <span>优惠金额 ￥ {{ formatPrice(item.couponPrice) }}</span>
             </div>
             <div class="action_line">
               <a-button type="primary" @click="openDetail(item)">查看详情</a-button>
@@ -153,7 +153,7 @@ onMounted(loadOrders)
           </div>
         </article>
       </div>
-      <a-empty v-else description="暂无订单"/>
+      <div v-else class="empty_card">暂无订单</div>
     </a-spin>
 
     <div v-if="count > pageSize" class="pager_bar">
@@ -181,27 +181,42 @@ onMounted(loadOrders)
   align-items: flex-start;
 }
 
+.eyebrow {
+  color: #ff647c;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .12em;
+}
+
 .panel_head h2 {
-  margin: 8px 0 8px;
-  font-size: 28px;
+  margin: 10px 0 8px;
+  color: #111827;
+  font-size: 32px;
+  line-height: 1.1;
 }
 
 .panel_head p,
 .order_top span,
 .goods_meta span {
-  color: var(--color-text-2);
+  color: #6b7280;
 }
 
-.eyebrow {
-  color: #ff5d72;
+.panel_head p {
+  margin: 0;
   font-size: 14px;
-  font-weight: 700;
-  letter-spacing: .08em;
+  line-height: 1.8;
 }
 
-.order_list {
-  display: grid;
-  gap: 14px;
+.head_tag {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: #fff4f6;
+  color: #ff637a;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .filter_bar {
@@ -209,17 +224,21 @@ onMounted(loadOrders)
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto auto;
   gap: 12px;
   padding: 14px;
-  border-radius: 20px;
-  background: var(--color-fill-1);
-  border: 1px solid var(--color-border-2);
+  border-radius: 16px;
+  background: #fafafb;
+  border: 1px solid #eceef2;
+}
+
+.order_list {
+  display: grid;
+  gap: 12px;
 }
 
 .order_card {
   padding: 18px;
-  border-radius: 22px;
-  background: var(--color-bg-1);
-  border: 1px solid var(--color-border-2);
-  box-shadow: 0 8px 24px rgba(15, 23, 42, .03);
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid #eceef2;
 }
 
 .order_top,
@@ -232,6 +251,7 @@ onMounted(loadOrders)
 
 .order_top strong {
   display: block;
+  color: #111827;
   font-size: 18px;
   margin-bottom: 6px;
 }
@@ -239,7 +259,7 @@ onMounted(loadOrders)
 .order_goods {
   margin-top: 16px;
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
 .goods_item {
@@ -247,15 +267,15 @@ onMounted(loadOrders)
   grid-template-columns: 96px minmax(0, 1fr);
   gap: 14px;
   padding: 12px;
-  border-radius: 18px;
-  background: var(--color-fill-1);
-  border: 1px solid var(--color-border-2);
+  border-radius: 14px;
+  background: #fafafb;
+  border: 1px solid #eceef2;
 }
 
 .goods_item img {
   width: 96px;
   height: 96px;
-  border-radius: 14px;
+  border-radius: 12px;
   object-fit: cover;
 }
 
@@ -265,6 +285,7 @@ onMounted(loadOrders)
 }
 
 .goods_meta strong {
+  color: #111827;
   font-size: 16px;
 }
 
@@ -280,8 +301,23 @@ onMounted(loadOrders)
   flex-wrap: wrap;
 }
 
+.price_line {
+  color: #6b7280;
+  font-size: 13px;
+}
+
 .action_line {
   justify-content: flex-end;
+}
+
+.empty_card {
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px dashed #f0d7dd;
+  background: linear-gradient(180deg, #fffafb, #fff);
+  color: #9ca3af;
+  font-size: 13px;
+  text-align: center;
 }
 
 .pager_bar {
