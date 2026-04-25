@@ -193,8 +193,7 @@ onMounted(() => {
 .web_search_view {
   min-height: 100vh;
   color: var(--color-text-1);
-  background:
-    linear-gradient(180deg, #f5f5f6 0, #f5f5f6 460px, #f2f3f5 460px, #f2f3f5 100%);
+  background: #fff;
 }
 
 .page_shell {

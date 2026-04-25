@@ -636,8 +636,7 @@ onMounted(() => {
 <style scoped lang="less">
 .web_home_view {
   color: var(--color-text-1);
-  background:
-    linear-gradient(180deg, #f5f5f6 0, #f5f5f6 520px, #f2f3f5 520px, #f2f3f5 100%);
+  background: #fff;
 }
 
 .page_shell {

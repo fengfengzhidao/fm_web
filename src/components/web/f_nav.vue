@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, ref} from "vue";
-import {slogan, enSlogan} from "@/conf/global";
 import {useRoute, useRouter} from "vue-router";
 
 const route = useRoute()
@@ -65,14 +64,6 @@ function openNav(name: string) {
 <template>
   <div class="f_nav" :class="{isShow}">
     <div class="container">
-      <router-link class="brand" to="/">
-        <div class="brand_mark">枫</div>
-        <div class="brand_text">
-          <strong>{{ slogan }}</strong>
-          <span>{{ enSlogan }}</span>
-        </div>
-      </router-link>
-
       <nav class="nav_links">
         <button
           v-for="item in navItems"
@@ -100,52 +91,12 @@ function openNav(name: string) {
   display: flex;
   justify-content: center;
   color: var(--color-text-1);
-  background: rgba(255, 255, 255, .97);
-  border-bottom: 1px solid rgba(255, 217, 224, .82);
-  box-shadow: 0 8px 24px rgba(255, 107, 127, .06);
+  background: transparent;
 
   .container {
     width: min(1180px, calc(100% - 48px));
     display: flex;
     align-items: center;
-    gap: 24px;
-  }
-
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    text-decoration: none;
-    color: inherit;
-    flex: 0 0 auto;
-  }
-
-  .brand_mark {
-    width: 36px;
-    height: 36px;
-    border-radius: 11px;
-    display: grid;
-    place-items: center;
-    color: #fff;
-    font-weight: 800;
-    background: linear-gradient(135deg, #ff8fa3, #ff667d);
-    box-shadow: 0 10px 22px rgba(255, 103, 125, .24);
-  }
-
-  .brand_text {
-    display: grid;
-    gap: 2px;
-
-    strong {
-      font-size: 18px;
-      line-height: 1.1;
-    }
-
-    span {
-      color: var(--color-text-3);
-      font-size: 12px;
-      line-height: 1;
-    }
   }
 
   .nav_links {
@@ -209,7 +160,6 @@ function openNav(name: string) {
       gap: 12px;
     }
 
-    .brand_text span,
     .nav_links {
       display: none;
     }

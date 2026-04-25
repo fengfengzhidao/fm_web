@@ -31,8 +31,7 @@ function goHome(){
   display: grid;
   place-items: center;
   padding: 32px 24px 40px;
-  background:
-    linear-gradient(180deg, #f5f5f6 0, #f5f5f6 420px, #f2f3f5 420px, #f2f3f5 100%);
+  background: #fff;
 }
 
 .notfound_shell {
