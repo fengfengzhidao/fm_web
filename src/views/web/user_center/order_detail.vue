@@ -2,6 +2,12 @@
 import {computed, onMounted, ref, watch} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {Message} from "@arco-design/web-vue";
+import {
+  IconCheckCircle,
+  IconGift,
+  IconLocation,
+  IconSafe
+} from "@arco-design/web-vue/es/icon";
 import {orderCallbackApi, orderDetailApi, orderRevGoodsApi, orderStatusApi, type orderDetailType} from "@/api/order_api";
 import {dateTimeFormat} from "@/utils/date";
 import {canCommentOrder, canPayOrder, canReceiveOrder, formatPrice, orderStatusColor, orderStatusText} from "@/views/web/user_center/utils";
@@ -138,7 +144,7 @@ onMounted(loadDetail)
       <div>
         <div class="eyebrow">ORDER DETAIL</div>
         <h2>订单详情</h2>
-        <p>查看订单商品、收货地址和结算信息。</p>
+        <p>查看订单状态、收货地址、商品列表和优惠信息，把订单的关键信息压缩进一页内完成确认。</p>
       </div>
       <div class="head_actions">
         <a-button @click="refreshStatus">刷新状态</a-button>
@@ -152,17 +158,29 @@ onMounted(loadDetail)
 
     <a-spin :loading="loading">
       <div v-if="detail" class="detail_grid">
-        <section class="detail_card">
+        <section class="detail_card summary_card span_2">
           <div class="card_title">订单信息</div>
-          <div class="info_list">
-            <div>订单号：{{ detail.no }}</div>
-            <div>创建时间：{{ dateTimeFormat(detail.createdAt) }}</div>
-            <div>更新时间：{{ dateTimeFormat(detail.updatedAt) }}</div>
-            <div>状态：<a-tag :color="orderStatusColor(detail.status)">{{ orderStatusText(detail.status) }}</a-tag></div>
-            <div>订单金额：￥{{ formatPrice(detail.price) }}</div>
-            <div>优惠金额：￥{{ formatPrice(detail.coupon) }}</div>
-            <div>支付方式：{{ detail.payType }}</div>
-            <div>支付地址：<a-link v-if="detail.payUrl" :href="detail.payUrl" target="_blank">打开支付页</a-link><span v-else>暂无</span></div>
+          <div class="summary_box">
+            <div>
+              <span>订单号</span>
+              <strong>{{ detail.no }}</strong>
+            </div>
+            <div>
+              <span>订单状态</span>
+              <a-tag :color="orderStatusColor(detail.status)">{{ orderStatusText(detail.status) }}</a-tag>
+            </div>
+            <div>
+              <span>订单金额</span>
+              <strong>￥{{ formatPrice(detail.price) }}</strong>
+            </div>
+            <div>
+              <span>优惠金额</span>
+              <strong>￥{{ formatPrice(detail.coupon) }}</strong>
+            </div>
+          </div>
+          <div class="summary_hint">
+            <span><IconCheckCircle/> 创建时间：{{ dateTimeFormat(detail.createdAt) }}</span>
+            <span><IconSafe/> 更新时间：{{ dateTimeFormat(detail.updatedAt) }}</span>
           </div>
         </section>
 
@@ -172,6 +190,26 @@ onMounted(loadDetail)
             <strong>{{ detail.addrInfo.name }}</strong>
             <span>{{ detail.addrInfo.tel }}</span>
             <span>{{ detail.addrInfo.addr }} {{ detail.addrInfo.detailAddr }}</span>
+          </div>
+          <div class="hint_row">
+            <IconLocation/>
+            <span>下单后默认按照该地址进行配送</span>
+          </div>
+        </section>
+
+        <section class="detail_card">
+          <div class="card_title">支付信息</div>
+          <div class="info_list">
+            <div>支付方式：{{ detail.payType }}</div>
+            <div>
+              支付地址：
+              <a-link v-if="detail.payUrl" :href="detail.payUrl" target="_blank">打开支付页</a-link>
+              <span v-else>暂无</span>
+            </div>
+          </div>
+          <div class="hint_row">
+            <IconGift/>
+            <span>如果后端生成了支付地址，会从这里直接跳转</span>
           </div>
         </section>
 
@@ -196,10 +234,10 @@ onMounted(loadDetail)
               <span>类型 {{ coupon.type }}</span>
             </div>
           </div>
-          <a-empty v-else description="暂无优惠券"/>
+          <div v-else class="empty_card">暂无优惠券</div>
         </section>
       </div>
-      <a-empty v-else description="未找到订单"/>
+      <div v-else class="empty_card">未找到订单</div>
     </a-spin>
   </div>
 </template>
@@ -224,24 +262,34 @@ onMounted(loadDetail)
   justify-content: flex-end;
 }
 
+.eyebrow {
+  color: #ff647c;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .12em;
+}
+
 .panel_head h2 {
-  margin: 8px 0 8px;
-  font-size: 28px;
+  margin: 10px 0 8px;
+  color: #111827;
+  font-size: 32px;
+  line-height: 1.1;
 }
 
 .panel_head p,
 .info_list,
 .addr_box span,
 .goods_meta span,
-.coupon_item span {
-  color: var(--color-text-2);
+.coupon_item span,
+.summary_hint,
+.hint_row {
+  color: #6b7280;
 }
 
-.eyebrow {
-  color: #ff5d72;
+.panel_head p {
+  margin: 0;
   font-size: 14px;
-  font-weight: 700;
-  letter-spacing: .08em;
+  line-height: 1.8;
 }
 
 .detail_grid {
@@ -252,10 +300,13 @@ onMounted(loadDetail)
 
 .detail_card {
   padding: 18px;
-  border-radius: 22px;
-  background: var(--color-bg-1);
-  border: 1px solid var(--color-border-2);
-  box-shadow: 0 8px 24px rgba(15, 23, 42, .03);
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid #eceef2;
+}
+
+.summary_card {
+  background: linear-gradient(180deg, #fffafb, #ffffff 62%);
 }
 
 .span_2 {
@@ -263,9 +314,53 @@ onMounted(loadDetail)
 }
 
 .card_title {
-  font-size: 18px;
-  font-weight: 800;
+  color: #111827;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.1;
   margin-bottom: 12px;
+}
+
+.summary_box {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+
+  > div {
+    padding: 14px;
+    border-radius: 14px;
+    background: #fff;
+    border: 1px solid #eceef2;
+  }
+
+  span {
+    display: block;
+    color: #9ca3af;
+    font-size: 12px;
+  }
+
+  strong {
+    display: block;
+    margin-top: 8px;
+    color: #111827;
+    font-size: 18px;
+    line-height: 1.4;
+    word-break: break-all;
+  }
+}
+
+.summary_hint {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-size: 12px;
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
 }
 
 .info_list {
@@ -278,6 +373,19 @@ onMounted(loadDetail)
   display: grid;
   gap: 6px;
   line-height: 1.7;
+
+  strong {
+    color: #111827;
+    font-size: 16px;
+  }
+}
+
+.hint_row {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
 }
 
 .detail_goods {
@@ -290,15 +398,15 @@ onMounted(loadDetail)
   grid-template-columns: 96px minmax(0, 1fr);
   gap: 14px;
   padding: 12px;
-  border-radius: 18px;
-  background: var(--color-fill-1);
-  border: 1px solid var(--color-border-2);
+  border-radius: 14px;
+  background: #fafafb;
+  border: 1px solid #eceef2;
 }
 
 .goods_row img {
   width: 96px;
   height: 96px;
-  border-radius: 14px;
+  border-radius: 12px;
   object-fit: cover;
 }
 
@@ -309,6 +417,7 @@ onMounted(loadDetail)
 
 .goods_meta strong,
 .coupon_item strong {
+  color: #111827;
   font-size: 16px;
 }
 
@@ -319,11 +428,22 @@ onMounted(loadDetail)
 
 .coupon_item {
   padding: 12px 14px;
-  border-radius: 16px;
-  background: var(--color-bg-1);
+  border-radius: 14px;
+  background: #fafafb;
+  border: 1px solid #eceef2;
 }
 
-@media (max-width: 768px) {
+.empty_card {
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px dashed #f0d7dd;
+  background: linear-gradient(180deg, #fffafb, #fff);
+  color: #9ca3af;
+  font-size: 13px;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
   .panel_head {
     flex-direction: column;
   }
@@ -332,6 +452,13 @@ onMounted(loadDetail)
     justify-content: flex-start;
   }
 
+  .detail_grid,
+  .summary_box {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
   .goods_row {
     grid-template-columns: 1fr;
   }
@@ -340,10 +467,6 @@ onMounted(loadDetail)
     width: 100%;
     height: auto;
     aspect-ratio: 1;
-  }
-
-  .detail_grid {
-    grid-template-columns: 1fr;
   }
 }
 </style>
