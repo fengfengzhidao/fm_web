@@ -51,7 +51,7 @@ onMounted(loadList)
       <div>
         <div class="eyebrow">COUPON</div>
         <h2>我的优惠券</h2>
-        <p>包含可领取、未使用和已使用三类内容。</p>
+        <p>集中查看可领取、未使用和已使用的优惠券，结算时会直接读取可用状态。</p>
       </div>
     </div>
 
@@ -70,15 +70,16 @@ onMounted(loadList)
       </article>
     </div>
 
-    <a-tabs v-model:active-key="active">
+    <a-tabs v-model:active-key="active" class="coupon_tabs">
       <a-tab-pane key="available" title="待领取的优惠券">
         <a-spin :loading="loading">
           <div v-if="availableList.length" class="coupon_grid">
             <article v-for="item in availableList" :key="item.id" class="coupon_card">
-              <strong>￥{{ formatPrice(item.couponPrice) }}</strong>
-              <span>满 {{ formatPrice(item.threshold) }} 可用</span>
-              <span>{{ item.title || "通用优惠券" }}</span>
-              <a-tag v-if="item.isReceive" color="green">已领取</a-tag>
+              <div class="coupon_price">￥{{ formatPrice(item.couponPrice) }}</div>
+              <div class="coupon_title">{{ item.title || "通用优惠券" }}</div>
+              <div class="coupon_meta">满 {{ formatPrice(item.threshold) }} 可用</div>
+              <div class="coupon_meta">可在结算时自动匹配使用</div>
+              <span v-if="item.isReceive" class="coupon_state">已领取</span>
               <a-button v-else type="primary" @click="receiveCoupon(item)">立即领取</a-button>
             </article>
           </div>
@@ -90,9 +91,11 @@ onMounted(loadList)
         <a-spin :loading="loading">
           <div v-if="mineList.length" class="coupon_list">
             <article v-for="item in mineList" :key="item.id" class="coupon_row">
-              <strong>{{ item.title }}</strong>
-              <span>￥{{ formatPrice(item.couponPrice) }}，满 {{ formatPrice(item.threshold) }} 可用</span>
-              <a-tag>{{ userCouponStatusText(item.status) }}</a-tag>
+              <div class="row_main">
+                <strong>{{ item.title }}</strong>
+                <span>￥{{ formatPrice(item.couponPrice) }}，满 {{ formatPrice(item.threshold) }} 可用</span>
+              </div>
+              <span class="row_state">{{ userCouponStatusText(item.status) }}</span>
             </article>
           </div>
           <a-empty v-else description="暂无未使用优惠券"/>
@@ -103,9 +106,11 @@ onMounted(loadList)
         <a-spin :loading="loading">
           <div v-if="usedList.length" class="coupon_list">
             <article v-for="item in usedList" :key="item.id" class="coupon_row">
-              <strong>{{ item.title }}</strong>
-              <span>￥{{ formatPrice(item.couponPrice) }}，满 {{ formatPrice(item.threshold) }} 可用</span>
-              <a-tag>{{ userCouponStatusText(item.status) }}</a-tag>
+              <div class="row_main">
+                <strong>{{ item.title }}</strong>
+                <span>￥{{ formatPrice(item.couponPrice) }}，满 {{ formatPrice(item.threshold) }} 可用</span>
+              </div>
+              <span class="row_state used">{{ userCouponStatusText(item.status) }}</span>
             </article>
           </div>
           <a-empty v-else description="暂无已使用优惠券"/>
@@ -119,6 +124,13 @@ onMounted(loadList)
 .page_view {
   display: grid;
   gap: 18px;
+}
+
+.panel_head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
 }
 
 .panel_head h2 {
@@ -136,7 +148,7 @@ onMounted(loadList)
   color: #ff5d72;
   font-size: 14px;
   font-weight: 700;
-  letter-spacing: .08em;
+  letter-spacing: .12em;
 }
 
 .coupon_grid {
@@ -152,42 +164,108 @@ onMounted(loadList)
 }
 
 .summary_card {
-  padding: 16px 18px;
+  padding: 18px 20px;
   border-radius: 18px;
-  background: var(--color-bg-1);
-  border: 1px solid var(--color-border-2);
-  box-shadow: 0 8px 24px rgba(15, 23, 42, .03);
+  background: linear-gradient(180deg, #fffafb, #fff);
+  border: 1px solid #eceef2;
+  box-shadow: 0 12px 30px rgba(17, 24, 39, .04);
 }
 
 .summary_card strong {
   display: block;
   font-size: 26px;
-  color: #e11d48;
+  color: #ff647c;
 }
 
 .summary_card span {
   color: var(--color-text-2);
 }
 
+.coupon_tabs {
+  :deep(.arco-tabs-nav::before) {
+    background: #f1f3f6;
+  }
+
+  :deep(.arco-tabs-tab) {
+    color: #6b7280;
+    font-weight: 600;
+  }
+
+  :deep(.arco-tabs-tab-active),
+  :deep(.arco-tabs-tab:hover) {
+    color: #ff647c;
+  }
+
+  :deep(.arco-tabs-nav-ink) {
+    background: #ff647c;
+  }
+}
+
 .coupon_card,
 .coupon_row {
   display: grid;
   gap: 8px;
-  padding: 16px;
-  border-radius: 20px;
-  background: var(--color-bg-1);
-  border: 1px solid var(--color-border-2);
-  box-shadow: 0 8px 24px rgba(15, 23, 42, .03);
+  padding: 18px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #fffafb, #fff);
+  border: 1px solid #eceef2;
+  box-shadow: 0 12px 30px rgba(17, 24, 39, .04);
 }
 
-.coupon_card strong {
-  color: #e11d48;
+.coupon_price {
+  color: #ff647c;
   font-size: 26px;
+  font-weight: 800;
+}
+
+.coupon_title {
+  color: #111827;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.coupon_meta {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.coupon_state,
+.row_state {
+  justify-self: start;
+  padding: 7px 12px;
+  border-radius: 999px;
+  color: #ff647c;
+  font-size: 12px;
+  font-weight: 700;
+  background: #fff2f5;
+  border: 1px solid #ffd4dc;
 }
 
 .coupon_list {
   display: grid;
   gap: 12px;
+}
+
+.coupon_row {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+}
+
+.row_main {
+  display: grid;
+  gap: 6px;
+}
+
+.row_main strong {
+  color: #111827;
+  font-size: 16px;
+}
+
+.row_state.used {
+  color: #9ca3af;
+  background: #f8fafc;
+  border-color: #e5e7eb;
 }
 
 @media (max-width: 768px) {
@@ -196,6 +274,10 @@ onMounted(loadList)
   }
 
   .summary_grid {
+    grid-template-columns: 1fr;
+  }
+
+  .coupon_row {
     grid-template-columns: 1fr;
   }
 }

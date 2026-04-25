@@ -89,23 +89,23 @@ onMounted(loadList)
       <div>
         <div class="eyebrow">MESSAGE</div>
         <h2>消息通知</h2>
-        <p>订单、商品和系统消息。</p>
+        <p>统一查看订单、商品和系统提醒，支持快速跳转来源并管理已读状态。</p>
       </div>
       <div class="head_actions">
-        <a-tag color="blue">未读 {{ unreadCount }}</a-tag>
-        <a-tag color="green">已读 {{ readCount }}</a-tag>
+        <span class="summary_badge">未读 {{ unreadCount }}</span>
+        <span class="summary_badge muted">已读 {{ readCount }}</span>
         <a-button type="primary" @click="markAllRead">全部已读</a-button>
       </div>
     </div>
 
     <a-spin :loading="loading">
-      <a-tabs v-model:active-key="active">
+      <a-tabs v-model:active-key="active" class="msg_tabs">
         <a-tab-pane key="all" title="全部消息">
           <div v-if="allList.length" class="msg_list">
             <article v-for="item in allList" :key="item.id" class="msg_card" :class="{read: item.isRead}">
               <div class="msg_top">
                 <strong>{{ item.goodsTitle || `消息 #${item.id}` }}</strong>
-                <a-tag :color="item.isRead ? 'gray' : 'blue'">{{ item.isRead ? '已读' : '未读' }}</a-tag>
+                <span class="msg_state" :class="{read: item.isRead}">{{ item.isRead ? '已读' : '未读' }}</span>
               </div>
               <div class="msg_body">
                 <div v-for="line in item.msgList" :key="line">{{ line }}</div>
@@ -130,7 +130,7 @@ onMounted(loadList)
             <article v-for="item in unreadList" :key="item.id" class="msg_card">
               <div class="msg_top">
                 <strong>{{ item.goodsTitle || `消息 #${item.id}` }}</strong>
-                <a-tag color="blue">未读</a-tag>
+                <span class="msg_state">未读</span>
               </div>
               <div class="msg_body">
                 <div v-for="line in item.msgList" :key="line">{{ line }}</div>
@@ -152,7 +152,7 @@ onMounted(loadList)
             <article v-for="item in readList" :key="item.id" class="msg_card read">
               <div class="msg_top">
                 <strong>{{ item.goodsTitle || `消息 #${item.id}` }}</strong>
-                <a-tag color="gray">已读</a-tag>
+                <span class="msg_state read">已读</span>
               </div>
               <div class="msg_body">
                 <div v-for="line in item.msgList" :key="line">{{ line }}</div>
@@ -181,9 +181,16 @@ onMounted(loadList)
   gap: 18px;
 }
 
+.panel_head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+}
+
 .panel_head h2 {
   margin: 8px 0 8px;
-  font-size: 28px;
+  font-size: 30px;
 }
 
 .panel_head p,
@@ -198,11 +205,47 @@ onMounted(loadList)
   flex-wrap: wrap;
 }
 
+.summary_badge {
+  padding: 8px 12px;
+  border-radius: 999px;
+  color: #ff647c;
+  font-size: 12px;
+  font-weight: 700;
+  background: #fff2f5;
+  border: 1px solid #ffd4dc;
+}
+
+.summary_badge.muted {
+  color: #9ca3af;
+  background: #f8fafc;
+  border-color: #e5e7eb;
+}
+
 .eyebrow {
   color: #ff5d72;
   font-size: 14px;
   font-weight: 700;
-  letter-spacing: .08em;
+  letter-spacing: .12em;
+}
+
+.msg_tabs {
+  :deep(.arco-tabs-nav::before) {
+    background: #f1f3f6;
+  }
+
+  :deep(.arco-tabs-tab) {
+    color: #6b7280;
+    font-weight: 600;
+  }
+
+  :deep(.arco-tabs-tab-active),
+  :deep(.arco-tabs-tab:hover) {
+    color: #ff647c;
+  }
+
+  :deep(.arco-tabs-nav-ink) {
+    background: #ff647c;
+  }
 }
 
 .msg_list {
@@ -211,15 +254,15 @@ onMounted(loadList)
 }
 
 .msg_card {
-  padding: 16px;
-  border-radius: 20px;
-  background: var(--color-bg-1);
-  border: 1px solid var(--color-border-2);
-  box-shadow: 0 8px 24px rgba(15, 23, 42, .03);
+  padding: 18px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #fffafb, #fff);
+  border: 1px solid #eceef2;
+  box-shadow: 0 12px 30px rgba(17, 24, 39, .04);
 }
 
 .msg_card.read {
-  background: var(--color-fill-1);
+  background: linear-gradient(180deg, #fbfcfd, #fff);
 }
 
 .msg_top,
@@ -230,11 +273,31 @@ onMounted(loadList)
   align-items: flex-start;
 }
 
+.msg_state {
+  flex: 0 0 auto;
+  padding: 7px 12px;
+  border-radius: 999px;
+  color: #ff647c;
+  font-size: 12px;
+  font-weight: 700;
+  background: #fff2f5;
+  border: 1px solid #ffd4dc;
+}
+
+.msg_state.read {
+  color: #9ca3af;
+  background: #f8fafc;
+  border-color: #e5e7eb;
+}
+
 .msg_body {
   margin: 12px 0;
   display: grid;
   gap: 6px;
   line-height: 1.75;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #fafafb;
 }
 
 .actions {
