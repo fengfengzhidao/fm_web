@@ -2,8 +2,13 @@
 import {computed, onMounted, ref} from "vue";
 import {useRouter} from "vue-router";
 import {Message} from "@arco-design/web-vue";
-import F_nav from "@/components/web/f_nav.vue";
-import F_main from "@/components/web/f_main.vue";
+import {
+  IconCheckCircle,
+  IconDelete,
+  IconHeart,
+  IconSafe,
+  IconStorage
+} from "@arco-design/web-vue/es/icon";
 import F_footer from "@/components/web/f_footer.vue";
 import {carListApi, carNumUpdateApi, carRemoveApi, carToCollectApi, type carGoodsInfoType, type carListType} from "@/api/car_api";
 import {userStorei} from "@/stores/user_store";
@@ -149,6 +154,7 @@ const totalPrice = computed(() => formatPrice(cart.value.price))
 const allSelected = computed(() => cart.value.goodsList.length > 0 && selectedIds.value.length === cart.value.goodsList.length)
 const selectedCount = computed(() => selectedIds.value.length)
 const selectedCouponCount = computed(() => selectedCouponIDs.value.length)
+const isEmpty = computed(() => !cart.value.goodsList.length)
 
 onMounted(() => {
   if (!store.isLogin) {
@@ -160,59 +166,106 @@ onMounted(() => {
 
 <template>
   <div class="cart_view">
-    <f_nav no-scroll/>
-    <f_main>
-      <section class="cart_shell">
-        <div class="page_head">
-          <div>
+    <div class="page_shell">
+      <section class="hero_surface">
+        <header class="hero_header">
+          <router-link class="brand_block" to="/">
+            <div class="brand_title">枫枫商城</div>
+            <div class="brand_subtitle">享受快人一步</div>
+          </router-link>
+
+          <div class="header_actions">
+            <button type="button" @click="router.push({name: 'web_home'})">商城首页</button>
+            <button type="button" @click="router.push({name: 'web_search'})">继续逛</button>
+            <button type="button" @click="checkout">去结算</button>
+          </div>
+        </header>
+
+        <section class="hero_section">
+          <div class="hero_copy">
             <div class="eyebrow">CART</div>
             <h1>购物车</h1>
-            <p>支持修改数量、删除、收藏，并且按原型保留清晰的结算信息区。</p>
-          </div>
-          <div class="head_actions">
-            <a-button @click="router.back()">返回</a-button>
-            <a-button type="primary" @click="checkout">去结算</a-button>
-          </div>
-        </div>
+            <p>把购物车页压成更接近原型的前台结算面板，突出已选商品、优惠券和总价这三层核心信息。</p>
 
+            <div class="hero_tags">
+              <span><IconStorage/> 勾选结算</span>
+              <span><IconHeart/> 转入收藏</span>
+              <span><IconSafe/> 优惠后金额实时重算</span>
+            </div>
+          </div>
+
+          <aside class="hero_summary">
+            <div class="summary_title">当前结算概览</div>
+            <div class="summary_value">￥ {{ totalPrice }}</div>
+            <div class="summary_meta">已选商品 {{ selectedCount }} 件，已选优惠券 {{ selectedCouponCount }} 张</div>
+            <a-button long type="primary" @click="checkout">去结算</a-button>
+          </aside>
+        </section>
+      </section>
+
+      <section class="cart_surface">
         <a-spin :loading="loading" tip="加载中...">
-          <div v-if="cart.goodsList.length" class="cart_grid">
+          <div v-if="!isEmpty" class="cart_grid">
             <div class="goods_panel">
               <div class="panel_head_row">
-                <div class="panel_title">商品列表</div>
-                <a-checkbox :model-value="allSelected" :indeterminate="selectedIds.length > 0 && !allSelected" @change="(checked) => toggleSelectAll(Boolean(checked))">
+                <div>
+                  <div class="panel_title">商品列表</div>
+                  <div class="panel_desc">勾选商品后会同步刷新优惠和应付金额</div>
+                </div>
+                <a-checkbox
+                  :model-value="allSelected"
+                  :indeterminate="selectedIds.length > 0 && !allSelected"
+                  @change="(checked) => toggleSelectAll(Boolean(checked))"
+                >
                   全选
                 </a-checkbox>
               </div>
+
               <article class="cart_item" v-for="item in cart.goodsList" :key="item.carID">
-                <a-checkbox :model-value="selectedIds.includes(item.carID)" @change="(checked) => toggleSelect(item, Boolean(checked))"/>
-                <div class="item_cover" @click="goGoodsDetail(item)">
-                  <img :src="item.cover" :alt="item.title"></img>
+                <div class="item_select">
+                  <a-checkbox
+                    :model-value="selectedIds.includes(item.carID)"
+                    @change="(checked) => toggleSelect(item, Boolean(checked))"
+                  />
                 </div>
+
+                <div class="item_cover" @click="goGoodsDetail(item)">
+                  <img :src="item.cover" :alt="item.title">
+                </div>
+
                 <div class="item_body">
                   <div class="item_title" @click="goGoodsDetail(item)">{{ item.title }}</div>
-                  <div class="item_price">单价 ￥{{ formatPrice(item.price) }}</div>
+                  <div class="item_price">单价 ￥ {{ formatPrice(item.price) }}</div>
                   <div class="item_sub">
-                    <span>合计 ￥{{ formatPrice(item.totalPrice) }}</span>
-                    <span>实付 ￥{{ formatPrice(item.payPrice) }}</span>
-                    <span v-if="item.couponInfo">优惠券 ￥{{ formatPrice(item.couponInfo.couponPrice) }}</span>
+                    <span>合计 ￥ {{ formatPrice(item.totalPrice) }}</span>
+                    <span>实付 ￥ {{ formatPrice(item.payPrice) }}</span>
+                    <span v-if="item.couponInfo">优惠券 ￥ {{ formatPrice(item.couponInfo.couponPrice) }}</span>
                   </div>
                 </div>
+
                 <div class="item_actions">
                   <a-input-number :model-value="item.num" :min="1" @change="(value) => updateNum(item, Number(value || 1))"/>
-                  <a-button @click="collectItem(item)">收藏</a-button>
-                  <a-popconfirm content="确定删除该商品吗？" @ok="removeItem(item)">
-                    <a-button status="danger">删除</a-button>
-                  </a-popconfirm>
+                  <div class="action_buttons">
+                    <a-button @click="collectItem(item)">收藏</a-button>
+                    <a-popconfirm content="确定删除该商品吗？" @ok="removeItem(item)">
+                      <a-button status="danger"><IconDelete/>删除</a-button>
+                    </a-popconfirm>
+                  </div>
                 </div>
               </article>
             </div>
 
             <aside class="summary_panel">
               <div class="panel_title">结算信息</div>
+
               <div class="summary_total">
-                <strong>￥{{ totalPrice }}</strong>
+                <strong>￥ {{ totalPrice }}</strong>
                 <span>优惠后应付金额</span>
+              </div>
+
+              <div class="summary_status">
+                <span><IconCheckCircle/> 已选 {{ selectedCount }} 件商品</span>
+                <span><IconHeart/> 已用 {{ selectedCouponCount }} 张券</span>
               </div>
 
               <div class="coupon_list">
@@ -225,16 +278,12 @@ onMounted(() => {
                   <label class="coupon_card" v-for="coupon in cart.couponList" :key="coupon.id">
                     <a-checkbox :model-value="selectedCouponIDs.includes(coupon.id)" @change="(checked) => toggleCoupon(coupon.id, Boolean(checked))"/>
                     <div>
-                      <strong>￥{{ formatPrice(coupon.couponPrice) }}</strong>
+                      <strong>￥ {{ formatPrice(coupon.couponPrice) }}</strong>
                       <span>满 {{ formatPrice(coupon.threshold) }} 可用</span>
                     </div>
                   </label>
                 </div>
-                <a-empty v-else description="暂无可用优惠券"/>
-              </div>
-
-              <div class="summary_note">
-                已选商品 {{ selectedCount }} 件，已选优惠券 {{ selectedCouponCount }} 张。
+                <div v-else class="coupon_empty">暂无可用优惠券</div>
               </div>
 
               <div class="summary_actions">
@@ -243,118 +292,233 @@ onMounted(() => {
               </div>
             </aside>
           </div>
-          <a-empty v-else description="购物车还是空的"/>
+
+          <div v-else class="empty_state">
+            <div class="empty_icon"><IconStorage/></div>
+            <div class="empty_title">{{ store.isLogin ? "购物车还是空的" : "登录后查看购物车" }}</div>
+            <div class="empty_desc">
+              {{ store.isLogin ? "先去首页或搜索页挑几件商品，再回到这里统一结算。" : "当前未登录，先登录再查看已加入购物车的商品。" }}
+            </div>
+            <div class="empty_actions">
+              <a-button type="primary" @click="store.isLogin ? router.push({name: 'web_home'}) : store.openLoginModal('/cart')">
+                {{ store.isLogin ? "去逛逛" : "立即登录" }}
+              </a-button>
+              <a-button @click="router.push({name: 'web_search'})">搜索商品</a-button>
+            </div>
+          </div>
         </a-spin>
       </section>
-
-      <section class="tip_shell">
-        <div class="tip_card">
-          <div class="panel_title">操作说明</div>
-          <div class="tip_text">
-            当前阶段先把“详情页加入购物车”和“购物车管理”跑通，结算页会在下一阶段接上订单确认与地址选择。
-          </div>
-        </div>
-      </section>
-    </f_main>
+    </div>
     <f_footer/>
   </div>
 </template>
 
 <style scoped lang="less">
 .cart_view {
+  min-height: 100vh;
   color: var(--color-text-1);
+  background:
+    linear-gradient(180deg, #f5f5f6 0, #f5f5f6 460px, #f2f3f5 460px, #f2f3f5 100%);
 }
 
-.cart_shell,
-.tip_shell {
-  margin: 20px max(16px, calc((100% - 1240px) / 2));
-  padding: 30px;
-  border-radius: 28px;
+.page_shell {
+  width: min(1180px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 26px 0 36px;
+}
+
+.hero_surface,
+.cart_surface {
+  border-radius: 18px;
   background: #fff;
-  border: 1px solid rgba(226, 232, 240, .95);
-  box-shadow: 0 12px 34px rgba(15, 23, 42, .04);
+  box-shadow: 0 20px 45px rgba(17, 24, 39, .05);
 }
 
-.cart_shell {
-  margin-top: 20px;
+.hero_surface {
+  padding: 24px 22px 22px;
 }
 
-.page_head {
+.hero_header {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 20px;
-  margin-bottom: 24px;
+  gap: 16px;
+}
 
-  h1 {
-    margin: 12px 0 10px;
-    font-size: 42px;
-    line-height: 1.1;
-  }
+.brand_block {
+  text-decoration: none;
+  color: inherit;
+}
 
-  p {
-    margin: 0;
-    color: var(--color-text-2);
-    line-height: 1.85;
+.brand_title {
+  font-size: 28px;
+  line-height: 1.05;
+  color: #ff667d;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+
+.brand_subtitle {
+  margin-top: 6px;
+  color: #ff8b9b;
+  font-size: 12px;
+  letter-spacing: .18em;
+}
+
+.header_actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+
+  button {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    color: #4b5563;
+    font-size: 12px;
+    cursor: pointer;
   }
+}
+
+.hero_section {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) 320px;
+  gap: 14px;
+}
+
+.hero_copy,
+.hero_summary {
+  border-radius: 16px;
+  border: 1px solid #eceef2;
+  background: #fff;
+}
+
+.hero_copy {
+  padding: 24px 22px;
+  background: linear-gradient(180deg, #fffafb, #ffffff 62%);
 }
 
 .eyebrow {
-  color: #ff5d72;
+  color: #ff647c;
   font-size: 14px;
   font-weight: 700;
-  letter-spacing: .08em;
+  letter-spacing: .12em;
 }
 
-.head_actions {
+.hero_copy h1 {
+  margin: 8px 0 10px;
+  font-size: 36px;
+  line-height: 1.05;
+  color: #111827;
+}
+
+.hero_copy p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.hero_tags {
+  margin-top: 18px;
   display: flex;
-  gap: 10px;
   flex-wrap: wrap;
+  gap: 10px;
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: #fff4f6;
+    color: #ff6178;
+    font-size: 12px;
+    font-weight: 600;
+  }
+}
+
+.hero_summary {
+  padding: 22px 20px;
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+.summary_title {
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+.summary_value {
+  color: #111827;
+  font-size: 28px;
+  line-height: 1.15;
+  font-weight: 700;
+}
+
+.summary_meta {
+  color: #4b5563;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.cart_surface {
+  margin-top: 18px;
+  padding: 18px;
 }
 
 .cart_grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(320px, .8fr);
-  gap: 18px;
+  grid-template-columns: minmax(0, 1.3fr) minmax(300px, .7fr);
+  gap: 16px;
 }
 
 .goods_panel,
-.summary_panel,
-.tip_card {
-  padding: 22px;
-  border-radius: 24px;
+.summary_panel {
+  border-radius: 16px;
+  border: 1px solid #eceef2;
   background: #fff;
-  border: 1px solid rgba(226, 232, 240, .95);
+  padding: 18px;
 }
 
 .panel_head_row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
 .panel_title {
-  font-size: 20px;
-  font-weight: 800;
-  margin-bottom: 0;
+  color: #111827;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.panel_desc {
+  margin-top: 8px;
+  color: #9ca3af;
+  font-size: 13px;
 }
 
 .cart_item {
   display: grid;
-  grid-template-columns: auto 120px minmax(0, 1fr) auto;
+  grid-template-columns: auto 112px minmax(0, 1fr) 180px;
   gap: 14px;
   align-items: center;
   padding: 16px 0;
-  border-top: 1px solid var(--color-border-2);
+  border-top: 1px solid #eceef2;
 }
 
 .item_cover {
-  width: 120px;
-  border-radius: 16px;
+  width: 112px;
   overflow: hidden;
+  border-radius: 12px;
   cursor: pointer;
+  background: #f7f8fa;
 
   img {
     width: 100%;
@@ -369,15 +533,16 @@ onMounted(() => {
 }
 
 .item_title {
-  font-size: 16px;
+  color: #111827;
+  font-size: 15px;
   font-weight: 700;
-  line-height: 1.5;
+  line-height: 1.6;
   cursor: pointer;
 }
 
 .item_price {
   margin-top: 8px;
-  color: #e11d48;
+  color: #ff637a;
   font-weight: 700;
 }
 
@@ -386,34 +551,54 @@ onMounted(() => {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  color: var(--color-text-2);
+  color: #9ca3af;
+  font-size: 12px;
+  line-height: 1.7;
 }
 
 .item_actions {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: 10px;
-  align-items: flex-end;
+  justify-items: end;
 }
 
-.summary_panel {
-  align-self: start;
+.action_buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .summary_total {
+  margin-top: 14px;
   padding: 18px;
-  border-radius: 20px;
+  border-radius: 14px;
   background: linear-gradient(135deg, rgba(255, 93, 114, .1), rgba(255, 93, 114, .04));
   display: grid;
   gap: 4px;
 
   strong {
     font-size: 30px;
-    color: #e11d48;
+    color: #ff637a;
   }
 
   span {
-    color: var(--color-text-2);
+    color: #6b7280;
+    font-size: 13px;
+  }
+}
+
+.summary_status {
+  margin-top: 14px;
+  display: grid;
+  gap: 8px;
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #6b7280;
+    font-size: 12px;
   }
 }
 
@@ -429,25 +614,29 @@ onMounted(() => {
 }
 
 .coupon_title {
+  color: #111827;
+  font-size: 15px;
   font-weight: 700;
 }
 
 .coupon_hint {
   margin-top: 8px;
-  color: var(--color-text-2);
-  line-height: 1.6;
+  color: #9ca3af;
+  font-size: 12px;
+  line-height: 1.7;
 }
 
 .coupon_items {
+  margin-top: 12px;
   display: grid;
   gap: 10px;
 }
 
 .coupon_card {
   padding: 14px 16px;
-  border-radius: 20px;
-  background: var(--color-bg-1);
-  border: 1px solid var(--color-border-2);
+  border-radius: 14px;
+  background: #fafafb;
+  border: 1px solid #eceef2;
   display: flex;
   gap: 12px;
   align-items: flex-start;
@@ -455,24 +644,26 @@ onMounted(() => {
 
   strong {
     display: block;
-    color: #e11d48;
+    color: #ff637a;
     font-size: 18px;
   }
 
   span {
     display: block;
     margin-top: 6px;
-    color: var(--color-text-2);
+    color: #6b7280;
+    font-size: 12px;
   }
 }
 
-.summary_note {
-  margin-top: 18px;
-  padding: 14px;
-  border-radius: 20px;
-  background: rgba(255, 93, 114, .08);
-  color: var(--color-text-2);
-  line-height: 1.75;
+.coupon_empty {
+  margin-top: 12px;
+  padding: 16px;
+  border-radius: 14px;
+  background: #fafafb;
+  color: #9ca3af;
+  font-size: 12px;
+  text-align: center;
 }
 
 .summary_actions {
@@ -481,38 +672,73 @@ onMounted(() => {
   gap: 10px;
 }
 
-.tip_shell {
-  background: #fff;
+.empty_state {
+  min-height: 360px;
+  border-radius: 16px;
+  border: 1px dashed #f0d7dd;
+  background: linear-gradient(180deg, #fffafb, #fff);
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  text-align: center;
+  padding: 28px;
 }
 
-.tip_text {
-  color: var(--color-text-2);
+.empty_icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #fff1f4;
+  color: #ff647c;
+  font-size: 30px;
+}
+
+.empty_title {
+  margin-top: 14px;
+  color: #111827;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.empty_desc {
+  margin-top: 10px;
+  max-width: 420px;
+  color: #9ca3af;
+  font-size: 13px;
   line-height: 1.8;
 }
 
+.empty_actions {
+  margin-top: 18px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
 @media (max-width: 1100px) {
+  .hero_section,
   .cart_grid {
     grid-template-columns: 1fr;
   }
-
-  .item_actions {
-    align-items: flex-start;
-  }
 }
 
-@media (max-width: 768px) {
-  .cart_shell,
-  .tip_shell {
-    margin-left: 16px;
-    margin-right: 16px;
-    padding: 20px;
+@media (max-width: 900px) {
+  .page_shell {
+    width: calc(100% - 24px);
+    padding-top: 12px;
   }
 
-  .cart_shell {
-    margin-top: 76px;
+  .hero_surface,
+  .cart_surface {
+    border-radius: 14px;
   }
 
-  .page_head {
+  .hero_header,
+  .panel_head_row {
+    align-items: flex-start;
     flex-direction: column;
   }
 
@@ -524,13 +750,46 @@ onMounted(() => {
     width: 100%;
   }
 
-  .item_actions {
-    width: 100%;
-    align-items: stretch;
+  .item_actions,
+  .action_buttons {
+    justify-items: stretch;
+    justify-content: flex-start;
+  }
 
-    :deep(.arco-input-number) {
-      width: 100%;
-    }
+  .item_actions :deep(.arco-input-number) {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .page_shell {
+    width: calc(100% - 16px);
+  }
+
+  .hero_surface {
+    padding: 16px 12px 14px;
+  }
+
+  .cart_surface,
+  .goods_panel,
+  .summary_panel {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .brand_title,
+  .hero_copy h1,
+  .panel_title,
+  .summary_value,
+  .empty_title {
+    font-size: 24px;
+  }
+
+  .header_actions,
+  .hero_tags,
+  .empty_actions {
+    gap: 10px;
+    flex-wrap: wrap;
   }
 }
 </style>
