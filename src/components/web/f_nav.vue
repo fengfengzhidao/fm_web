@@ -2,9 +2,11 @@
 import {computed, onMounted, onUnmounted, ref} from "vue";
 import {slogan, enSlogan} from "@/conf/global";
 import {useRoute, useRouter} from "vue-router";
+import {userStorei} from "@/stores/user_store";
 
 const route = useRoute()
 const router = useRouter()
+const store = userStorei()
 
 interface Props {
   noScroll?: boolean
@@ -18,6 +20,11 @@ const isShow = ref(noScroll)
 const showBrand = computed(() => route.name !== "web_home")
 
 const navItems = computed(() => [
+  ...(store.isAdmin ? [{
+    label: "后台管理",
+    name: "admin",
+    active: typeof route.name === "string" && route.name.startsWith("admin"),
+  }] : []),
   {
     label: "购物车",
     name: "web_cart",
