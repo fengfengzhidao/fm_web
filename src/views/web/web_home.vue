@@ -1050,19 +1050,23 @@ onMounted(() => {
   gap: 8px;
 
   button {
-    min-height: 62px;
+    min-height: 78px;
     border: 1px solid #eceef2;
     border-radius: 10px;
     background: #fff;
     display: grid;
     justify-items: center;
     align-content: center;
-    gap: 6px;
+    gap: 8px;
     color: #4b5563;
     cursor: pointer;
 
+    :deep(svg) {
+      font-size: 20px;
+    }
+
     span {
-      font-size: 11px;
+      font-size: 12px;
     }
   }
 }
