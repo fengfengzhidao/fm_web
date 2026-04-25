@@ -96,7 +96,7 @@ onMounted(loadList)
       <div>
         <div class="eyebrow">ADDRESS</div>
         <h2>我的地址</h2>
-        <p>维护收货地址，结算页直接读取这里的数据。</p>
+        <p>统一维护收货信息，确认订单时会直接读取这里的默认地址。</p>
       </div>
       <a-button type="primary" @click="openCreate">新增地址</a-button>
     </div>
@@ -105,11 +105,14 @@ onMounted(loadList)
       <div v-if="list.length" class="addr_list">
         <article v-for="item in list" :key="item.id" class="addr_card">
           <div class="addr_top">
-            <div>
-              <strong>{{ item.name }}</strong>
-              <span>{{ item.tel }}</span>
+            <div class="addr_identity">
+              <div class="avatar_mark">{{ item.name.slice(0, 1) }}</div>
+              <div>
+                <strong>{{ item.name }}</strong>
+                <span>{{ item.tel }}</span>
+              </div>
             </div>
-            <a-tag v-if="item.isDefault" color="green">默认</a-tag>
+            <span v-if="item.isDefault" class="default_badge">默认地址</span>
           </div>
           <div class="addr_text">{{ item.addr }} {{ item.detailAddr }}</div>
           <div class="actions">
@@ -153,12 +156,12 @@ onMounted(loadList)
   display: flex;
   justify-content: space-between;
   gap: 16px;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .panel_head h2 {
   margin: 8px 0 8px;
-  font-size: 28px;
+  font-size: 30px;
 }
 
 .panel_head p,
@@ -171,7 +174,7 @@ onMounted(loadList)
   color: #ff5d72;
   font-size: 14px;
   font-weight: 700;
-  letter-spacing: .08em;
+  letter-spacing: .12em;
 }
 
 .addr_list {
@@ -180,11 +183,11 @@ onMounted(loadList)
 }
 
 .addr_card {
-  padding: 16px;
-  border-radius: 20px;
-  background: var(--color-bg-1);
-  border: 1px solid var(--color-border-2);
-  box-shadow: 0 8px 24px rgba(15, 23, 42, .03);
+  padding: 18px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #fffafb, #fff);
+  border: 1px solid #eceef2;
+  box-shadow: 0 12px 30px rgba(17, 24, 39, .04);
 }
 
 .addr_top,
@@ -195,15 +198,49 @@ onMounted(loadList)
   align-items: center;
 }
 
+.addr_identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar_mark {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  color: #ff647c;
+  font-size: 18px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #fff1f4, #fffafb);
+  border: 1px solid #ffe1e7;
+}
+
 .addr_top strong {
   display: block;
   font-size: 18px;
   margin-bottom: 4px;
 }
 
+.default_badge {
+  flex: 0 0 auto;
+  padding: 8px 12px;
+  border-radius: 999px;
+  color: #ff647c;
+  font-size: 12px;
+  font-weight: 700;
+  background: #fff2f5;
+  border: 1px solid #ffd4dc;
+}
+
 .addr_text {
   margin: 12px 0;
   line-height: 1.7;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #fafafb;
 }
 
 .actions {

@@ -50,19 +50,27 @@ onMounted(loadList)
       <div>
         <div class="eyebrow">LOOK</div>
         <h2>我的足迹</h2>
-        <p>最近浏览过的商品。</p>
+        <p>整理最近浏览过的商品，快速回到感兴趣的商品详情页。</p>
       </div>
-      <a-tag color="orange">共 {{ count }} 条</a-tag>
+      <div class="summary_badge">共 {{ count }} 条</div>
     </div>
 
     <a-spin :loading="loading">
       <div v-if="list.length" class="goods_grid">
         <article v-for="item in list" :key="item.id" class="goods_card">
-          <div class="cover">{{ (item.goodsTitle || "商").slice(0, 1) }}</div>
+          <div class="cover">
+            <span class="cover_mark">{{ (item.goodsTitle || "商").slice(0, 1) }}</span>
+            <span class="cover_hint">HISTORY</span>
+          </div>
           <div class="body">
-            <strong @click="openDetail(item)">{{ item.goodsTitle }}</strong>
-            <span>商品ID：{{ item.goodsID }}</span>
-            <span>浏览时间：{{ dateTimeFormat(item.createdAt) }}</span>
+            <div class="body_top">
+              <strong @click="openDetail(item)">{{ item.goodsTitle }}</strong>
+              <span class="status_chip">最近浏览</span>
+            </div>
+            <div class="meta_list">
+              <span>商品ID：{{ item.goodsID }}</span>
+              <span>浏览时间：{{ dateTimeFormat(item.createdAt) }}</span>
+            </div>
           </div>
           <div class="actions">
             <a-button type="primary" @click="openDetail(item)">查看商品</a-button>
@@ -87,12 +95,12 @@ onMounted(loadList)
   display: flex;
   justify-content: space-between;
   gap: 16px;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .panel_head h2 {
   margin: 8px 0 8px;
-  font-size: 28px;
+  font-size: 30px;
 }
 
 .panel_head p,
@@ -104,7 +112,19 @@ onMounted(loadList)
   color: #ff5d72;
   font-size: 14px;
   font-weight: 700;
-  letter-spacing: .08em;
+  letter-spacing: .12em;
+}
+
+.summary_badge {
+  min-width: 104px;
+  padding: 12px 18px;
+  border-radius: 999px;
+  text-align: center;
+  color: #ff647c;
+  font-size: 13px;
+  font-weight: 700;
+  background: linear-gradient(180deg, #fff7f9, #fff);
+  border: 1px solid #ffd7df;
 }
 
 .goods_grid {
@@ -115,31 +135,51 @@ onMounted(loadList)
 .goods_card {
   display: grid;
   grid-template-columns: 120px minmax(0, 1fr) auto;
-  gap: 14px;
+  gap: 16px;
   align-items: center;
-  padding: 16px;
-  border-radius: 20px;
-  background: var(--color-bg-1);
-  border: 1px solid var(--color-border-2);
-  box-shadow: 0 8px 24px rgba(15, 23, 42, .03);
+  padding: 18px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #fffafb, #fff);
+  border: 1px solid #eceef2;
+  box-shadow: 0 12px 30px rgba(17, 24, 39, .04);
 }
 
 .cover {
   width: 120px;
   height: 120px;
-  border-radius: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, rgba(255, 93, 114, .08), rgba(255, 93, 114, .02));
+  border-radius: 20px;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #fff1f4, #fffafb 62%, #ffffff);
+  border: 1px solid #ffe1e7;
+}
+
+.cover_mark {
   color: #ff5d72;
   font-size: 40px;
+  line-height: 1;
   font-weight: 800;
+}
+
+.cover_hint {
+  color: #ff95a5;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .14em;
 }
 
 .body {
   display: grid;
-  gap: 6px;
+  gap: 10px;
+}
+
+.body_top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
 }
 
 .body strong {
@@ -147,10 +187,27 @@ onMounted(loadList)
   cursor: pointer;
 }
 
+.status_chip {
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  border-radius: 999px;
+  color: #ff647c;
+  font-size: 11px;
+  font-weight: 700;
+  background: #fff2f5;
+  border: 1px solid #ffd4dc;
+}
+
+.meta_list {
+  display: grid;
+  gap: 6px;
+}
+
 .actions {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 @media (max-width: 768px) {
@@ -162,6 +219,15 @@ onMounted(loadList)
     width: 100%;
     height: auto;
     aspect-ratio: 1;
+  }
+
+  .body_top {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .actions {
+    justify-content: flex-start;
   }
 }
 </style>
