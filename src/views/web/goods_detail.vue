@@ -642,12 +642,11 @@ onBeforeUnmount(() => {
 .detail_row {
   display: grid;
   grid-template-columns: 72px minmax(0, 1fr);
-  align-items: start;
+  align-items: center;
   gap: 12px;
 }
 
 .detail_label {
-  padding-top: 6px;
   color: #666;
   font-size: 15px;
   line-height: 1.4;
@@ -778,7 +777,7 @@ onBeforeUnmount(() => {
 .action_row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0;
+  gap: 12px;
   padding-top: 116px;
   align-items: center;
 }
@@ -805,7 +804,7 @@ onBeforeUnmount(() => {
 }
 
 .buy_hint {
-  margin-top: 2px;
+  margin-top: 12px;
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
