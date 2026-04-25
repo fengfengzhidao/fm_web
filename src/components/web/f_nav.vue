@@ -15,6 +15,7 @@ const props = defineProps<Props>()
 const {noScroll = false, scrollTop = 200} = props
 
 const isShow = ref(noScroll)
+const showBrand = computed(() => route.name !== "web_home")
 
 const navItems = computed(() => [
   {
@@ -65,7 +66,7 @@ function openNav(name: string) {
 <template>
   <div class="f_nav" :class="{isShow}">
     <div class="container">
-      <router-link class="brand" to="/">
+      <router-link v-if="showBrand" class="brand" to="/">
         <div class="brand_text">
           <strong>{{ slogan }}</strong>
           <span>{{ enSlogan }}</span>
