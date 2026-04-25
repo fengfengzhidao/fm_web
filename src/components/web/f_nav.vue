@@ -94,9 +94,6 @@ function openNav(name: string) {
 .f_nav {
   width: 100vw;
   height: 72px;
-  position: fixed;
-  top: 0;
-  z-index: 1000;
   display: flex;
   justify-content: center;
   color: var(--color-text-1);
