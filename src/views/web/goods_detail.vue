@@ -6,6 +6,8 @@ import {
   IconCheckCircle,
   IconGift,
   IconHeart,
+  IconMinus,
+  IconPlus,
   IconStar
 } from "@arco-design/web-vue/es/icon";
 import {goodsDetailApi, type goodsDetailType} from "@/api/goods_api";
@@ -245,6 +247,15 @@ async function addToCart() {
   }
 }
 
+function decreaseBuyNum() {
+  buyNum.value = Math.max(1, buyNum.value - 1)
+}
+
+function increaseBuyNum() {
+  const max = detail.value?.inventory || 99
+  buyNum.value = Math.min(max, buyNum.value + 1)
+}
+
 function goCart() {
   router.push({name: "web_cart"})
 }
@@ -304,37 +315,46 @@ onBeforeUnmount(() => {
               <p class="summary">{{ detail.abstract }}</p>
 
               <div class="price_box">
-                <div class="price">￥ {{ formatPrice(detail.price) }}</div>
+                <div class="price_main">
+                  <div class="price">￥{{ formatPrice(detail.price) }}</div>
+                  <button
+                    type="button"
+                    class="collect_inline_btn"
+                    :class="{active: detail.isCollect}"
+                    :disabled="detail.isCollect || collecting"
+                    @click="collectGoods"
+                  >
+                    <IconStar/>
+                    <span>{{ detail.isCollect ? "已收藏" : "收藏商品" }}</span>
+                  </button>
+                </div>
                 <div class="meta_row">
-                  <span>销量 {{ detail.salesNum }}</span>
-                  <span>浏览 {{ detail.lookCount }}</span>
-                  <span>评论 {{ detail.commentCount }}</span>
+                  <span>累计评价 <strong>{{ commentFilterList[0]?.countText || detail.commentCount }}</strong></span>
+                  <span>已售 <strong>{{ detail.salesNum > 999 ? `${Math.floor(detail.salesNum / 100) / 10}k+` : `${detail.salesNum}+` }}</strong></span>
                 </div>
               </div>
 
-              <div class="info_grid">
-                <div class="info_card">
-                  <span>分类</span>
-                  <strong>{{ detail.category }}</strong>
+              <div class="detail_rows">
+                <div class="detail_row">
+                  <span class="detail_label">商品分类</span>
+                  <span class="detail_value">{{ detail.category }}</span>
                 </div>
-                <div class="info_card">
-                  <span>库存</span>
-                  <strong>{{ detail.inventory === null || detail.inventory === undefined ? "不限库存" : detail.inventory }}</strong>
+                <div class="detail_row">
+                  <span class="detail_label">库存情况</span>
+                  <span class="detail_value">{{ detail.inventory === null || detail.inventory === undefined ? "不限库存" : `${detail.inventory}件` }}</span>
                 </div>
-                <div class="info_card">
-                  <span>收藏</span>
-                  <strong>{{ detail.isCollect ? "已收藏" : "未收藏" }}</strong>
+                <div v-if="detail.goodsDetailCoupon" class="detail_row detail_row_coupon">
+                  <span class="detail_label">优惠信息</span>
+                  <div class="detail_value coupon_inline">
+                    <div class="coupon_title"><IconGift/> 商品优惠券</div>
+                    <div class="coupon_desc">
+                      满 {{ formatPrice(detail.goodsDetailCoupon.threshold) }} 减 {{ formatPrice(detail.goodsDetailCoupon.couponPrice) }}
+                    </div>
+                  </div>
                 </div>
-                <div class="info_card">
-                  <span>优惠</span>
-                  <strong>{{ detail.isGoodCoupon ? "可领取" : "暂无" }}</strong>
-                </div>
-              </div>
-
-              <div v-if="detail.goodsDetailCoupon" class="coupon_box">
-                <div class="coupon_title"><IconGift/> 商品优惠券</div>
-                <div class="coupon_desc">
-                  满 {{ formatPrice(detail.goodsDetailCoupon.threshold) }} 减 {{ formatPrice(detail.goodsDetailCoupon.couponPrice) }}
+                <div v-else-if="detail.isGoodCoupon" class="detail_row">
+                  <span class="detail_label">优惠信息</span>
+                  <span class="detail_value">当前商品可领取优惠券</span>
                 </div>
               </div>
 
@@ -351,19 +371,23 @@ onBeforeUnmount(() => {
               </div>
 
               <div class="buy_box">
-                <a-input-number v-model="buyNum" :min="1" :max="detail.inventory || 99" />
-                <a-button type="primary" size="large" :loading="adding" @click="addToCart">加入购物车</a-button>
-                <a-button
-                  size="large"
-                  class="collect_action_btn"
-                  :loading="collecting"
-                  :disabled="detail.isCollect"
-                  @click="collectGoods"
-                >
-                  <IconHeart/>
-                  <span>{{ detail.isCollect ? "已收藏" : "收藏商品" }}</span>
-                </a-button>
-                <a-button size="large" @click="goCart">去购物车</a-button>
+                <div class="buy_row">
+                  <span class="detail_label">购买数量</span>
+                  <div class="qty_stepper">
+                    <button type="button" class="qty_btn" @click="decreaseBuyNum">
+                      <IconMinus/>
+                    </button>
+                    <span class="qty_value">{{ buyNum }}</span>
+                    <button type="button" class="qty_btn" @click="increaseBuyNum">
+                      <IconPlus/>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="action_row">
+                  <a-button size="large" class="ghost_action_btn" @click="goCart">去购物车</a-button>
+                  <a-button type="primary" size="large" class="cart_action_btn" :loading="adding" @click="addToCart">加入购物车</a-button>
+                </div>
               </div>
 
               <div class="buy_hint">
@@ -473,7 +497,7 @@ onBeforeUnmount(() => {
 
 .detail_grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, .96fr);
+  grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr);
   gap: 22px;
 }
 
@@ -532,86 +556,121 @@ onBeforeUnmount(() => {
 }
 
 .summary_panel {
-  padding: 22px 20px;
+  padding: 18px 18px 20px;
 }
 
 .eyebrow {
   color: #ff647c;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: .12em;
 }
 
 .summary_panel h1 {
-  margin: 10px 0;
-  font-size: 34px;
-  line-height: 1.2;
+  margin: 8px 0 10px;
+  font-size: 26px;
+  line-height: 1.35;
   color: #111827;
 }
 
 .summary {
   margin: 0;
   color: #6b7280;
-  font-size: 14px;
-  line-height: 1.8;
+  font-size: 13px;
+  line-height: 1.7;
 }
 
 .price_box {
   margin-top: 18px;
-  padding: 18px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, rgba(255, 93, 114, .1), rgba(255, 93, 114, .04));
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #fff7f8 0%, #fff 100%);
+}
+
+.price_main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
 }
 
 .price {
   color: #ff637a;
-  font-size: 30px;
+  font-size: 40px;
   font-weight: 700;
+  line-height: 1;
+}
+
+.collect_inline_btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: transparent;
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
+
+  &.active,
+  &:disabled {
+    color: #ff637a;
+    cursor: default;
+  }
 }
 
 .meta_row {
-  margin-top: 10px;
+  margin-top: 12px;
   display: flex;
   flex-wrap: wrap;
-  gap: 14px;
+  gap: 24px;
   color: #6b7280;
-  font-size: 12px;
-}
-
-.info_grid {
-  margin-top: 18px;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.info_card {
-  padding: 14px;
-  border-radius: 14px;
-  background: #fafafb;
-  border: 1px solid #eceef2;
-
-  span {
-    display: block;
-    color: #9ca3af;
-    font-size: 12px;
-  }
+  font-size: 14px;
 
   strong {
-    display: block;
-    margin-top: 8px;
-    color: #111827;
-    font-size: 15px;
+    color: #ff637a;
+    font-weight: 600;
   }
 }
 
-.coupon_box,
+.detail_rows {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.detail_row {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
+}
+
+.detail_label {
+  padding-top: 6px;
+  color: #666;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.detail_value {
+  color: #2b2b2b;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
 .config_box {
   margin-top: 18px;
-  padding: 16px;
-  border-radius: 14px;
-  background: #fffafb;
-  border: 1px solid #f4d8df;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.coupon_inline {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #fff7f8;
+  border: 1px solid #f9dde3;
 }
 
 .coupon_title,
@@ -624,42 +683,52 @@ onBeforeUnmount(() => {
 }
 
 .coupon_desc {
-  margin-top: 10px;
+  margin-top: 6px;
   color: #6b7280;
   font-size: 13px;
 }
 
 .config_group + .config_group {
-  margin-top: 16px;
+  margin-top: 0;
+}
+
+.config_group {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 12px;
 }
 
 .config_items {
-  margin-top: 12px;
+  margin-top: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(112px, 112px));
+  grid-template-columns: repeat(auto-fill, minmax(126px, 126px));
   gap: 12px;
 }
 
 .config_item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 8px;
   border-radius: 12px;
   background: #fff;
   border: 1px solid #eceef2;
-  overflow: hidden;
 
   img {
-    width: 100%;
-    height: 96px;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    border-radius: 8px;
     object-fit: cover;
-    display: block;
   }
 
   span {
-    display: block;
-    padding: 8px 10px 10px;
+    padding: 0;
     color: #4b5563;
-    font-size: 12px;
+    font-size: 13px;
     line-height: 1.4;
-    text-align: center;
+    text-align: left;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -669,28 +738,74 @@ onBeforeUnmount(() => {
 .buy_box {
   margin-top: 22px;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.buy_row {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  align-items: center;
   gap: 12px;
+}
+
+.qty_stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qty_btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  border: 1px solid #d8dce3;
+  background: #fff;
+  color: #7b8088;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.qty_value {
+  min-width: 24px;
+  color: #444;
+  font-size: 15px;
+  text-align: center;
+}
+
+.action_row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  padding-top: 116px;
   align-items: center;
 }
 
-.collect_action_btn {
-  border-color: #ffd0d9;
-  color: #ff647c;
-  background: #fff7f9;
+.ghost_action_btn,
+.cart_action_btn {
+  min-width: 124px;
+  height: 44px;
+  border-radius: 4px;
+  font-size: 15px;
+  font-weight: 600;
+}
 
-  &:hover {
-    border-color: #ffb7c4;
-    background: #fff0f4;
-  }
+.ghost_action_btn {
+  border-color: #ff6b81;
+  background: #ff6b81;
+  color: #fff;
+}
 
-  :deep(.arco-icon) {
-    margin-right: 6px;
-  }
+.cart_action_btn {
+  border-color: #ffab12;
+  background: #ffab12;
+  color: #fff;
 }
 
 .buy_hint {
-  margin-top: 14px;
+  margin-top: 2px;
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
@@ -919,14 +1034,24 @@ onBeforeUnmount(() => {
 
   .thumb_list,
   .config_items,
-  .info_grid {
+  .detail_row,
+  .config_group,
+  .buy_row {
     grid-template-columns: 1fr;
-    gap: 10px;
-    flex-wrap: wrap;
   }
 
   .thumb_list {
     display: grid;
+  }
+
+  .action_row {
+    padding-top: 24px;
+  }
+
+  .ghost_action_btn,
+  .cart_action_btn {
+    min-width: calc(50% - 1px);
+    flex: 1;
   }
 
   .comment_head {
