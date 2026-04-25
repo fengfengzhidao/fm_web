@@ -152,8 +152,8 @@ onMounted(loadList)
   color: #ff647c;
   font-size: 13px;
   font-weight: 700;
-  background: linear-gradient(180deg, #fff7f9, #fff);
-  border: 1px solid #ffd7df;
+  background: var(--web-soft-grad);
+  border: 1px solid var(--web-border);
 }
 
 .goods_grid {
@@ -168,9 +168,9 @@ onMounted(loadList)
   align-items: center;
   padding: 18px;
   border-radius: 18px;
-  background: linear-gradient(180deg, #fffafb, #fff);
-  border: 1px solid #eceef2;
-  box-shadow: 0 12px 30px rgba(17, 24, 39, .04);
+  background: var(--web-soft-grad);
+  border: 1px solid var(--web-border);
+  box-shadow: var(--web-shadow-soft);
 }
 
 .cover {
@@ -178,9 +178,9 @@ onMounted(loadList)
   aspect-ratio: 16 / 9;
   border-radius: 20px;
   overflow: hidden;
-  background: #f7f8fa;
+  background: var(--web-soft-bg);
   cursor: pointer;
-  border: 1px solid #ffe1e7;
+  border: 1px solid var(--web-border);
 
   img {
     width: 100%;
@@ -230,11 +230,11 @@ onMounted(loadList)
   }
 
   :deep(.arco-pagination-item-active) {
-    background: #fff2f5;
+    background: var(--web-brand-soft);
   }
 
   :deep(.arco-pagination-item-active:hover) {
-    background: #fff0f4;
+    background: var(--web-brand-soft);
   }
 }
 

@@ -165,9 +165,9 @@ onMounted(loadList)
 .summary_card {
   padding: 18px 20px;
   border-radius: 18px;
-  background: linear-gradient(180deg, #fffafb, #fff);
-  border: 1px solid #eceef2;
-  box-shadow: 0 12px 30px rgba(17, 24, 39, .04);
+  background: var(--web-soft-grad);
+  border: 1px solid var(--web-border);
+  box-shadow: var(--web-shadow-soft);
 }
 
 .summary_card strong {
@@ -182,11 +182,11 @@ onMounted(loadList)
 
 .coupon_tabs {
   :deep(.arco-tabs-nav::before) {
-    background: #f1f3f6;
+    background: var(--web-border);
   }
 
   :deep(.arco-tabs-tab) {
-    color: #6b7280;
+    color: var(--web-text-soft);
     font-weight: 600;
   }
 
@@ -206,9 +206,9 @@ onMounted(loadList)
   gap: 8px;
   padding: 18px;
   border-radius: 18px;
-  background: linear-gradient(180deg, #fffafb, #fff);
-  border: 1px solid #eceef2;
-  box-shadow: 0 12px 30px rgba(17, 24, 39, .04);
+  background: var(--web-soft-grad);
+  border: 1px solid var(--web-border);
+  box-shadow: var(--web-shadow-soft);
 }
 
 .coupon_price {
@@ -218,13 +218,13 @@ onMounted(loadList)
 }
 
 .coupon_title {
-  color: #111827;
+  color: var(--web-text);
   font-size: 16px;
   font-weight: 700;
 }
 
 .coupon_meta {
-  color: #6b7280;
+  color: var(--web-text-soft);
   font-size: 13px;
 }
 
@@ -236,7 +236,7 @@ onMounted(loadList)
   color: #ff647c;
   font-size: 12px;
   font-weight: 700;
-  background: #fff2f5;
+  background: var(--web-brand-soft);
   border: 1px solid #ffd4dc;
 }
 
@@ -257,14 +257,14 @@ onMounted(loadList)
 }
 
 .row_main strong {
-  color: #111827;
+  color: var(--web-text);
   font-size: 16px;
 }
 
 .row_state.used {
-  color: #9ca3af;
-  background: #f8fafc;
-  border-color: #e5e7eb;
+  color: var(--web-text-muted);
+  background: var(--web-soft-bg);
+  border-color: var(--web-border);
 }
 
 @media (max-width: 768px) {

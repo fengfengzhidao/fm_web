@@ -200,8 +200,8 @@ onMounted(loadList)
   color: #ff647c;
   font-size: 13px;
   font-weight: 700;
-  background: linear-gradient(180deg, #fff7f9, #fff);
-  border: 1px solid #ffd7df;
+  background: var(--web-soft-grad);
+  border: 1px solid var(--web-border);
 }
 
 .toolbar {
@@ -215,7 +215,7 @@ onMounted(loadList)
   :deep(.arco-input-wrapper) {
     border-radius: 999px;
     border-color: #ffd7df;
-    background: #fffafb;
+    background: var(--web-surface);
   }
 
   :deep(.arco-input-wrapper:hover),
@@ -247,13 +247,13 @@ onMounted(loadList)
 
   h3 {
     margin: 0;
-    color: #374151;
+    color: var(--web-text);
     font-size: 24px;
     font-weight: 700;
   }
 
   span {
-    color: #6b7280;
+    color: var(--web-text-soft);
     font-size: 14px;
   }
 }
@@ -274,7 +274,7 @@ onMounted(loadList)
   transition: background-color .18s ease, box-shadow .18s ease, transform .18s ease;
 
   &:hover {
-    background: linear-gradient(180deg, #fff7f9, #fff);
+    background: var(--web-soft-grad);
     box-shadow: 0 10px 24px rgba(255, 93, 114, .08);
     transform: translateY(-1px);
   }
@@ -285,8 +285,8 @@ onMounted(loadList)
   aspect-ratio: 16 / 9;
   border-radius: 8px;
   overflow: hidden;
-  background: #f7f8fa;
-  border: 1px solid #eceef2;
+  background: var(--web-soft-bg);
+  border: 1px solid var(--web-border);
 
   img {
     width: 100%;
@@ -306,7 +306,7 @@ onMounted(loadList)
   font-size: 14px;
   line-height: 1.45;
   cursor: pointer;
-  color: #374151;
+  color: var(--web-text);
   display: -webkit-box;
   overflow: hidden;
   -webkit-line-clamp: 2;
@@ -328,7 +328,7 @@ onMounted(loadList)
 }
 
 .sales {
-  color: #6b7280;
+  color: var(--web-text-soft);
 }
 
 .card_actions {
@@ -357,7 +357,7 @@ onMounted(loadList)
   display: grid;
   place-items: center;
   background: rgba(255, 255, 255, .94);
-  color: #9ca3af;
+  color: var(--web-text-muted);
   box-shadow: 0 12px 24px rgba(17, 24, 39, .14);
   cursor: pointer;
   transition: transform .18s ease, background-color .18s ease, color .18s ease;
@@ -369,12 +369,12 @@ onMounted(loadList)
   &:hover {
     transform: scale(1.04);
     color: #ff647c;
-    background: #fff;
+    background: var(--web-surface);
   }
 }
 
 .delete_action {
-  color: #9ca3af;
+  color: var(--web-text-muted);
 }
 
 @media (hover: none) {
@@ -404,11 +404,11 @@ onMounted(loadList)
   }
 
   :deep(.arco-pagination-item-active) {
-    background: #fff2f5;
+    background: var(--web-brand-soft);
   }
 
   :deep(.arco-pagination-item-active:hover) {
-    background: #fff0f4;
+    background: var(--web-brand-soft);
   }
 }
 

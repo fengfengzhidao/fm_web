@@ -284,7 +284,7 @@ onMounted(loadDetail)
 
 .panel_head h2 {
   margin: 10px 0 8px;
-  color: #111827;
+  color: var(--web-text);
   font-size: 32px;
   line-height: 1.1;
 }
@@ -296,7 +296,7 @@ onMounted(loadDetail)
 .coupon_item span,
 .summary_hint,
 .hint_row {
-  color: #6b7280;
+  color: var(--web-text-soft);
 }
 
 .panel_head p {
@@ -346,14 +346,14 @@ onMounted(loadDetail)
 
 .status_row h3 {
   margin: 0;
-  color: #111827;
+  color: var(--web-text);
   font-size: 30px;
   line-height: 1.1;
 }
 
 .status_no {
   margin-top: 12px;
-  color: #6b7280;
+  color: var(--web-text-soft);
   font-size: 14px;
   word-break: break-all;
 }
@@ -365,7 +365,7 @@ onMounted(loadDetail)
 
   span,
   em {
-    color: #6b7280;
+    color: var(--web-text-soft);
     font-size: 12px;
     font-style: normal;
   }
@@ -380,11 +380,11 @@ onMounted(loadDetail)
 .status_meta {
   margin-top: 14px;
   padding-top: 14px;
-  border-top: 1px solid #f0f2f5;
+  border-top: 1px solid var(--web-border);
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
-  color: #6b7280;
+  color: var(--web-text-soft);
   font-size: 12px;
 
   span {
@@ -405,7 +405,7 @@ onMounted(loadDetail)
   & + .content_section {
     margin-top: 18px;
     padding-top: 18px;
-    border-top: 1px solid #f0f2f5;
+    border-top: 1px solid var(--web-border);
   }
 }
 
@@ -414,7 +414,7 @@ onMounted(loadDetail)
 }
 
 .card_title {
-  color: #111827;
+  color: var(--web-text);
   font-size: 24px;
   font-weight: 700;
   line-height: 1.1;
@@ -432,7 +432,7 @@ onMounted(loadDetail)
 
 .block_title {
   margin-bottom: 10px;
-  color: #111827;
+  color: var(--web-text);
   font-size: 16px;
   font-weight: 700;
 }
@@ -450,12 +450,12 @@ onMounted(loadDetail)
   }
 
   span {
-    color: #9ca3af;
+    color: var(--web-text-muted);
     font-size: 13px;
   }
 
   strong {
-    color: #111827;
+    color: var(--web-text);
     font-size: 14px;
     font-weight: 600;
   }
@@ -467,7 +467,7 @@ onMounted(loadDetail)
   line-height: 1.7;
 
   strong {
-    color: #111827;
+    color: var(--web-text);
     font-size: 16px;
   }
 }
@@ -478,7 +478,7 @@ onMounted(loadDetail)
   align-items: center;
   gap: 6px;
   font-size: 12px;
-  color: #6b7280;
+  color: var(--web-text-soft);
 }
 
 .goods_list {
@@ -509,7 +509,7 @@ onMounted(loadDetail)
 
 .goods_meta strong,
 .coupon_item strong {
-  color: #111827;
+  color: var(--web-text);
   font-size: 16px;
 }
 
@@ -517,7 +517,7 @@ onMounted(loadDetail)
   display: flex;
   flex-wrap: wrap;
   gap: 8px 14px;
-  color: #6b7280;
+  color: var(--web-text-soft);
   font-size: 13px;
   line-height: 1.7;
 }
@@ -540,9 +540,9 @@ onMounted(loadDetail)
 .empty_card {
   padding: 20px;
   border-radius: 16px;
-  border: 1px dashed #f0d7dd;
+  border: 1px dashed var(--web-border);
   background: var(--web-hero-grad);
-  color: #9ca3af;
+  color: var(--web-text-muted);
   font-size: 13px;
   text-align: center;
 }

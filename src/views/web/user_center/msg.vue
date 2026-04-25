@@ -210,14 +210,14 @@ onMounted(loadList)
   color: #ff647c;
   font-size: 12px;
   font-weight: 700;
-  background: #fff2f5;
+  background: var(--web-brand-soft);
   border: 1px solid #ffd4dc;
 }
 
 .summary_badge.muted {
-  color: #9ca3af;
-  background: #f8fafc;
-  border-color: #e5e7eb;
+  color: var(--web-text-muted);
+  background: var(--web-soft-bg);
+  border-color: var(--web-border);
 }
 
 .eyebrow {
@@ -229,11 +229,11 @@ onMounted(loadList)
 
 .msg_tabs {
   :deep(.arco-tabs-nav::before) {
-    background: #f1f3f6;
+    background: var(--web-border);
   }
 
   :deep(.arco-tabs-tab) {
-    color: #6b7280;
+    color: var(--web-text-soft);
     font-weight: 600;
   }
 
@@ -255,13 +255,13 @@ onMounted(loadList)
 .msg_card {
   padding: 18px;
   border-radius: 18px;
-  background: linear-gradient(180deg, #fffafb, #fff);
-  border: 1px solid #eceef2;
-  box-shadow: 0 12px 30px rgba(17, 24, 39, .04);
+  background: var(--web-soft-grad);
+  border: 1px solid var(--web-border);
+  box-shadow: var(--web-shadow-soft);
 }
 
 .msg_card.read {
-  background: linear-gradient(180deg, #fbfcfd, #fff);
+  background: var(--web-soft-bg);
 }
 
 .msg_top,
@@ -279,14 +279,14 @@ onMounted(loadList)
   color: #ff647c;
   font-size: 12px;
   font-weight: 700;
-  background: #fff2f5;
+  background: var(--web-brand-soft);
   border: 1px solid #ffd4dc;
 }
 
 .msg_state.read {
-  color: #9ca3af;
-  background: #f8fafc;
-  border-color: #e5e7eb;
+  color: var(--web-text-muted);
+  background: var(--web-soft-bg);
+  border-color: var(--web-border);
 }
 
 .msg_body {
@@ -296,7 +296,7 @@ onMounted(loadList)
   line-height: 1.75;
   padding: 14px 16px;
   border-radius: 16px;
-  background: #fafafb;
+  background: var(--web-soft-bg);
 }
 
 .actions {

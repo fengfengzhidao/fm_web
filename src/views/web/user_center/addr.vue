@@ -184,9 +184,9 @@ onMounted(loadList)
 .addr_card {
   padding: 18px;
   border-radius: 18px;
-  background: linear-gradient(180deg, #fffafb, #fff);
-  border: 1px solid #eceef2;
-  box-shadow: 0 12px 30px rgba(17, 24, 39, .04);
+  background: var(--web-soft-grad);
+  border: 1px solid var(--web-border);
+  box-shadow: var(--web-shadow-soft);
 }
 
 .addr_top,
@@ -213,8 +213,8 @@ onMounted(loadList)
   color: #ff647c;
   font-size: 18px;
   font-weight: 800;
-  background: linear-gradient(135deg, #fff1f4, #fffafb);
-  border: 1px solid #ffe1e7;
+  background: var(--web-soft-grad);
+  border: 1px solid var(--web-border);
 }
 
 .addr_top strong {
@@ -230,7 +230,7 @@ onMounted(loadList)
   color: #ff647c;
   font-size: 12px;
   font-weight: 700;
-  background: #fff2f5;
+  background: var(--web-brand-soft);
   border: 1px solid #ffd4dc;
 }
 
@@ -239,7 +239,7 @@ onMounted(loadList)
   line-height: 1.7;
   padding: 14px 16px;
   border-radius: 16px;
-  background: #fafafb;
+  background: var(--web-soft-bg);
 }
 
 .actions {
