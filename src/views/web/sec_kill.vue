@@ -349,6 +349,7 @@ onMounted(loadDateList)
                 <a-button
                   type="primary"
                   long
+                  class="sec_kill_action_btn"
                   :loading="submitting && !detailVisible"
                   :disabled="getStage(item) !== 'running' || item.buyNum >= item.killInventory"
                   @click="openPurchase(item)"
@@ -719,6 +720,31 @@ onMounted(loadDateList)
 .meta_row,
 .time_row {
   line-height: 1.5;
+}
+
+.sec_kill_action_btn {
+  margin-top: 12px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-size: 13px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ff6f86, #ff556f);
+  box-shadow: 0 10px 20px rgba(255, 94, 120, .18);
+}
+
+.sec_kill_action_btn:hover {
+  background: linear-gradient(135deg, #ff627b, #ff4966);
+  box-shadow: 0 12px 24px rgba(255, 94, 120, .24);
+}
+
+.sec_kill_action_btn:disabled,
+.sec_kill_action_btn.arco-btn-disabled {
+  color: #b85c6a;
+  border-color: #f3c9d1;
+  background: linear-gradient(135deg, #fff4f6, #ffe9ee);
+  box-shadow: none;
+  opacity: 1;
 }
 
 .time_row span {
