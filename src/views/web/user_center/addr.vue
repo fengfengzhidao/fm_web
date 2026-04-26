@@ -227,11 +227,12 @@ onMounted(loadList)
   flex: 0 0 auto;
   padding: 8px 12px;
   border-radius: 999px;
-  color: #ff647c;
+  color: var(--web-status-badge-text);
   font-size: 12px;
   font-weight: 700;
-  background: var(--web-brand-soft);
-  border: 1px solid #ffd4dc;
+  background: var(--web-status-badge-bg);
+  border: 1px solid var(--web-status-badge-border);
+  box-shadow: 0 10px 22px rgba(255, 111, 142, .16);
 }
 
 .addr_text {

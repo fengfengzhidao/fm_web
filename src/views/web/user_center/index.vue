@@ -232,8 +232,8 @@ function go(name: string) {
   line-height: 1;
 
   &.active {
-    border-color: #ffccd5;
-    background: var(--web-brand-soft);
+    border-color: var(--web-menu-active-border);
+    background: var(--web-menu-active-bg);
     box-shadow: 0 8px 20px rgba(255, 93, 114, .06);
   }
 
@@ -241,6 +241,20 @@ function go(name: string) {
     border-color: #ffd5dd;
     background: var(--web-soft-bg-2);
     transform: translateY(-1px);
+  }
+
+  &.active .menu_icon {
+    background: var(--web-menu-active-icon-bg);
+    border-color: var(--web-menu-active-border);
+    color: #ff6d88;
+  }
+
+  &.active .menu_name {
+    color: var(--web-menu-active-text);
+  }
+
+  &.active .menu_desc {
+    color: var(--web-menu-active-desc);
   }
 }
 
