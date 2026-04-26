@@ -18,14 +18,14 @@ const route = useRoute()
 const store = userStorei()
 
 const menus = [
-  {name: "web_user_center_info", title: "个人中心", icon: "user"},
-  {name: "web_user_center_order", title: "我的订单", icon: "book"},
-  {name: "web_user_center_comment", title: "我的评价", icon: "star"},
-  {name: "web_user_center_collect", title: "我的收藏", icon: "heart"},
-  {name: "web_user_center_look", title: "我的足迹", icon: "history"},
-  {name: "web_user_center_addr", title: "我的地址", icon: "location"},
-  {name: "web_user_center_coupon", title: "我的优惠券", icon: "gift"},
-  {name: "web_user_center_msg", title: "消息通知", icon: "message"},
+  {name: "web_user_center_info", title: "个人中心", desc: "账号资料与快捷入口", icon: "user"},
+  {name: "web_user_center_order", title: "我的订单", desc: "订单记录与详情", icon: "book"},
+  {name: "web_user_center_comment", title: "我的评价", desc: "已发布的评价", icon: "star"},
+  {name: "web_user_center_collect", title: "我的收藏", desc: "收藏商品管理", icon: "heart"},
+  {name: "web_user_center_look", title: "我的足迹", desc: "浏览记录", icon: "history"},
+  {name: "web_user_center_addr", title: "我的地址", desc: "收货地址维护", icon: "location"},
+  {name: "web_user_center_coupon", title: "我的优惠券", desc: "可领、未用、已用", icon: "gift"},
+  {name: "web_user_center_msg", title: "消息通知", desc: "订单与商品消息", icon: "message"},
 ]
 
 const activeName = computed(() => typeof route.name === "string" ? route.name : "web_user_center_info")
@@ -59,6 +59,7 @@ function go(name: string) {
 
       <section class="center_surface">
         <aside class="side_panel">
+          <div class="side_title">功能菜单</div>
           <div class="menu_list">
             <button
               v-for="item in menus"
@@ -66,8 +67,6 @@ function go(name: string) {
               class="menu_item"
               :class="{active: activeName === item.name}"
               @click="go(item.name)"
-              :title="item.title"
-              :aria-label="item.title"
             >
               <span class="menu_icon">
                 <IconUser v-if="item.icon === 'user'"/>
@@ -79,6 +78,10 @@ function go(name: string) {
                 <IconGift v-else-if="item.icon === 'gift'"/>
                 <IconMessage v-else/>
               </span>
+              <div class="menu_text">
+                <strong class="menu_name">{{ item.title }}</strong>
+                <span class="menu_desc">{{ item.desc }}</span>
+              </div>
             </button>
           </div>
         </aside>
@@ -183,10 +186,11 @@ function go(name: string) {
   margin-top: 18px;
   padding: 0;
   display: grid;
-  grid-template-columns: 72px minmax(0, 1fr);
+  grid-template-columns: 280px minmax(0, 1fr);
   gap: 16px;
 }
 
+.side_panel,
 .content_panel {
   border-radius: 16px;
   border: 1px solid var(--web-border);
@@ -194,14 +198,16 @@ function go(name: string) {
   padding: 18px;
 }
 
-.side_panel {
-  border: 0;
-  padding: 0;
-  background: transparent;
-}
-
 .content_panel {
   min-height: 560px;
+}
+
+.side_title {
+  color: var(--web-text);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 14px;
 }
 
 .menu_list {
@@ -211,16 +217,18 @@ function go(name: string) {
 
 .menu_item {
   width: 100%;
+  text-align: left;
   appearance: none;
   border: 1px solid var(--web-border);
   background: var(--web-soft-bg);
   border-radius: 14px;
-  padding: 0;
+  padding: 13px 14px;
   cursor: pointer;
   transition: .18s ease;
-  display: grid;
-  place-items: center;
-  height: 58px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-height: 68px;
   line-height: 1;
 
   &.active {
@@ -239,6 +247,14 @@ function go(name: string) {
     background: var(--web-menu-active-icon-bg);
     border-color: var(--web-menu-active-border);
     color: #ff6d88;
+  }
+
+  &.active .menu_name {
+    color: var(--web-menu-active-text);
+  }
+
+  &.active .menu_desc {
+    color: var(--web-menu-active-desc);
   }
 }
 
@@ -261,6 +277,32 @@ function go(name: string) {
     height: 20px;
     display: block;
   }
+}
+
+.menu_text {
+  flex: 1;
+  min-width: 0;
+  min-height: 42px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+
+.menu_name,
+.menu_desc {
+  display: block;
+}
+
+.menu_name {
+  color: var(--web-text);
+  font-size: 15px;
+}
+
+.menu_desc {
+  color: var(--web-text-soft);
+  font-size: 12px;
+  line-height: 1.6;
 }
 
 @media (max-width: 1100px) {
@@ -290,13 +332,14 @@ function go(name: string) {
 
   .hero_surface,
   .center_surface,
+  .side_panel,
   .content_panel {
     padding-left: 0;
     padding-right: 0;
   }
 
   .hero_meta h1,
-  .hero_card strong {
+  .side_title {
     font-size: 24px;
   }
 }
