@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {onMounted, reactive, ref} from "vue";
+import dayjs from "dayjs";
 import F_list, {type columnType, type filterGroupType} from "@/components/admin/f_list.vue";
 import {couponCreateApi, couponListApi, type couponType} from "@/api/coupon_api";
 import {goodsOptionsApi} from "@/api/goods_api";
@@ -124,7 +125,7 @@ async function createSecKill(done: (closed: boolean) => void) {
     goodsID: secKillForm.goodsID as number,
     killPrice: Math.round(secKillForm.killPriceYuan * 100),
     killInventory: secKillForm.killInventory,
-    startTime: secKillForm.startTime,
+    startTime: dayjs(secKillForm.startTime).format("YYYY-MM-DDTHH:mm:ssZ"),
   })
   if (res.code) {
     Message.error(res.msg)
@@ -267,8 +268,15 @@ onMounted(initGoodsOptions)
         <a-form-item field="killInventory" label="秒杀库存" :rules="[{required: true, message: '请输入秒杀库存'}]">
           <a-input-number v-model="secKillForm.killInventory" :min="1"></a-input-number>
         </a-form-item>
-        <a-form-item field="startTime" label="开始时间" :rules="[{required: true, message: '请输入开始时间'}]">
-          <a-input v-model="secKillForm.startTime" placeholder="2026-04-23T22:00:00+08:00"></a-input>
+        <a-form-item field="startTime" label="开始时间" :rules="[{required: true, message: '请选择开始时间'}]">
+          <a-date-picker
+            v-model="secKillForm.startTime"
+            show-time
+            value-format="YYYY-MM-DD HH:mm:ss"
+            format="YYYY-MM-DD HH:mm:ss"
+            placeholder="选择开始时间"
+            style="width: 100%"
+          ></a-date-picker>
         </a-form-item>
       </a-form>
     </a-modal>
