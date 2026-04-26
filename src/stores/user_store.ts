@@ -105,6 +105,14 @@ export const userStorei = defineStore('userStore', {
             }
             Message.success("用户注销成功")
             router.push({name: "web_home"})
+        },
+        syncUserProfile(profile: {nickName?: string; avatar?: string}) {
+            this.userInfo = {
+                ...this.userInfo,
+                nickName: profile.nickName ?? this.userInfo.nickName,
+                avatar: profile.avatar ?? this.userInfo.avatar,
+            }
+            localStorage.setItem("userInfo", JSON.stringify(this.userInfo))
         }
 
     },
