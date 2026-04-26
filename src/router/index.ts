@@ -263,6 +263,14 @@ const router = createRouter({
                                 title: "编辑商品"
                             },
                             component: () => import("@/views/admin/goods_manage/goods_form_page.vue"),
+                        },
+                        {
+                            name: "orderList",
+                            path: "order_list",
+                            meta: {
+                                title: "订单管理"
+                            },
+                            component: () => import("@/views/admin/order_manage/index.vue"),
                         }
                     ]
                 },

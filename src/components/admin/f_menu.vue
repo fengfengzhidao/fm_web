@@ -28,7 +28,8 @@ const menuList: MenuType[] = [
       {title: "用户列表", name: "userList", icon: "iconfont icon-yonghuguanli_huaban",}
     ]},
   {title: "商品管理", role: 1, name: "goodsManage", icon: IconStorage, children: [
-      {title: "商品列表", name: "goodsList", icon: IconStorage}
+      {title: "商品列表", name: "goodsList", icon: IconStorage},
+      {title: "订单管理", name: "orderList", icon: IconStorage}
     ]},
   {title: "评价管理", role: 1, name: "commentManage", icon: IconMessage, children: [
       {title: "评价列表", name: "commentList", icon: IconMessage}
