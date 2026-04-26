@@ -2,6 +2,8 @@
 import {computed, onBeforeUnmount, onMounted, ref, watch} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {Message} from "@arco-design/web-vue";
+import {MdPreview} from "md-editor-v3";
+import "md-editor-v3/lib/style.css";
 import {
   IconCheckCircle,
   IconGift,
@@ -43,6 +45,7 @@ const commentFilters = [
 ]
 
 const goodsID = computed(() => Number(route.params.id))
+const markdownId = computed(() => `goods-detail-md-${goodsID.value || "preview"}`)
 const commentFilterList = computed(() => {
   const summary = level.value
   const allCount = summary?.allCount ?? detail.value?.commentCount ?? 0
@@ -312,7 +315,7 @@ onBeforeUnmount(() => {
             <div class="summary_panel">
               <div class="eyebrow">GOODS DETAIL</div>
               <h1>{{ detail.title }}</h1>
-              <p class="summary">{{ detail.abstract }}</p>
+              <p class="summary">商品介绍支持图文详情展示，完整内容见下方“商品介绍”。</p>
 
               <div class="price_box">
                 <div class="price_main">
@@ -464,6 +467,21 @@ onBeforeUnmount(() => {
           <div v-else class="empty_card large">暂无评论</div>
         </a-spin>
       </section>
+
+      <section v-if="detail" class="intro_surface">
+        <div class="section_head">
+          <div class="section_title">商品介绍</div>
+        </div>
+
+        <div class="intro_markdown">
+          <MdPreview
+            :editor-id="markdownId"
+            :model-value="detail.abstract || '暂无商品介绍'"
+            preview-theme="default"
+            code-theme="atom"
+          />
+        </div>
+      </section>
     </div>
   </div>
 </template>
@@ -482,7 +500,8 @@ onBeforeUnmount(() => {
 }
 
 .hero_surface,
-.comment_surface {
+.comment_surface,
+.intro_surface {
   border-radius: 18px;
 }
 
@@ -497,6 +516,10 @@ onBeforeUnmount(() => {
 .comment_surface {
   background: var(--web-page-bg);
   box-shadow: none;
+}
+
+.intro_surface {
+  margin-top: 18px;
 }
 
 .detail_grid {
@@ -827,6 +850,43 @@ onBeforeUnmount(() => {
   padding: 0;
 }
 
+.intro_markdown {
+  padding: 22px 24px;
+  border-radius: 16px;
+  border: 1px solid var(--web-border);
+  background: var(--web-surface);
+}
+
+.intro_markdown :deep(.md-editor-preview-wrapper) {
+  padding: 0;
+  background: transparent;
+}
+
+.intro_markdown :deep(.md-editor-preview) {
+  color: var(--web-text);
+  font-family: inherit;
+}
+
+.intro_markdown :deep(h1),
+.intro_markdown :deep(h2),
+.intro_markdown :deep(h3),
+.intro_markdown :deep(h4),
+.intro_markdown :deep(h5),
+.intro_markdown :deep(h6) {
+  color: var(--web-text);
+}
+
+.intro_markdown :deep(p),
+.intro_markdown :deep(li),
+.intro_markdown :deep(blockquote) {
+  color: var(--web-text-soft);
+  line-height: 1.9;
+}
+
+.intro_markdown :deep(img) {
+  border-radius: 12px;
+}
+
 .section_head {
   margin-bottom: 16px;
 }
@@ -1007,7 +1067,8 @@ onBeforeUnmount(() => {
   }
 
   .hero_surface,
-  .comment_surface {
+  .comment_surface,
+  .intro_surface {
     border-radius: 14px;
   }
 
@@ -1023,6 +1084,7 @@ onBeforeUnmount(() => {
   }
 
   .comment_surface,
+  .intro_surface,
   .gallery_panel,
   .summary_panel {
     padding-left: 0;
