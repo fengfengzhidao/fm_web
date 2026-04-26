@@ -236,8 +236,8 @@ onMounted(loadList)
   color: #fff;
   font-size: 12px;
   font-weight: 700;
-  background: var(--web-brand-soft);
-  border: 1px solid #ffd4dc;
+  background: linear-gradient(135deg, #ff8fa0, #ff6f86);
+  border: 1px solid rgba(255, 108, 132, .22);
 }
 
 .coupon_list {
