@@ -290,20 +290,19 @@ async function submitRegister() {
 
   .code_img {
     height: 36px;
-    width: 200px;
     margin-left: 10px;
-    flex: 0 0 200px;
+    flex: 0 0 auto;
     border: 1px solid rgba(255, 93, 114, .42);
     background: var(--web-soft-grad);
     border-radius: 4px;
     cursor: pointer;
-    display: grid;
-    place-items: center;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
     user-select: none;
 
     img {
       width: auto;
-      max-width: 100%;
       height: 36px;
       display: block;
       object-fit: contain;
