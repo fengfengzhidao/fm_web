@@ -423,7 +423,7 @@ watch(() => store.isLogin, (isLogin) => {
     padding: 8px 12px;
     border-radius: 999px;
     background: var(--web-brand-soft);
-    color: #ff6178;
+    color: #fff;
     font-size: 12px;
     font-weight: 600;
   }

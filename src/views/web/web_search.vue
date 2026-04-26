@@ -251,7 +251,7 @@ watch(currentKey, (value) => {
   padding: 0 14px;
   border-radius: 999px;
   background: var(--web-soft-bg-2);
-  color: #ff6178;
+  color: #fff;
   font-size: 12px;
   font-weight: 600;
 }

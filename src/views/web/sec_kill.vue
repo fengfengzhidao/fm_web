@@ -507,7 +507,7 @@ onMounted(loadDateList)
     border-radius: 999px;
     border: 1px solid var(--web-border);
     background: var(--web-soft-bg-2);
-    color: var(--web-brand);
+    color: #fff;
     font-size: 12px;
     font-weight: 600;
   }

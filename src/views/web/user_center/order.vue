@@ -369,7 +369,7 @@ onMounted(loadOrders)
   padding: 0 14px;
   border-radius: 999px;
   background: var(--web-brand-soft);
-  color: #ff637a;
+  color: #fff;
   font-size: 12px;
   font-weight: 700;
 }

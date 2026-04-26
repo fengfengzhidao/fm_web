@@ -207,7 +207,7 @@ onMounted(loadList)
 .summary_badge {
   padding: 8px 12px;
   border-radius: 999px;
-  color: #ff647c;
+  color: #fff;
   font-size: 12px;
   font-weight: 700;
   background: var(--web-brand-soft);
@@ -276,7 +276,7 @@ onMounted(loadList)
   flex: 0 0 auto;
   padding: 7px 12px;
   border-radius: 999px;
-  color: #ff647c;
+  color: #fff;
   font-size: 12px;
   font-weight: 700;
   background: var(--web-brand-soft);
