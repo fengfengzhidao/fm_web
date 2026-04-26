@@ -323,14 +323,9 @@ onMounted(loadList)
 
 .default_badge {
   flex: 0 0 auto;
-  padding: 8px 12px;
-  border-radius: 999px;
-  color: #fff;
+  color: #ff647c;
   font-size: 12px;
   font-weight: 700;
-  background: var(--web-status-badge-bg);
-  border: 1px solid var(--web-status-badge-border);
-  box-shadow: 0 10px 22px rgba(255, 111, 142, .16);
 }
 
 .addr_text {
