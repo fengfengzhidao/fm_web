@@ -17,6 +17,7 @@ import {commentLevelApi, goodsCommentListApi, type commentLevelType, type goodsC
 import {carCreateApi} from "@/api/car_api";
 import {collectGoodsApi, lookGoodsApi} from "@/api/user_center_api";
 import {userStorei} from "@/stores/user_store";
+import {theme as appTheme} from "@/components/common/f_theme";
 import {dateTimeFormat} from "@/utils/date";
 import homeBg from "@/assets/img/home_bg.png";
 
@@ -46,6 +47,7 @@ const commentFilters = [
 
 const goodsID = computed(() => Number(route.params.id))
 const markdownId = computed(() => `goods-detail-md-${goodsID.value || "preview"}`)
+const markdownTheme = computed(() => appTheme.value === "dark" ? "dark" : "light")
 const commentFilterList = computed(() => {
   const summary = level.value
   const allCount = summary?.allCount ?? detail.value?.commentCount ?? 0
@@ -477,7 +479,8 @@ onBeforeUnmount(() => {
           <MdPreview
             :editor-id="markdownId"
             :model-value="detail.abstract || '暂无商品介绍'"
-            preview-theme="default"
+            :theme="markdownTheme"
+            :preview-theme="markdownTheme"
             code-theme="atom"
           />
         </div>
@@ -862,9 +865,19 @@ onBeforeUnmount(() => {
   background: transparent;
 }
 
+.intro_markdown :deep(.md-editor) {
+  background: transparent;
+}
+
 .intro_markdown :deep(.md-editor-preview) {
   color: var(--web-text);
   font-family: inherit;
+}
+
+.intro_markdown :deep(.md-editor-dark),
+.intro_markdown :deep(.md-editor-dark .md-editor-preview),
+.intro_markdown :deep(.md-editor-dark .md-editor-preview-wrapper) {
+  background: transparent;
 }
 
 .intro_markdown :deep(h1),
@@ -881,6 +894,11 @@ onBeforeUnmount(() => {
 .intro_markdown :deep(blockquote) {
   color: var(--web-text-soft);
   line-height: 1.9;
+}
+
+.intro_markdown :deep(pre),
+.intro_markdown :deep(code) {
+  font-family: Consolas, "Courier New", monospace;
 }
 
 .intro_markdown :deep(img) {
