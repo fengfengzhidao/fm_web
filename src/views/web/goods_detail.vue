@@ -488,6 +488,10 @@ onBeforeUnmount(() => {
 
 .hero_surface {
   padding: 0;
+
+  :deep(.arco-spin) {
+    width: 100%;
+  }
 }
 
 .comment_surface {
