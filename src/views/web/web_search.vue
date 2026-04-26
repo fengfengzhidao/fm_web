@@ -141,7 +141,6 @@ watch(currentKey, (value) => {
 }
 
 .result_surface {
-  background: var(--web-surface);
   box-shadow: var(--web-shadow-lg);
 }
 
