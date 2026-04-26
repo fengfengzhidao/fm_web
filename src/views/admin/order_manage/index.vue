@@ -6,7 +6,6 @@ import {
   orderAdminListApi,
   orderDetailApi,
   orderSendOutGoodsApi,
-  type orderAdminGoodsType,
   type orderAdminType,
   type orderDetailType,
 } from "@/api/order_api";
@@ -70,19 +69,6 @@ function payTypeText(payType: number) {
 
 function canSendOrder(order: orderAdminType) {
   return order.status === 2 && order.orderGoodsList.length > 0
-}
-
-function goodsStatusText(goods: orderAdminGoodsType) {
-  if (goods.status === 2) return "待发货"
-  if (goods.status === 3) return "已发货"
-  if (goods.status === 4 || goods.status === 5 || goods.status === 6) return "已完成"
-  return orderStatusText(goods.status)
-}
-
-function goodsStatusType(goods: orderAdminGoodsType) {
-  if (goods.status === 2) return "primary" as const
-  if (goods.status === 3) return "success" as const
-  return "secondary" as const
 }
 
 function searchOrders() {
@@ -232,7 +218,6 @@ async function submitSend(done: (closed: boolean) => void) {
             <a-image :src="goods.goodsCover" :width="44" :height="44" fit="cover" />
             <div class="goods_info">
               <span class="primary_text">{{ goods.goodsTitle }}</span>
-              <a-tag :color="goodsStatusType(goods)">{{ goodsStatusText(goods) }}</a-tag>
             </div>
           </div>
         </div>
