@@ -4,17 +4,23 @@ import {Message} from "@arco-design/web-vue";
 import F_list, {type columnType} from "@/components/admin/f_list.vue";
 import {
   orderAdminListApi,
+  orderDetailApi,
   orderSendOutGoodsApi,
   type orderAdminGoodsType,
   type orderAdminType,
+  type orderDetailType,
 } from "@/api/order_api";
 import {dateTemFormat} from "@/utils/date";
 import {formatPrice, orderStatusColor, orderStatusText} from "@/views/web/user_center/utils";
 
 const fListRef = ref<InstanceType<typeof F_list>>()
 const sendVisible = ref(false)
+const detailVisible = ref(false)
 const sendFormRef = ref()
 const sendLoading = ref(false)
+const detailLoading = ref(false)
+const detailData = ref<orderDetailType | null>(null)
+const currentSendOrder = ref<orderAdminType | null>(null)
 const searchForm = reactive({
   no: "",
   userID: undefined as number | undefined,
@@ -33,12 +39,9 @@ const columns: columnType[] = [
   {title: "用户", slotName: "user", width: 150},
   {title: "商品", slotName: "goods", width: 260},
   {title: "支付价格", slotName: "price", width: 120},
-  {title: "优惠价格", slotName: "coupon", width: 120},
   {title: "下单时间", slotName: "createdAt", width: 180},
   {title: "状态", slotName: "status", width: 120},
-  {title: "支付时间", slotName: "payTime", width: 180},
-  {title: "支付方式", slotName: "payType", width: 120},
-  {title: "操作", slotName: "action", width: 180},
+  {title: "操作", slotName: "action", width: 240},
 ]
 
 const statusOptions = [
@@ -52,6 +55,10 @@ const statusOptions = [
 ]
 
 const orderCount = computed(() => fListRef.value?.data.count || 0)
+const sendGoodsOptions = computed(() => currentSendOrder.value?.orderGoodsList.map((item) => ({
+  label: item.goodsTitle,
+  value: item.orderGoodsID,
+})) || [])
 
 function payTypeText(payType: number) {
   const map: Record<number, string> = {
@@ -61,12 +68,12 @@ function payTypeText(payType: number) {
   return map[payType] || `方式 ${payType}`
 }
 
-function goodsSendable(goods: orderAdminGoodsType) {
-  return goods.status === 2
+function canSendOrder(order: orderAdminType) {
+  return order.status === 2 && order.orderGoodsList.length > 0
 }
 
 function goodsStatusText(goods: orderAdminGoodsType) {
-  if (goods.status === 2) return "去发货"
+  if (goods.status === 2) return "待发货"
   if (goods.status === 3) return "已发货"
   if (goods.status === 4 || goods.status === 5 || goods.status === 6) return "已完成"
   return orderStatusText(goods.status)
@@ -94,12 +101,36 @@ function resetSearch() {
   searchOrders()
 }
 
-function openSendModal(orderGoods: orderAdminGoodsType) {
-  sendForm.orderGoodsID = orderGoods.orderGoodsID
-  sendForm.goodsTitle = orderGoods.goodsTitle
+function openSendModal(order: orderAdminType) {
+  currentSendOrder.value = order
+  const firstGoods = order.orderGoodsList[0]
+  sendForm.orderGoodsID = firstGoods?.orderGoodsID || 0
+  sendForm.goodsTitle = firstGoods?.goodsTitle || ""
   sendForm.waybillNumber = ""
   sendForm.message = ""
   sendVisible.value = true
+}
+
+function changeSendGoods(order: orderAdminType, orderGoodsID: number) {
+  const currentGoods = order.orderGoodsList.find((item) => item.orderGoodsID === orderGoodsID)
+  sendForm.orderGoodsID = orderGoodsID
+  sendForm.goodsTitle = currentGoods?.goodsTitle || ""
+}
+
+async function openDetailModal(order: orderAdminType) {
+  detailLoading.value = true
+  detailVisible.value = true
+  try {
+    const res = await orderDetailApi(order.id)
+    if (res.code) {
+      Message.error(res.msg)
+      detailVisible.value = false
+      return
+    }
+    detailData.value = res.data
+  } finally {
+    detailLoading.value = false
+  }
 }
 
 async function submitSend(done: (closed: boolean) => void) {
@@ -122,6 +153,7 @@ async function submitSend(done: (closed: boolean) => void) {
     }
     Message.success("发货成功")
     fListRef.value?.getList()
+    currentSendOrder.value = null
     done(true)
   } finally {
     sendLoading.value = false
@@ -151,6 +183,7 @@ async function submitSend(done: (closed: boolean) => void) {
       search-placeholder="接口暂不支持关键词搜索"
       no-add
       no-edit
+      no-delete
       no-action-group
     >
       <template #search_other>
@@ -199,16 +232,7 @@ async function submitSend(done: (closed: boolean) => void) {
             <a-image :src="goods.goodsCover" :width="44" :height="44" fit="cover" />
             <div class="goods_info">
               <span class="primary_text">{{ goods.goodsTitle }}</span>
-              <a-button
-                v-if="goodsSendable(goods)"
-                type="text"
-                size="mini"
-                class="send_link"
-                @click="openSendModal(goods)"
-              >
-                去发货
-              </a-button>
-              <a-tag v-else :color="goodsStatusType(goods)">{{ goodsStatusText(goods) }}</a-tag>
+              <a-tag :color="goodsStatusType(goods)">{{ goodsStatusText(goods) }}</a-tag>
             </div>
           </div>
         </div>
@@ -216,10 +240,6 @@ async function submitSend(done: (closed: boolean) => void) {
 
       <template #price="{record}:{record: orderAdminType}">
         <span>￥ {{ formatPrice(record.price) }}</span>
-      </template>
-
-      <template #coupon="{record}:{record: orderAdminType}">
-        <span>{{ record.coupon ? `￥ ${formatPrice(record.coupon)}` : "-" }}</span>
       </template>
 
       <template #createdAt="{record}:{record: orderAdminType}">
@@ -230,25 +250,13 @@ async function submitSend(done: (closed: boolean) => void) {
         <a-tag :color="orderStatusColor(record.status)">{{ orderStatusText(record.status) }}</a-tag>
       </template>
 
-      <template #payTime="{record}:{record: orderAdminType}">
-        {{ record.payTime ? dateTemFormat(record.payTime) : "-" }}
+      <template #action_left="{record}:{record: orderAdminType}">
+        <a-button v-if="canSendOrder(record)" type="primary" status="warning" @click="openSendModal(record)">
+          发货
+        </a-button>
       </template>
-
-      <template #payType="{record}:{record: orderAdminType}">
-        {{ payTypeText(record.payType) }}
-      </template>
-
       <template #action_right="{record}:{record: orderAdminType}">
-        <a-popover position="left">
-          <a-button>商品数 {{ record.orderGoodsList.length }}</a-button>
-          <template #content>
-            <div class="popover_list">
-              <div v-for="goods in record.orderGoodsList" :key="goods.orderGoodsID">
-                {{ goods.goodsTitle }}
-              </div>
-            </div>
-          </template>
-        </a-popover>
+        <a-button @click="openDetailModal(record)">详情</a-button>
       </template>
     </f_list>
 
@@ -259,8 +267,13 @@ async function submitSend(done: (closed: boolean) => void) {
       :on-before-ok="submitSend"
     >
       <a-form ref="sendFormRef" :model="sendForm" auto-label-width>
-        <a-form-item field="goodsTitle" label="商品">
-          <a-input v-model="sendForm.goodsTitle" disabled />
+        <a-form-item field="orderGoodsID" label="商品" :rules="[{required: true, message: '请选择商品'}]">
+          <a-select
+            :model-value="sendForm.orderGoodsID"
+            @change="(value) => currentSendOrder && changeSendGoods(currentSendOrder, Number(value))"
+            :options="sendGoodsOptions"
+            placeholder="请选择商品"
+          />
         </a-form-item>
         <a-form-item
           field="waybillNumber"
@@ -281,6 +294,59 @@ async function submitSend(done: (closed: boolean) => void) {
           />
         </a-form-item>
       </a-form>
+    </a-modal>
+
+    <a-modal
+      v-model:visible="detailVisible"
+      title="订单详情"
+      :footer="false"
+      :width="820"
+    >
+      <a-spin :loading="detailLoading">
+        <div v-if="detailData" class="detail_modal">
+          <div class="detail_grid">
+            <div class="detail_card">
+              <div class="detail_label">订单号</div>
+              <div class="detail_value">{{ detailData.no }}</div>
+            </div>
+            <div class="detail_card">
+              <div class="detail_label">用户</div>
+              <div class="detail_value">{{ detailData.userNickname || `用户 ${detailData.userID}` }}</div>
+            </div>
+            <div class="detail_card">
+              <div class="detail_label">支付价格</div>
+              <div class="detail_value">￥ {{ formatPrice(detailData.price) }}</div>
+            </div>
+            <div class="detail_card">
+              <div class="detail_label">优惠价格</div>
+              <div class="detail_value">{{ detailData.coupon ? `￥ ${formatPrice(detailData.coupon)}` : "-" }}</div>
+            </div>
+            <div class="detail_card">
+              <div class="detail_label">支付方式</div>
+              <div class="detail_value">{{ payTypeText(detailData.payType) }}</div>
+            </div>
+            <div class="detail_card">
+              <div class="detail_label">支付时间</div>
+              <div class="detail_value">{{ detailData.payTime ? dateTemFormat(detailData.payTime) : "-" }}</div>
+            </div>
+          </div>
+
+          <div class="detail_section">
+            <div class="detail_section_title">商品信息</div>
+            <div class="detail_goods_list">
+              <div v-for="goods in detailData.goodsList" :key="goods.orderGoodsID" class="detail_goods_item">
+                <a-image :src="goods.cover" :width="56" :height="56" fit="cover" />
+                <div class="detail_goods_info">
+                  <div class="primary_text">{{ goods.title }}</div>
+                  <div class="muted">商品数量：{{ goods.num }}</div>
+                  <div class="muted">单价：￥ {{ formatPrice(goods.price) }}</div>
+                  <div class="muted" v-if="goods.note">备注：{{ goods.note }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </a-spin>
     </a-modal>
   </div>
 </template>
@@ -354,15 +420,67 @@ async function submitSend(done: (closed: boolean) => void) {
     align-items: center;
   }
 
-  .send_link {
-    justify-content: flex-start;
-    padding-left: 0;
+  .detail_modal {
+    display: grid;
+    gap: 18px;
   }
 
-  .popover_list {
+  .detail_grid {
     display: grid;
-    gap: 6px;
-    max-width: 240px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .detail_card,
+  .detail_section {
+    border: 1px solid var(--color-border-2);
+    border-radius: 10px;
+    background: var(--color-fill-1);
+  }
+
+  .detail_card {
+    padding: 14px 16px;
+  }
+
+  .detail_label {
+    color: @color-text-3;
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+
+  .detail_value {
+    color: @color-text-1;
+    font-size: 14px;
+    line-height: 1.6;
+    word-break: break-all;
+  }
+
+  .detail_section {
+    padding: 16px;
+  }
+
+  .detail_section_title {
+    color: @color-text-1;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .detail_goods_list {
+    display: grid;
+    gap: 12px;
+  }
+
+  .detail_goods_item {
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+  }
+
+  .detail_goods_info {
+    display: grid;
+    gap: 2px;
   }
 
   .arco-image {
