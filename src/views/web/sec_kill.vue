@@ -506,8 +506,9 @@ onMounted(loadDateList)
     gap: 6px;
     padding: 8px 12px;
     border-radius: 999px;
-    border: 1px solid var(--web-border);
-    background: var(--web-soft-bg-2);
+    border: 1px solid rgba(255, 108, 132, .2);
+    background: linear-gradient(135deg, #ff8fa0, #ff6f86);
+    box-shadow: 0 10px 20px rgba(255, 111, 134, .16);
     color: #fff;
     font-size: 12px;
     font-weight: 600;
