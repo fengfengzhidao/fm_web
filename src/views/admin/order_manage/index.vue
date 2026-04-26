@@ -300,47 +300,94 @@ async function submitSend(done: (closed: boolean) => void) {
       v-model:visible="detailVisible"
       title="订单详情"
       :footer="false"
-      :width="820"
+      :width="920"
     >
       <a-spin :loading="detailLoading">
         <div v-if="detailData" class="detail_modal">
+          <div class="detail_hero">
+            <div class="detail_hero_main">
+              <div class="detail_hero_label">ORDER DETAIL</div>
+              <div class="detail_hero_no">{{ detailData.no }}</div>
+              <div class="detail_hero_meta">
+                <span>用户：{{ detailData.userNickname || `用户 ${detailData.userID}` }}</span>
+                <span>下单时间：{{ dateTemFormat(detailData.createdAt) }}</span>
+              </div>
+            </div>
+            <div class="detail_hero_side">
+              <a-tag class="detail_status_tag" :color="orderStatusColor(detailData.status)">
+                {{ orderStatusText(detailData.status) }}
+              </a-tag>
+              <div class="detail_hero_price">￥ {{ formatPrice(detailData.price) }}</div>
+              <div class="detail_hero_price_desc">订单实付金额</div>
+            </div>
+          </div>
+
           <div class="detail_grid">
             <div class="detail_card">
-              <div class="detail_label">订单号</div>
-              <div class="detail_value">{{ detailData.no }}</div>
-            </div>
-            <div class="detail_card">
-              <div class="detail_label">用户</div>
-              <div class="detail_value">{{ detailData.userNickname || `用户 ${detailData.userID}` }}</div>
-            </div>
-            <div class="detail_card">
-              <div class="detail_label">支付价格</div>
-              <div class="detail_value">￥ {{ formatPrice(detailData.price) }}</div>
+              <div class="detail_label">支付方式</div>
+              <div class="detail_value">{{ payTypeText(detailData.payType) }}</div>
             </div>
             <div class="detail_card">
               <div class="detail_label">优惠价格</div>
               <div class="detail_value">{{ detailData.coupon ? `￥ ${formatPrice(detailData.coupon)}` : "-" }}</div>
             </div>
             <div class="detail_card">
-              <div class="detail_label">支付方式</div>
-              <div class="detail_value">{{ payTypeText(detailData.payType) }}</div>
-            </div>
-            <div class="detail_card">
               <div class="detail_label">支付时间</div>
               <div class="detail_value">{{ detailData.payTime ? dateTemFormat(detailData.payTime) : "-" }}</div>
             </div>
+            <div class="detail_card">
+              <div class="detail_label">商品数量</div>
+              <div class="detail_value">{{ detailData.goodsList.length }} 件</div>
+            </div>
+            <div class="detail_card">
+              <div class="detail_label">收货人</div>
+              <div class="detail_value">{{ detailData.addrInfo.name }} {{ detailData.addrInfo.tel }}</div>
+            </div>
+            <div class="detail_card">
+              <div class="detail_label">收货地址</div>
+              <div class="detail_value">{{ detailData.addrInfo.addr }} {{ detailData.addrInfo.detailAddr }}</div>
+            </div>
           </div>
 
-          <div class="detail_section">
-            <div class="detail_section_title">商品信息</div>
-            <div class="detail_goods_list">
-              <div v-for="goods in detailData.goodsList" :key="goods.orderGoodsID" class="detail_goods_item">
-                <a-image :src="goods.cover" :width="56" :height="56" fit="cover" />
-                <div class="detail_goods_info">
-                  <div class="primary_text">{{ goods.title }}</div>
-                  <div class="muted">商品数量：{{ goods.num }}</div>
-                  <div class="muted">单价：￥ {{ formatPrice(goods.price) }}</div>
-                  <div class="muted" v-if="goods.note">备注：{{ goods.note }}</div>
+          <div class="detail_layout">
+            <div class="detail_section">
+              <div class="detail_section_title">商品清单</div>
+              <div class="detail_goods_list">
+                <div v-for="goods in detailData.goodsList" :key="goods.orderGoodsID" class="detail_goods_item">
+                  <a-image :src="goods.cover" :width="64" :height="64" fit="cover" />
+                  <div class="detail_goods_info">
+                    <div class="primary_text">{{ goods.title }}</div>
+                    <div class="goods_inline_meta">
+                      <span class="muted">数量 {{ goods.num }}</span>
+                      <span class="muted">单价 ￥ {{ formatPrice(goods.price) }}</span>
+                    </div>
+                    <div class="muted" v-if="goods.note">备注：{{ goods.note }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="detail_section">
+              <div class="detail_section_title">补充信息</div>
+              <div class="detail_side_group">
+                <div class="detail_sub_card">
+                  <div class="detail_sub_label">优惠券信息</div>
+                  <div v-if="detailData.couponList.length" class="detail_coupon_list">
+                    <div
+                      v-for="(coupon, index) in detailData.couponList"
+                      :key="`${coupon.type}-${index}`"
+                      class="muted"
+                    >
+                      类型 {{ coupon.type }}，优惠 ￥ {{ formatPrice(coupon.couponPrice) }}
+                    </div>
+                  </div>
+                  <div v-else class="muted">未使用优惠券</div>
+                </div>
+
+                <div class="detail_sub_card">
+                  <div class="detail_sub_label">地址信息</div>
+                  <div class="muted">{{ detailData.addrInfo.name }} {{ detailData.addrInfo.tel }}</div>
+                  <div class="muted">{{ detailData.addrInfo.addr }} {{ detailData.addrInfo.detailAddr }}</div>
                 </div>
               </div>
             </div>
@@ -422,7 +469,68 @@ async function submitSend(done: (closed: boolean) => void) {
 
   .detail_modal {
     display: grid;
-    gap: 18px;
+    gap: 20px;
+  }
+
+  .detail_hero {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 20px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(255, 116, 138, .12), rgba(255, 92, 117, .04));
+    border: 1px solid rgba(255, 116, 138, .12);
+  }
+
+  .detail_hero_main,
+  .detail_hero_side {
+    display: grid;
+    gap: 8px;
+  }
+
+  .detail_hero_label {
+    color: @color-text-3;
+    font-size: 12px;
+    letter-spacing: .12em;
+    font-weight: 700;
+  }
+
+  .detail_hero_no {
+    color: @color-text-1;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.2;
+    word-break: break-all;
+  }
+
+  .detail_hero_meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    color: @color-text-2;
+    font-size: 13px;
+  }
+
+  .detail_hero_side {
+    justify-items: end;
+    align-content: start;
+  }
+
+  .detail_status_tag {
+    padding: 2px 10px;
+    border-radius: 999px;
+  }
+
+  .detail_hero_price {
+    color: #f53f3f;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .detail_hero_price_desc {
+    color: @color-text-3;
+    font-size: 12px;
   }
 
   .detail_grid {
@@ -459,6 +567,12 @@ async function submitSend(done: (closed: boolean) => void) {
     padding: 16px;
   }
 
+  .detail_layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(280px, .55fr);
+    gap: 14px;
+  }
+
   .detail_section_title {
     color: @color-text-1;
     font-size: 16px;
@@ -473,14 +587,66 @@ async function submitSend(done: (closed: boolean) => void) {
 
   .detail_goods_item {
     display: grid;
-    grid-template-columns: 56px minmax(0, 1fr);
+    grid-template-columns: 64px minmax(0, 1fr);
     gap: 12px;
     align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--color-border-2);
+  }
+
+  .detail_goods_item:last-child {
+    border-bottom: 0;
   }
 
   .detail_goods_info {
     display: grid;
-    gap: 2px;
+    gap: 4px;
+  }
+
+  .goods_inline_meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .detail_side_group {
+    display: grid;
+    gap: 12px;
+  }
+
+  .detail_sub_card {
+    padding: 14px;
+    border-radius: 12px;
+    background: var(--color-bg-1);
+    border: 1px solid var(--color-border-2);
+    display: grid;
+    gap: 8px;
+  }
+
+  .detail_sub_label {
+    color: @color-text-1;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .detail_coupon_list {
+    display: grid;
+    gap: 6px;
+  }
+
+  @media (max-width: 900px) {
+    .detail_hero {
+      flex-direction: column;
+    }
+
+    .detail_hero_side {
+      justify-items: start;
+    }
+
+    .detail_grid,
+    .detail_layout {
+      grid-template-columns: 1fr;
+    }
   }
 
   .arco-image {
