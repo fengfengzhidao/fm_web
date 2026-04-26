@@ -832,7 +832,7 @@ onMounted(() => {
   align-items: center;
   gap: 7px;
   padding: 0;
-  color: #6b7280;
+  color: var(--web-text-soft);
   font-size: 15px;
   cursor: pointer;
   white-space: nowrap;
@@ -922,8 +922,8 @@ onMounted(() => {
   min-height: 82px;
   padding: 12px;
   border-radius: 10px;
-  background: linear-gradient(180deg, #fffafb, #fff);
-  border: 1px solid #ffd8de;
+  background: var(--web-soft-grad);
+  border: 1px solid var(--web-border);
   display: grid;
   grid-template-columns: 58px minmax(0, 1fr) auto;
   gap: 10px;
@@ -962,7 +962,7 @@ onMounted(() => {
 }
 
 .coupon_name {
-  color: #374151;
+  color: var(--web-text);
   font-size: 14px;
   font-weight: 600;
   line-height: 1.3;
@@ -975,7 +975,7 @@ onMounted(() => {
 .coupon_tip {
   font-size: 11px;
   line-height: 1.35;
-  color: #9ca3af;
+  color: var(--web-text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1017,12 +1017,12 @@ onMounted(() => {
 .user_greet {
   font-size: 16px;
   font-weight: 700;
-  color: #374151;
+  color: var(--web-text);
 }
 
 .user_state {
   margin-top: 4px;
-  color: #9ca3af;
+  color: var(--web-text-muted);
   font-size: 12px;
 }
 
@@ -1075,7 +1075,7 @@ onMounted(() => {
     justify-items: center;
     align-content: center;
     gap: 8px;
-    color: #4b5563;
+    color: var(--web-text-soft);
     cursor: pointer;
 
     :deep(svg) {
@@ -1139,7 +1139,7 @@ onMounted(() => {
 
 .goods_title {
   min-height: 34px;
-  color: #374151;
+  color: var(--web-text);
   font-size: 12px;
   line-height: 1.45;
   display: -webkit-box;
@@ -1157,7 +1157,7 @@ onMounted(() => {
 
 .goods_meta {
   margin-top: 6px;
-  color: #9ca3af;
+  color: var(--web-text-muted);
   font-size: 11px;
 }
 

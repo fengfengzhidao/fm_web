@@ -24,10 +24,9 @@ const store = userStorei()
 
 <style lang="less">
 .f_footer {
-  background:
-    linear-gradient(180deg, rgba(255, 249, 250, .96), rgba(255, 255, 255, .98));
+  background: var(--web-footer-grad);
   padding: 30px 16px 26px;
-  border-top: 1px solid rgba(255, 217, 224, .82);
+  border-top: 1px solid var(--web-border);
 
   .footer_inner {
     width: min(1240px, 100%);
@@ -38,8 +37,8 @@ const store = userStorei()
     justify-content: space-between;
     padding: 20px 22px;
     border-radius: 20px;
-    border: 1px solid #f8dfe4;
-    background: rgba(255, 255, 255, .9);
+    border: 1px solid var(--web-border);
+    background: color-mix(in srgb, var(--web-surface) 88%, transparent);
     box-shadow: 0 14px 34px rgba(255, 107, 127, .05);
 
     .brand {
@@ -55,7 +54,7 @@ const store = userStorei()
 
       a,
       .login_button {
-        color: #6b7280;
+        color: var(--web-text-soft);
         text-decoration: none;
         border: 0;
         background: transparent;
@@ -79,7 +78,7 @@ const store = userStorei()
 
     a {
       margin-left: 10px;
-      color: #9ca3af;
+      color: var(--web-text-muted);
       text-decoration: none;
 
       &:hover {

@@ -400,12 +400,12 @@ watch(() => store.isLogin, (isLogin) => {
   margin: 8px 0 10px;
   font-size: 36px;
   line-height: 1.05;
-  color: #111827;
+  color: var(--web-text);
 }
 
 .hero_copy p {
   margin: 0;
-  color: #6b7280;
+  color: var(--web-text-soft);
   font-size: 14px;
   line-height: 1.8;
 }
@@ -422,7 +422,7 @@ watch(() => store.isLogin, (isLogin) => {
     gap: 6px;
     padding: 8px 12px;
     border-radius: 999px;
-    background: #fff4f6;
+    background: var(--web-brand-soft);
     color: #ff6178;
     font-size: 12px;
     font-weight: 600;
@@ -437,19 +437,19 @@ watch(() => store.isLogin, (isLogin) => {
 }
 
 .summary_title {
-  color: #9ca3af;
+  color: var(--web-text-muted);
   font-size: 13px;
 }
 
 .summary_value {
-  color: #111827;
+  color: var(--web-text);
   font-size: 28px;
   line-height: 1.15;
   font-weight: 700;
 }
 
 .summary_meta {
-  color: #4b5563;
+  color: var(--web-text-soft);
   font-size: 14px;
   line-height: 1.6;
 }
@@ -490,7 +490,7 @@ watch(() => store.isLogin, (isLogin) => {
 }
 
 .panel_title {
-  color: #111827;
+  color: var(--web-text);
   font-size: 24px;
   font-weight: 700;
   line-height: 1.1;
@@ -498,7 +498,7 @@ watch(() => store.isLogin, (isLogin) => {
 
 .panel_desc {
   margin-top: 8px;
-  color: #9ca3af;
+  color: var(--web-text-muted);
   font-size: 13px;
 }
 
@@ -532,7 +532,7 @@ watch(() => store.isLogin, (isLogin) => {
 }
 
 .item_title {
-  color: #111827;
+  color: var(--web-text);
   font-size: 15px;
   font-weight: 700;
   line-height: 1.6;
@@ -550,7 +550,7 @@ watch(() => store.isLogin, (isLogin) => {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  color: #9ca3af;
+  color: var(--web-text-muted);
   font-size: 12px;
   line-height: 1.7;
 }
@@ -573,7 +573,7 @@ watch(() => store.isLogin, (isLogin) => {
   border-radius: 4px;
   border: 1px solid var(--web-border-strong);
   background: var(--web-surface);
-  color: #7b8088;
+  color: var(--web-text-soft);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -582,7 +582,7 @@ watch(() => store.isLogin, (isLogin) => {
 
 .qty_value {
   min-width: 24px;
-  color: #444;
+  color: var(--web-text);
   font-size: 15px;
   text-align: center;
 }
@@ -608,7 +608,7 @@ watch(() => store.isLogin, (isLogin) => {
   }
 
   span {
-    color: #6b7280;
+    color: var(--web-text-soft);
     font-size: 13px;
   }
 }
@@ -622,7 +622,7 @@ watch(() => store.isLogin, (isLogin) => {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    color: #6b7280;
+    color: var(--web-text-soft);
     font-size: 12px;
   }
 }
@@ -639,14 +639,14 @@ watch(() => store.isLogin, (isLogin) => {
 }
 
 .coupon_title {
-  color: #111827;
+  color: var(--web-text);
   font-size: 15px;
   font-weight: 700;
 }
 
 .coupon_hint {
   margin-top: 8px;
-  color: #9ca3af;
+  color: var(--web-text-muted);
   font-size: 12px;
   line-height: 1.7;
 }
@@ -676,7 +676,7 @@ watch(() => store.isLogin, (isLogin) => {
   span {
     display: block;
     margin-top: 6px;
-    color: #6b7280;
+    color: var(--web-text-soft);
     font-size: 12px;
   }
 }
@@ -686,7 +686,7 @@ watch(() => store.isLogin, (isLogin) => {
   padding: 16px;
   border-radius: 14px;
   background: var(--web-soft-bg);
-  color: #9ca3af;
+  color: var(--web-text-muted);
   font-size: 12px;
   text-align: center;
 }
@@ -700,7 +700,7 @@ watch(() => store.isLogin, (isLogin) => {
 .empty_state {
   min-height: 360px;
   border-radius: 16px;
-  border: 1px dashed #f0d7dd;
+  border: 1px dashed var(--web-border);
   background: var(--web-hero-grad);
   display: grid;
   justify-items: center;
@@ -722,7 +722,7 @@ watch(() => store.isLogin, (isLogin) => {
 
 .empty_title {
   margin-top: 14px;
-  color: #111827;
+  color: var(--web-text);
   font-size: 24px;
   font-weight: 700;
 }
@@ -730,7 +730,7 @@ watch(() => store.isLogin, (isLogin) => {
 .empty_desc {
   margin-top: 10px;
   max-width: 420px;
-  color: #9ca3af;
+  color: var(--web-text-muted);
   font-size: 13px;
   line-height: 1.8;
 }
@@ -749,7 +749,7 @@ watch(() => store.isLogin, (isLogin) => {
 }
 
 :deep(.arco-checkbox) {
-  --color-primary-light-1: #fff2f5;
+  --color-primary-light-1: var(--web-brand-soft);
   --color-primary-light-2: #ffdce5;
   --color-primary-light-3: #ffc3d1;
   --color-primary-light-4: #ffadc0;

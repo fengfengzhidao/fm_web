@@ -158,12 +158,12 @@ watch(currentKey, (value) => {
     margin: 8px 0 10px;
     font-size: 34px;
     line-height: 1.05;
-    color: #1f2937;
+    color: var(--web-text);
   }
 
   p {
     margin: 0;
-    color: #6b7280;
+    color: var(--web-text-soft);
     font-size: 14px;
     line-height: 1.75;
   }
@@ -222,7 +222,7 @@ watch(currentKey, (value) => {
 }
 
 .result_title {
-  color: #111827;
+  color: var(--web-text);
   font-size: 24px;
   font-weight: 700;
   line-height: 1.1;
@@ -230,7 +230,7 @@ watch(currentKey, (value) => {
 
 .result_meta {
   margin-top: 8px;
-  color: #9ca3af;
+  color: var(--web-text-muted);
   font-size: 13px;
 }
 
@@ -300,7 +300,7 @@ watch(currentKey, (value) => {
 
 .goods_title {
   min-height: 34px;
-  color: #374151;
+  color: var(--web-text);
   font-size: 12px;
   line-height: 1.45;
   display: -webkit-box;
@@ -318,7 +318,7 @@ watch(currentKey, (value) => {
 
 .goods_meta {
   margin-top: 6px;
-  color: #9ca3af;
+  color: var(--web-text-muted);
   font-size: 11px;
 }
 

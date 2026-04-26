@@ -343,12 +343,12 @@ onMounted(loadData)
   margin: 8px 0 10px;
   font-size: 36px;
   line-height: 1.05;
-  color: #111827;
+  color: var(--web-text);
 }
 
 .hero_copy p {
   margin: 0;
-  color: #6b7280;
+  color: var(--web-text-soft);
   font-size: 14px;
   line-height: 1.8;
 }
@@ -365,7 +365,7 @@ onMounted(loadData)
     gap: 6px;
     padding: 8px 12px;
     border-radius: 999px;
-    background: #fff4f6;
+    background: var(--web-brand-soft);
     color: #ff6178;
     font-size: 12px;
     font-weight: 600;
@@ -380,19 +380,19 @@ onMounted(loadData)
 }
 
 .summary_title {
-  color: #9ca3af;
+  color: var(--web-text-muted);
   font-size: 13px;
 }
 
 .summary_value {
-  color: #111827;
+  color: var(--web-text);
   font-size: 28px;
   line-height: 1.15;
   font-weight: 700;
 }
 
 .summary_meta {
-  color: #4b5563;
+  color: var(--web-text-soft);
   font-size: 14px;
   line-height: 1.6;
 }
@@ -416,7 +416,7 @@ onMounted(loadData)
 }
 
 .panel_title {
-  color: #111827;
+  color: var(--web-text);
   font-size: 24px;
   font-weight: 700;
   line-height: 1.1;
@@ -424,7 +424,7 @@ onMounted(loadData)
 
 .panel_desc {
   margin-top: 8px;
-  color: #9ca3af;
+  color: var(--web-text-muted);
   font-size: 13px;
 }
 
@@ -453,13 +453,13 @@ onMounted(loadData)
   gap: 6px;
 
   strong {
-    color: #111827;
+    color: var(--web-text);
     font-size: 15px;
     line-height: 1.6;
   }
 
   span {
-    color: #6b7280;
+    color: var(--web-text-soft);
     font-size: 12px;
   }
 }
@@ -485,14 +485,14 @@ onMounted(loadData)
 
 .addr_item.active {
   border-color: #ffccd5;
-  background: #fff4f6;
+  background: var(--web-brand-soft);
 }
 
 .addr_item span,
 .coupon_item span {
   display: block;
   margin-top: 6px;
-  color: #6b7280;
+  color: var(--web-text-soft);
   font-size: 12px;
 }
 
@@ -524,7 +524,7 @@ onMounted(loadData)
   align-items: center;
 
   span {
-    color: #6b7280;
+    color: var(--web-text-soft);
     font-size: 13px;
   }
 }
@@ -535,7 +535,7 @@ onMounted(loadData)
 }
 
 .summary_note {
-  color: #6b7280;
+  color: var(--web-text-soft);
   font-size: 12px;
   line-height: 1.7;
 
@@ -554,9 +554,9 @@ onMounted(loadData)
 .empty_card,
 .empty_state {
   border-radius: 14px;
-  border: 1px dashed #f0d7dd;
+  border: 1px dashed var(--web-border);
   background: var(--web-hero-grad);
-  color: #9ca3af;
+  color: var(--web-text-muted);
   font-size: 13px;
   line-height: 1.8;
 }
@@ -578,7 +578,7 @@ onMounted(loadData)
 }
 
 .empty_title {
-  color: #111827;
+  color: var(--web-text);
   font-size: 24px;
   font-weight: 700;
 }

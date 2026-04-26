@@ -31,7 +31,7 @@ function goHome(){
   display: grid;
   place-items: center;
   padding: 32px 24px 40px;
-  background: #fff;
+  background: var(--web-page-bg);
 }
 
 .notfound_shell {
@@ -42,15 +42,15 @@ function goHome(){
   gap: 24px;
   padding: 28px;
   border-radius: 24px;
-  background: #fff;
+  background: var(--web-surface);
   box-shadow: 0 20px 45px rgba(17, 24, 39, .05);
 }
 
 .copy_block,
 .art_block {
   border-radius: 20px;
-  border: 1px solid #eceef2;
-  background: linear-gradient(180deg, #fffafb, #fff);
+  border: 1px solid var(--web-border);
+  background: var(--web-soft-grad);
 }
 
 .copy_block {
@@ -69,13 +69,13 @@ function goHome(){
 
 .copy_block h1 {
   margin: 12px 0 14px;
-  color: #111827;
+  color: var(--web-text);
   font-size: 42px;
   line-height: 1.08;
 }
 
 .copy_block p {
-  color: #6b7280;
+  color: var(--web-text-soft);
   font-size: 14px;
   line-height: 1.9;
 }

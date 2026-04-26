@@ -164,12 +164,12 @@ watch(orderNo, loadPayInfo, {immediate: true})
   margin: 8px 0 10px;
   font-size: 36px;
   line-height: 1.08;
-  color: #111827;
+  color: var(--web-text);
 }
 
 .pay_desc {
   margin: 0;
-  color: #6b7280;
+  color: var(--web-text-soft);
   font-size: 14px;
   line-height: 1.8;
 }
@@ -186,7 +186,7 @@ watch(orderNo, loadPayInfo, {immediate: true})
     gap: 6px;
     padding: 8px 12px;
     border-radius: 999px;
-    background: #fff4f6;
+    background: var(--web-brand-soft);
     color: #ff6178;
     font-size: 12px;
     font-weight: 600;
@@ -202,13 +202,13 @@ watch(orderNo, loadPayInfo, {immediate: true})
 }
 
 .pay_label {
-  color: #9ca3af;
+  color: var(--web-text-muted);
   font-size: 13px;
 }
 
 .pay_no {
   margin-top: 8px;
-  color: #111827;
+  color: var(--web-text);
   font-size: 20px;
   font-weight: 700;
   word-break: break-all;
@@ -235,7 +235,7 @@ watch(orderNo, loadPayInfo, {immediate: true})
 }
 
 .summary_title {
-  color: #111827;
+  color: var(--web-text);
   font-size: 18px;
   font-weight: 700;
 }
@@ -250,7 +250,7 @@ watch(orderNo, loadPayInfo, {immediate: true})
   padding: 14px 14px;
   border-radius: 12px;
   background: var(--web-soft-bg);
-  color: #4b5563;
+  color: var(--web-text-soft);
   font-size: 13px;
   line-height: 1.7;
 }

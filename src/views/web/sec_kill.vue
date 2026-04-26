@@ -483,12 +483,12 @@ onMounted(loadDateList)
   margin: 8px 0 10px;
   font-size: 36px;
   line-height: 1.05;
-  color: #111827;
+  color: var(--web-text);
 }
 
 .hero_copy p {
   margin: 0;
-  color: #6b7280;
+  color: var(--web-text-soft);
   font-size: 14px;
   line-height: 1.8;
 }
@@ -505,7 +505,7 @@ onMounted(loadDateList)
     gap: 6px;
     padding: 8px 12px;
     border-radius: 999px;
-    background: #fff4f6;
+    background: var(--web-brand-soft);
     color: #ff6178;
     font-size: 12px;
     font-weight: 600;
@@ -520,12 +520,12 @@ onMounted(loadDateList)
 }
 
 .summary_title {
-  color: #9ca3af;
+  color: var(--web-text-muted);
   font-size: 13px;
 }
 
 .summary_value {
-  color: #111827;
+  color: var(--web-text);
   font-size: 28px;
   line-height: 1.15;
   font-weight: 700;
@@ -533,7 +533,7 @@ onMounted(loadDateList)
 }
 
 .summary_meta {
-  color: #4b5563;
+  color: var(--web-text-soft);
   font-size: 14px;
 }
 
@@ -541,7 +541,7 @@ onMounted(loadDateList)
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  color: #9ca3af;
+  color: var(--web-text-muted);
   font-size: 12px;
   line-height: 1.6;
 }
@@ -560,7 +560,7 @@ onMounted(loadDateList)
 }
 
 .panel_title {
-  color: #111827;
+  color: var(--web-text);
   font-size: 28px;
   font-weight: 700;
   line-height: 1.1;
@@ -568,7 +568,7 @@ onMounted(loadDateList)
 
 .panel_desc {
   margin-top: 8px;
-  color: #9ca3af;
+  color: var(--web-text-muted);
   font-size: 13px;
 }
 
@@ -591,18 +591,18 @@ onMounted(loadDateList)
 
   &.active {
     border-color: #ffccd5;
-    background: linear-gradient(180deg, #fff4f6, #fff);
+    background: var(--web-brand-soft);
     box-shadow: 0 12px 24px rgba(255, 99, 122, .08);
   }
 }
 
 .date_day {
-  color: #9ca3af;
+  color: var(--web-text-muted);
   font-size: 12px;
 }
 
 .date_hour {
-  color: #111827;
+  color: var(--web-text);
   font-size: 22px;
   line-height: 1;
 }
@@ -672,7 +672,7 @@ onMounted(loadDateList)
   h3 {
     margin: 0;
     min-height: 38px;
-    color: #374151;
+    color: var(--web-text);
     font-size: 13px;
     line-height: 1.5;
     display: -webkit-box;
@@ -701,7 +701,7 @@ onMounted(loadDateList)
 .price_row span,
 .meta_row,
 .time_row {
-  color: #9ca3af;
+  color: var(--web-text-muted);
   font-size: 11px;
 }
 
@@ -719,8 +719,8 @@ onMounted(loadDateList)
 .empty_card {
   min-height: 180px;
   border-radius: 16px;
-  border: 1px dashed #f0d7dd;
-  background: linear-gradient(180deg, #fffafb, #fff);
+  border: 1px dashed var(--web-border);
+  background: var(--web-soft-grad);
   display: grid;
   justify-items: center;
   align-content: center;
@@ -738,14 +738,14 @@ onMounted(loadDateList)
   border-radius: 999px;
   display: grid;
   place-items: center;
-  background: #fff1f4;
+  background: var(--web-brand-soft);
   color: #ff647c;
   font-size: 28px;
 }
 
 .empty_title {
   margin-top: 12px;
-  color: #111827;
+  color: var(--web-text);
   font-size: 18px;
   font-weight: 700;
 }
@@ -753,7 +753,7 @@ onMounted(loadDateList)
 .empty_desc {
   margin-top: 8px;
   max-width: 420px;
-  color: #9ca3af;
+  color: var(--web-text-muted);
   font-size: 13px;
   line-height: 1.7;
 }
@@ -766,8 +766,8 @@ onMounted(loadDateList)
 .detail_panel {
   padding: 16px;
   border-radius: 14px;
-  border: 1px solid #eceef2;
-  background: #fff;
+  border: 1px solid var(--web-border);
+  background: var(--web-surface);
 }
 
 .detail_title {
@@ -794,7 +794,7 @@ onMounted(loadDateList)
 
   p {
     margin: 6px 0 0;
-    color: #6b7280;
+    color: var(--web-text-soft);
   }
 }
 
@@ -810,18 +810,19 @@ onMounted(loadDateList)
   padding: 12px 14px;
   border-radius: 14px;
   background: #fafafb;
-  border: 1px solid #eceef2;
+  background: var(--web-soft-bg);
+  border: 1px solid var(--web-border);
   cursor: pointer;
 
   &.active {
     border-color: #ffccd5;
-    background: #fff4f6;
+    background: var(--web-brand-soft);
   }
 
   span {
     display: block;
     margin-top: 6px;
-    color: #6b7280;
+    color: var(--web-text-soft);
   }
 }
 
