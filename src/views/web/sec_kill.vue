@@ -505,8 +505,9 @@ onMounted(loadDateList)
     gap: 6px;
     padding: 8px 12px;
     border-radius: 999px;
-    background: var(--web-brand-soft);
-    color: #ff6178;
+    border: 1px solid var(--web-border);
+    background: var(--web-soft-bg-2);
+    color: var(--web-brand);
     font-size: 12px;
     font-weight: 600;
   }
@@ -590,9 +591,17 @@ onMounted(loadDateList)
   transition: .18s ease;
 
   &.active {
-    border-color: #ffccd5;
-    background: var(--web-brand-soft);
+    border-color: var(--web-menu-active-border);
+    background: linear-gradient(180deg, var(--web-soft-bg-2) 0%, var(--web-menu-active-bg) 100%);
     box-shadow: 0 12px 24px rgba(255, 99, 122, .08);
+  }
+
+  &.active .date_day {
+    color: var(--web-menu-active-desc);
+  }
+
+  &.active .date_hour {
+    color: var(--web-menu-active-text);
   }
 }
 
@@ -616,13 +625,13 @@ onMounted(loadDateList)
 .goods_card {
   overflow: hidden;
   border: 1px solid var(--web-border);
-  border-radius: 10px;
+  border-radius: 16px;
   background: var(--web-surface);
   transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
 
   &:hover {
     transform: translateY(-2px);
-    border-color: #ffd2da;
+    border-color: var(--web-menu-active-border);
     box-shadow: 0 14px 28px rgba(17, 24, 39, .08);
   }
 }
@@ -738,8 +747,9 @@ onMounted(loadDateList)
   border-radius: 999px;
   display: grid;
   place-items: center;
-  background: var(--web-brand-soft);
-  color: #ff647c;
+  border: 1px solid var(--web-menu-active-border);
+  background: linear-gradient(180deg, var(--web-soft-bg-2) 0%, var(--web-menu-active-bg) 100%);
+  color: var(--web-brand);
   font-size: 28px;
 }
 
@@ -815,8 +825,13 @@ onMounted(loadDateList)
   cursor: pointer;
 
   &.active {
-    border-color: #ffccd5;
-    background: var(--web-brand-soft);
+    border-color: var(--web-menu-active-border);
+    background: linear-gradient(180deg, var(--web-soft-bg-2) 0%, var(--web-menu-active-bg) 100%);
+  }
+
+  &.active span,
+  &.active strong {
+    color: var(--web-menu-active-text);
   }
 
   span {
