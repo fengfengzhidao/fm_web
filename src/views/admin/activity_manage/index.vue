@@ -70,6 +70,18 @@ const secKillForm = reactive({
   startTime: "",
 })
 
+function formatSecKillStartTime(value: unknown): string {
+  if (!value) return ""
+  const maybeDate = value as {toDate?: () => Date}
+  const parsed = typeof maybeDate?.toDate === "function"
+    ? dayjs(maybeDate.toDate())
+    : dayjs(value as string | number | Date)
+  if (!parsed.isValid()) {
+    return ""
+  }
+  return parsed.format("YYYY-MM-DDTHH:mm:ssZ")
+}
+
 function couponTypeName(type: number) {
   const map: Record<number, string> = {
     1: "节日",
@@ -121,11 +133,17 @@ async function createSecKill(done: (closed: boolean) => void) {
     done(false)
     return
   }
+  const startTime = formatSecKillStartTime(secKillForm.startTime)
+  if (!startTime) {
+    Message.error("开始时间格式错误")
+    done(false)
+    return
+  }
   const res = await secKillCreateApi({
     goodsID: secKillForm.goodsID as number,
     killPrice: Math.round(secKillForm.killPriceYuan * 100),
     killInventory: secKillForm.killInventory,
-    startTime: dayjs(secKillForm.startTime).format("YYYY-MM-DDTHH:mm:ssZ"),
+    startTime,
   })
   if (res.code) {
     Message.error(res.msg)
