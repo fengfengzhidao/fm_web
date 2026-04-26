@@ -339,6 +339,14 @@ function openUserShortcut(type: "collect" | "look" | "cart") {
   router.push({name: "web_cart"})
 }
 
+function openUserCenter() {
+  if (!store.isLogin) {
+    store.openLoginModal("/user_center/info")
+    return
+  }
+  router.push({name: "web_user_center_info"})
+}
+
 function openLoginModal() {
   store.openLoginModal("/")
 }
@@ -483,11 +491,11 @@ onMounted(() => {
 
           <aside class="hero_user">
             <div class="user_profile">
-              <div class="user_avatar">
+              <button type="button" class="user_avatar" @click="openUserCenter">
                 <a-avatar :size="44" :image-url="store.userInfo.avatar || '/logo.png'">
                   <IconUser/>
                 </a-avatar>
-              </div>
+              </button>
               <div class="user_intro">
                 <div class="user_greet">上午好<span v-if="store.isLogin">，{{ userDisplayName }}</span></div>
                 <div class="user_state">{{ store.isLogin ? "欢迎回来" : "请先登录" }}</div>
@@ -1007,11 +1015,21 @@ onMounted(() => {
 .user_avatar {
   width: 48px;
   height: 48px;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
   border-radius: 999px;
   display: grid;
   place-items: center;
   border: 1px solid #ffd4db;
   color: #ff6f84;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    border-color: #ffb7c3;
+    box-shadow: 0 10px 22px rgba(255, 98, 122, .14);
+  }
 }
 
 .user_greet {
