@@ -1,0 +1,16 @@
+{
+  "ok": false,
+  "orderNo": "NO202604251536952927",
+  "steps": [
+    "login",
+    "search-order"
+  ],
+  "screenshots": [
+    "F:\\IT\\fengfeng\\fengfeng_mall\\fm_web\\.codex_tmp\\screenshots\\51-after-login.png",
+    "F:\\IT\\fengfeng\\fengfeng_mall\\fm_web\\.codex_tmp\\screenshots\\52-order-search.png",
+    "F:\\IT\\fengfeng\\fengfeng_mall\\fm_web\\.codex_tmp\\screenshots\\59-error.png"
+  ],
+  "error": "page.waitForEvent: Timeout 30000ms exceeded while waiting for event \"filechooser\"\n=========================== logs ===========================\nwaiting for event \"filechooser\"\n============================================================\n    at [stdin]:65:12",
+  "blocker": null,
+  "statusText": "待评价"
+}

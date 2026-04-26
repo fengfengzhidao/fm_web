@@ -1,0 +1,28 @@
+{
+  "ok": true,
+  "steps": [
+    "open-goods-detail",
+    "capture-default",
+    "capture-images-filter"
+  ],
+  "screenshots": [
+    "F:\\IT\\fengfeng\\fengfeng_mall\\fm_web\\.codex_tmp\\screenshots\\81-goods-27-comment-default.png",
+    "F:\\IT\\fengfeng\\fengfeng_mall\\fm_web\\.codex_tmp\\screenshots\\82-goods-27-comment-images.png"
+  ],
+  "summary": {
+    "commentSurfaceText": "用户评价\n全部评论\n(1)\n好评\n(1)\n中评\n(0)\n差评\n(0)\n有图\n(1)\n默认排序\n枫枫\n2026-04-25 15:41:57\n啦啦啦\n购买商品：轻野保温杯礼盒 1777099837881",
+    "filterCount": 5,
+    "filterTexts": [
+      "全部评论(1)",
+      "好评(1)",
+      "中评(0)",
+      "差评(0)",
+      "有图(1)"
+    ],
+    "commentCount": 1,
+    "imageCount": 3,
+    "imageFilterCommentCount": 1,
+    "imageFilterImageCount": 3
+  },
+  "error": null
+}
