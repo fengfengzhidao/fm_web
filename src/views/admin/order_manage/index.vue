@@ -301,6 +301,7 @@ async function submitSend(done: (closed: boolean) => void) {
       title="订单详情"
       :footer="false"
       :width="920"
+      modal-class="order-detail-modal"
     >
       <a-spin :loading="detailLoading">
         <div v-if="detailData" class="detail_modal">
@@ -325,11 +326,11 @@ async function submitSend(done: (closed: boolean) => void) {
           <div class="detail_grid">
             <div class="detail_card">
               <div class="detail_label">支付方式</div>
-              <div class="detail_value">{{ payTypeText(detailData.payType) }}</div>
+              <div class="detail_value strong">{{ payTypeText(detailData.payType) }}</div>
             </div>
             <div class="detail_card">
               <div class="detail_label">优惠价格</div>
-              <div class="detail_value">{{ detailData.coupon ? `￥ ${formatPrice(detailData.coupon)}` : "-" }}</div>
+              <div class="detail_value strong">{{ detailData.coupon ? `￥ ${formatPrice(detailData.coupon)}` : "-" }}</div>
             </div>
             <div class="detail_card">
               <div class="detail_label">支付时间</div>
@@ -337,11 +338,11 @@ async function submitSend(done: (closed: boolean) => void) {
             </div>
             <div class="detail_card">
               <div class="detail_label">商品数量</div>
-              <div class="detail_value">{{ detailData.goodsList.length }} 件</div>
+              <div class="detail_value strong">{{ detailData.goodsList.length }} 件</div>
             </div>
             <div class="detail_card">
               <div class="detail_label">收货人</div>
-              <div class="detail_value">{{ detailData.addrInfo.name }} {{ detailData.addrInfo.tel }}</div>
+              <div class="detail_value strong">{{ detailData.addrInfo.name }} {{ detailData.addrInfo.tel }}</div>
             </div>
             <div class="detail_card">
               <div class="detail_label">收货地址</div>
@@ -653,6 +654,226 @@ async function submitSend(done: (closed: boolean) => void) {
     border-radius: 4px;
     overflow: hidden;
     background-color: var(--color-fill-2);
+  }
+}
+
+.order-detail-modal {
+  .arco-modal-body {
+    padding-top: 20px;
+  }
+
+  .primary_text {
+    color: @color-text-1;
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .muted {
+    color: @color-text-3;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .detail_modal {
+    display: grid;
+    gap: 20px;
+  }
+
+  .detail_hero {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 22px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(255, 116, 138, .14), rgba(255, 92, 117, .05));
+    border: 1px solid rgba(255, 116, 138, .12);
+  }
+
+  .detail_hero_main,
+  .detail_hero_side {
+    display: grid;
+    gap: 8px;
+  }
+
+  .detail_hero_label {
+    color: @color-text-3;
+    font-size: 12px;
+    letter-spacing: .12em;
+    font-weight: 700;
+  }
+
+  .detail_hero_no {
+    color: @color-text-1;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.2;
+    word-break: break-all;
+  }
+
+  .detail_hero_meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    color: @color-text-2;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .detail_hero_side {
+    justify-items: end;
+    align-content: start;
+  }
+
+  .detail_status_tag {
+    padding: 2px 10px;
+    border-radius: 999px;
+  }
+
+  .detail_hero_price {
+    color: #f53f3f;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .detail_hero_price_desc {
+    color: @color-text-3;
+    font-size: 12px;
+  }
+
+  .detail_grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .detail_card,
+  .detail_section {
+    border: 1px solid var(--color-border-2);
+    border-radius: 12px;
+    background: var(--color-fill-1);
+  }
+
+  .detail_card {
+    padding: 14px 16px;
+    min-height: 86px;
+    display: grid;
+    align-content: space-between;
+    gap: 8px;
+  }
+
+  .detail_label {
+    color: @color-text-3;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .detail_value {
+    color: @color-text-1;
+    font-size: 14px;
+    line-height: 1.7;
+    word-break: break-all;
+  }
+
+  .detail_value.strong {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .detail_section {
+    padding: 18px;
+  }
+
+  .detail_layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(280px, .55fr);
+    gap: 14px;
+  }
+
+  .detail_section_title {
+    color: @color-text-1;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+
+  .detail_goods_list {
+    display: grid;
+    gap: 12px;
+  }
+
+  .detail_goods_item {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--color-border-2);
+  }
+
+  .detail_goods_item:last-child {
+    border-bottom: 0;
+  }
+
+  .detail_goods_info {
+    display: grid;
+    gap: 4px;
+  }
+
+  .goods_inline_meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .detail_side_group {
+    display: grid;
+    gap: 12px;
+  }
+
+  .detail_sub_card {
+    padding: 14px;
+    border-radius: 12px;
+    background: var(--color-bg-1);
+    border: 1px solid var(--color-border-2);
+    display: grid;
+    gap: 8px;
+  }
+
+  .detail_sub_label {
+    color: @color-text-1;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .detail_coupon_list {
+    display: grid;
+    gap: 6px;
+  }
+
+  .arco-image {
+    border-radius: 6px;
+    overflow: hidden;
+    background-color: var(--color-fill-2);
+  }
+}
+
+@media (max-width: 900px) {
+  .order-detail-modal {
+    .detail_hero {
+      flex-direction: column;
+    }
+
+    .detail_hero_side {
+      justify-items: start;
+    }
+
+    .detail_grid,
+    .detail_layout {
+      grid-template-columns: 1fr;
+    }
   }
 }
 </style>
