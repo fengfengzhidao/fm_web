@@ -1,7 +1,61 @@
 <script setup lang="ts">
 import {onMounted, reactive, ref} from "vue";
 import {Message} from "@arco-design/web-vue";
+import {areaList} from "@vant/area-data";
 import {addrCreateApi, addrDefaultApi, addrListApi, addrRemoveApi, addrUpdateApi, type addrType} from "@/api/user_center_api";
+
+type areaOption = {
+  value: string
+  label: string
+  children?: areaOption[]
+}
+
+function buildAreaOptions() {
+  const provinceMap = new Map<string, areaOption>()
+  const cityMap = new Map<string, areaOption>()
+  const codeToLabels = new Map<string, string[]>()
+
+  for (const code in areaList.province_list) {
+    const label = areaList.province_list[code]
+    const option: areaOption = {value: code, label, children: []}
+    provinceMap.set(code, option)
+  }
+
+  for (const code in areaList.city_list) {
+    const label = areaList.city_list[code]
+    const provinceCode = `${code.slice(0, 2)}0000`
+    const parent = provinceMap.get(provinceCode)
+    if (!parent) continue
+    const option: areaOption = {value: code, label, children: []}
+    parent.children?.push(option)
+    cityMap.set(code, option)
+  }
+
+  for (const code in areaList.county_list) {
+    const label = areaList.county_list[code]
+    const cityCode = `${code.slice(0, 4)}00`
+    const parent = cityMap.get(cityCode)
+    if (!parent) continue
+    parent.children?.push({value: code, label})
+  }
+
+  const options = Array.from(provinceMap.values())
+
+  function walk(nodes: areaOption[], path: string[] = []) {
+    for (const node of nodes) {
+      const labels = [...path, node.label]
+      codeToLabels.set(node.value, labels)
+      if (node.children?.length) {
+        walk(node.children, labels)
+      }
+    }
+  }
+
+  walk(options)
+  return {options, codeToLabels}
+}
+
+const {options: areaOptions, codeToLabels} = buildAreaOptions()
 
 const loading = ref(false)
 const list = ref<addrType[]>([])
@@ -11,9 +65,40 @@ const editingID = ref<number | null>(null)
 const form = reactive({
   name: "",
   tel: "",
+  addrCodes: [] as string[] | string,
   addr: "",
   detailAddr: "",
 })
+
+function addrCodesToText(codes: string[] | string): string {
+  const lastCode = Array.isArray(codes) ? codes[codes.length - 1] : codes
+  const labels = lastCode ? codeToLabels.get(lastCode) : undefined
+  return labels ? labels.join(" ") : ""
+}
+
+function resolveAddrCodes(rawAddr?: string): string[] {
+  const addr = rawAddr?.trim()
+  if (!addr) return []
+  const normalized = addr.replace(/\s+/g, " ").trim()
+  const joined = normalized.replace(/\s+/g, "")
+
+  for (const [code, labels] of codeToLabels.entries()) {
+    if (labels.length !== 3) continue
+    const text = labels.join(" ")
+    if (text === normalized || labels.join("") === joined) {
+      return [labels[0], labels[1], labels[2]].map((_, index) => {
+        if (index === 0) {
+          return `${code.slice(0, 2)}0000`
+        }
+        if (index === 1) {
+          return `${code.slice(0, 4)}00`
+        }
+        return code
+      })
+    }
+  }
+  return []
+}
 
 async function loadList() {
   loading.value = true
@@ -36,6 +121,7 @@ function openCreate() {
   editingID.value = null
   form.name = ""
   form.tel = ""
+  form.addrCodes = []
   form.addr = ""
   form.detailAddr = ""
   visible.value = true
@@ -45,6 +131,7 @@ function openEdit(item: addrType) {
   editingID.value = item.id
   form.name = item.name
   form.tel = item.tel
+  form.addrCodes = resolveAddrCodes(item.addr)
   form.addr = item.addr
   form.detailAddr = item.detailAddr
   visible.value = true
@@ -53,7 +140,12 @@ function openEdit(item: addrType) {
 async function saveAddress() {
   const error = await formRef.value?.validate?.()
   if (error) return false
-  const payload = {...form}
+  const payload = {
+    name: form.name,
+    tel: form.tel,
+    addr: addrCodesToText(form.addrCodes),
+    detailAddr: form.detailAddr,
+  }
   const res = editingID.value
     ? await addrUpdateApi({id: editingID.value, ...payload})
     : await addrCreateApi(payload)
@@ -134,8 +226,14 @@ onMounted(loadList)
         <a-form-item field="tel" label="手机号" :rules="[{required: true, message: '请输入手机号'}]">
           <a-input v-model="form.tel" placeholder="手机号"/>
         </a-form-item>
-        <a-form-item field="addr" label="省市区" :rules="[{required: true, message: '请输入省市区'}]">
-          <a-input v-model="form.addr" placeholder="省市区"/>
+        <a-form-item field="addrCodes" label="省市区" :rules="[{required: true, message: '请选择省市区'}]">
+          <a-cascader
+            v-model="form.addrCodes"
+            :options="areaOptions"
+            placeholder="选择省 / 市 / 区"
+            allow-search
+            style="width: 100%"
+          />
         </a-form-item>
         <a-form-item field="detailAddr" label="详细地址" :rules="[{required: true, message: '请输入详细地址'}]">
           <a-input v-model="form.detailAddr" placeholder="详细地址"/>
