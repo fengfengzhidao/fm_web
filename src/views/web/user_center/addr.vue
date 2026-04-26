@@ -325,7 +325,7 @@ onMounted(loadList)
   flex: 0 0 auto;
   padding: 8px 12px;
   border-radius: 999px;
-  color: var(--web-status-badge-text);
+  color: #fff;
   font-size: 12px;
   font-weight: 700;
   background: var(--web-status-badge-bg);

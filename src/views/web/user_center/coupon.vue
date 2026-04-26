@@ -233,7 +233,7 @@ onMounted(loadList)
   justify-self: start;
   padding: 7px 12px;
   border-radius: 999px;
-  color: #ff647c;
+  color: #fff;
   font-size: 12px;
   font-weight: 700;
   background: var(--web-brand-soft);
