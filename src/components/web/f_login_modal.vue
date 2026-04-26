@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {computed, reactive, ref, watch} from "vue";
-import type {emailLoginRequest} from "@/api/user_api";
-import {emailLoginApi} from "@/api/user_api";
+import type {userRegisterRequest} from "@/api/user_api";
+import {emailLoginApi, userRegisterApi} from "@/api/user_api";
 import {Message} from "@arco-design/web-vue";
 import {userStorei} from "@/stores/user_store";
 import router from "@/router";
@@ -10,9 +10,11 @@ import {captchaGenerateApi} from "@/api/captcha_api";
 
 const store = userStorei()
 const route = useRoute()
-const form = reactive<emailLoginRequest>({
+const authMode = ref<"login" | "register">("login")
+const form = reactive<userRegisterRequest>({
   username: "",
   password: "",
+  rePassword: "",
   captchaID: "",
   captchaCode: "",
 })
@@ -20,11 +22,25 @@ const form = reactive<emailLoginRequest>({
 const formRef = ref()
 const visible = computed(() => store.loginModalVisible)
 const captchaImage = ref("")
+const confirmPasswordRules = [
+  {required: true, message: "请再次输入密码"},
+  {
+    validator: (value: string, callback: (message?: string) => void) => {
+      if (value !== form.password) {
+        callback("两次输入的密码不一致")
+        return
+      }
+      callback()
+    }
+  }
+]
 
 watch(visible, val => {
   if (!val) return
+  authMode.value = "login"
   form.username = ""
   form.password = ""
+  form.rePassword = ""
   form.captchaID = ""
   form.captchaCode = ""
   refreshCaptcha()
@@ -54,7 +70,12 @@ async function refreshCaptcha() {
 async function emailLogin() {
   const val = await formRef.value.validate()
   if (val) return
-  const res = await emailLoginApi(form)
+  const res = await emailLoginApi({
+    username: form.username,
+    password: form.password,
+    captchaID: form.captchaID,
+    captchaCode: form.captchaCode,
+  })
   if (res.code) {
     Message.error(res.msg)
     refreshCaptcha()
@@ -70,6 +91,33 @@ async function emailLogin() {
     router.push(redirect)
   }
 }
+
+function switchMode(mode: "login" | "register") {
+  authMode.value = mode
+  formRef.value?.clearValidate?.()
+  form.captchaCode = ""
+  if (mode === "login") {
+    form.rePassword = ""
+  }
+  refreshCaptcha()
+}
+
+async function submitRegister() {
+  const val = await formRef.value.validate()
+  if (val) return
+  const res = await userRegisterApi(form)
+  if (res.code) {
+    Message.error(res.msg)
+    refreshCaptcha()
+    return
+  }
+  Message.success("注册成功，请登录")
+  authMode.value = "login"
+  form.rePassword = ""
+  form.captchaCode = ""
+  formRef.value?.clearValidate?.()
+  refreshCaptcha()
+}
 </script>
 
 <template>
@@ -83,7 +131,7 @@ async function emailLogin() {
         <div class="modal_form">
           <a-form ref="formRef" :model="form" :label-col-props="{span: 0}" :wrapper-col-props="{span:24}">
             <div class="brand_title">枫枫商城</div>
-            <div class="title">用户登陆</div>
+            <div class="title">{{ authMode === "login" ? "用户登陆" : "用户注册" }}</div>
             <a-form-item label="用户名" field="username" :rules="[{required:true,message:'请输入用户名'}]">
               <a-input placeholder="请输入用户名" v-model="form.username">
                 <template #prefix>
@@ -98,6 +146,18 @@ async function emailLogin() {
                 </template>
               </a-input>
             </a-form-item>
+            <a-form-item
+                v-if="authMode === 'register'"
+                label="确认密码"
+                field="rePassword"
+                :rules="confirmPasswordRules"
+            >
+              <a-input placeholder="请再次输入密码" type="password" v-model="form.rePassword">
+                <template #prefix>
+                  <icon-safe/>
+                </template>
+              </a-input>
+            </a-form-item>
             <a-form-item class="code_row" field="captchaCode" :rules="[{required:true,message:'请输入验证码'}]">
               <a-input v-model="form.captchaCode" class="code_input" placeholder="验证码">
                 <template #prefix>
@@ -108,8 +168,20 @@ async function emailLogin() {
                 <img v-if="captchaImage" :src="captchaImage" alt="验证码">
               </div>
             </a-form-item>
+            <div class="mode_switch">
+              <span>{{ authMode === "login" ? "没有账号？" : "已有账号？" }}</span>
+              <button
+                  class="switch_btn"
+                  type="button"
+                  @click="switchMode(authMode === 'login' ? 'register' : 'login')"
+              >
+                {{ authMode === "login" ? "去注册" : "去登录" }}
+              </button>
+            </div>
             <a-form-item class="action_row">
-              <a-button type="primary" @click="emailLogin" long>登陆</a-button>
+              <a-button type="primary" @click="authMode === 'login' ? emailLogin() : submitRegister()" long>
+                {{ authMode === "login" ? "登陆" : "注册" }}
+              </a-button>
             </a-form-item>
             <div class="tips">测试账号：admin / 1234</div>
           </a-form>
@@ -230,16 +302,37 @@ async function emailLogin() {
     user-select: none;
 
     img {
-      width: 100%;
-      height: 100%;
+      width: auto;
+      max-width: 100%;
+      height: 36px;
       display: block;
-      object-fit: cover;
+      object-fit: contain;
       border-radius: 4px;
+      margin-left: auto;
     }
   }
 
+  .mode_switch {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin: 2px 0 10px;
+    color: var(--color-text-3);
+    font-size: 13px;
+  }
+
+  .switch_btn {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--web-brand);
+    font-weight: 700;
+    cursor: pointer;
+  }
+
   .action_row {
-    margin-top: 8px;
+    margin-top: 0;
   }
 }
 
