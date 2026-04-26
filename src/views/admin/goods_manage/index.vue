@@ -69,6 +69,19 @@ async function updateStatus(record: goodsType) {
 onMounted(() => {
   initFilterGroup()
 })
+
+function formatAbstractPreview(content?: string) {
+  if (!content) {
+    return "无简介"
+  }
+
+  return content
+    .replace(/!\[[^\]]*]\([^)]*\)/g, " ")
+    .replace(/\[[^\]]*]\([^)]*\)/g, " ")
+    .replace(/[`>#*_~-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim() || "无简介"
+}
 </script>
 
 <template>
@@ -104,7 +117,9 @@ onMounted(() => {
         <div class="goods_info">
           <strong>{{ record.title }}</strong>
           <span>{{ record.category || "未分类" }}</span>
-          <p>{{ record.abstract || "无简介" }}</p>
+          <a-tooltip :content="record.abstract || '无简介'" position="top">
+            <p>{{ formatAbstractPreview(record.abstract) }}</p>
+          </a-tooltip>
         </div>
       </template>
       <template #price="{record}:{record: goodsType}">
@@ -150,6 +165,17 @@ onMounted(() => {
     p {
       color: @color-text-2;
       margin: 0;
+    }
+
+    p {
+      display: -webkit-box;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      max-width: 100%;
+      line-height: 1.7;
+      word-break: break-word;
     }
   }
 
