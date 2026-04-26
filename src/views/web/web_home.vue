@@ -860,7 +860,6 @@ onMounted(() => {
   margin-bottom: 16px;
   padding: 10px 0;
   border-radius: 0;
-  background: var(--web-page-bg);
   display: inline-flex;
   max-width: 100%;
 }
