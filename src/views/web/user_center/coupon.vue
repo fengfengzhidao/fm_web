@@ -140,7 +140,7 @@ onMounted(loadList)
 .panel_head p,
 .coupon_row span,
 .coupon_card span {
-  color: var(--color-text-2);
+  color: #fff;
 }
 
 .eyebrow {
