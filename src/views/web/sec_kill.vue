@@ -290,7 +290,7 @@ onMounted(loadDateList)
       <section class="panel_surface">
         <div class="panel_head">
           <div>
-            <div class="panel_title">秒杀码段</div>
+            <div class="panel_title">秒杀时间段</div>
           </div>
           <a-button size="small" @click="loadDateList">刷新日期</a-button>
         </div>
@@ -550,6 +550,8 @@ onMounted(loadDateList)
 .panel_surface {
   margin-top: 18px;
   padding: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .panel_head {
