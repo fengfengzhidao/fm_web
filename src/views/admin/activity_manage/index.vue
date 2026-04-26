@@ -70,6 +70,15 @@ const secKillForm = reactive({
   startTime: "",
 })
 
+const secKillTimePickerProps = {
+  disabledMinutes: () => Array.from({length: 59}, (_, index) => index + 1),
+  disabledSeconds: () => Array.from({length: 59}, (_, index) => index + 1),
+}
+
+function nextHourStart(): string {
+  return dayjs().add(1, "hour").startOf("hour").format("YYYY-MM-DD HH:mm:ss")
+}
+
 function formatSecKillStartTime(value: unknown): string {
   if (!value) return ""
   const maybeDate = value as {toDate?: () => Date}
@@ -79,7 +88,7 @@ function formatSecKillStartTime(value: unknown): string {
   if (!parsed.isValid()) {
     return ""
   }
-  return parsed.format("YYYY-MM-DDTHH:mm:ssZ")
+  return parsed.startOf("hour").format("YYYY-MM-DDTHH:mm:ssZ")
 }
 
 function couponTypeName(type: number) {
@@ -98,6 +107,10 @@ function openCoupon() {
 }
 
 function openSecKill() {
+  secKillForm.goodsID = undefined
+  secKillForm.killPriceYuan = 0
+  secKillForm.killInventory = 1
+  secKillForm.startTime = nextHourStart()
   secKillVisible.value = true
 }
 
@@ -290,6 +303,7 @@ onMounted(initGoodsOptions)
           <a-date-picker
             v-model="secKillForm.startTime"
             show-time
+            :time-picker-props="secKillTimePickerProps"
             value-format="YYYY-MM-DD HH:mm:ss"
             format="YYYY-MM-DD HH:mm:ss"
             placeholder="选择开始时间"
