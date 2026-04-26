@@ -59,7 +59,6 @@ function go(name: string) {
 
       <section class="center_surface">
         <aside class="side_panel">
-          <div class="side_title">功能菜单</div>
           <div class="menu_list">
             <button
               v-for="item in menus"
@@ -195,6 +194,13 @@ function go(name: string) {
   border-radius: 16px;
   border: 1px solid var(--web-border);
   background: var(--web-surface);
+}
+
+.side_panel {
+  padding: 0;
+}
+
+.content_panel {
   padding: 18px;
 }
 
@@ -202,17 +208,10 @@ function go(name: string) {
   min-height: 560px;
 }
 
-.side_title {
-  color: var(--web-text);
-  font-size: 24px;
-  font-weight: 700;
-  line-height: 1.1;
-  margin-bottom: 14px;
-}
-
 .menu_list {
   display: grid;
   gap: 10px;
+  padding: 18px;
 }
 
 .menu_item {
@@ -338,8 +337,7 @@ function go(name: string) {
     padding-right: 0;
   }
 
-  .hero_meta h1,
-  .side_title {
+  .hero_meta h1 {
     font-size: 24px;
   }
 }
