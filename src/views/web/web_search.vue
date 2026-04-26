@@ -140,10 +140,6 @@ watch(currentKey, (value) => {
   padding: 0;
 }
 
-.result_surface {
-  box-shadow: var(--web-shadow-lg);
-}
-
 .search_panel {
   margin-top: 0;
   padding: 22px;
